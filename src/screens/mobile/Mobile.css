@@ -41,3 +41,7 @@
   cursor: pointer;
   white-space: nowrap;
 }
+body:has(.mobile) {
+  background: var(--bg, #0a1116);
+  margin: 0;
+}

@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: '/haker/',
   plugins: [react()],
+  server: { port: 5178, strictPort: true },
   test: {
     include: ['tests/**/*.test.{ts,tsx}'],
     exclude: ['tests/e2e/**', 'node_modules/**'],

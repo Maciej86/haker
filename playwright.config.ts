@@ -6,10 +6,10 @@ export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
   retries: 0,
-  use: { baseURL: 'http://localhost:5173/haker/', viewport },
+  use: { baseURL: 'http://localhost:5178/haker/', viewport },
   webServer: {
-    command: 'npm run dev -- --port 5173 --strictPort',
-    url: 'http://localhost:5173/haker/',
+    command: 'npm run dev',
+    url: 'http://localhost:5178/haker/',
     reuseExistingServer: !process.env.CI,
   },
   projects: [
