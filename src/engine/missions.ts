@@ -1,8 +1,11 @@
-import type { AppId, GameState, MissionId, StepResult, SummaryRow } from './types';
+import type { AppId, GameState, Line, MailMsg, MissionId, StepResult, SummaryRow, UiEvent } from './types';
+import { step } from './types';
+import { advance, dayVars, gclk } from './clock';
+import { esc, fill } from './text';
 import type { CommandTable } from './terminal';
 import type { HelpGroup } from './help';
 import type { RealtimeSource } from './realtime';
-import { MISSIONS, MISSION_ORDER } from '../missions';
+import { MISSIONS, MAIL_ORDER } from '../missions';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string };
 export type HostDef = { ip: string; name: string; promptName?: string };
@@ -74,7 +77,108 @@ export function findHost(ip: string): HostDef | undefined {
   return undefined;
 }
 
+export function visibleOffers(s: GameState): MissionId[] {
+  return MAIL_ORDER.filter(
+    (id) =>
+      !s.mail.hidden.includes(id) &&
+      missionDef(id).availability.afterMissions.every((m) => s.done.includes(m)),
+  );
+}
+
 export function focusMission(s: GameState): MissionId | null {
   if (s.active) return s.active;
-  return s.done.length === 0 ? MISSION_ORDER[0] : null;
+  const free = visibleOffers(s).filter((id) => !s.done.includes(id));
+  return free.length === 1 ? free[0] : null;
+}
+
+export function isBlocked(s: GameState, id: MissionId): boolean {
+  return s.active !== null && s.active !== id && !s.done.includes(id);
+}
+
+export const BUSY_NOTE = {
+  button: 'Zablokowane',
+  title: 'Najpierw skończ bieżące zlecenie.',
+  body: 'Ta oferta poczeka. W demo nie da się prowadzić dwóch zleceń naraz.',
+};
+
+export function acceptOffer(s: GameState, id: MissionId): StepResult {
+  if (
+    !visibleOffers(s).includes(id) ||
+    isBlocked(s, id) ||
+    s.active === id ||
+    s.done.includes(id)
+  ) {
+    return step(s);
+  }
+  const def = missionDef(id);
+  const { offer, giver } = def;
+  const reply = s.mail.draft[id] ?? offer.acceptReply;
+
+  let cur = advance(s, offer.acceptCost);
+  const mine: MailMsg = { from: 'Ty', when: gclk(cur), html: esc(reply) };
+  cur = advance(cur, offer.giverAnswer.cost);
+  const theirs: MailMsg = {
+    from: giver.name,
+    when: gclk(cur),
+    html: fill(offer.giverAnswer.text, dayVars(s)),
+  };
+  const { [id]: _draft, ...draft } = cur.mail.draft;
+  cur = {
+    ...cur,
+    active: id,
+    gains: [],
+    mail: {
+      ...cur.mail,
+      read: cur.mail.read.includes(id) ? cur.mail.read : [...cur.mail.read, id],
+      threads: { ...cur.mail.threads, [id]: [...(cur.mail.threads[id] ?? []), mine, theirs] },
+      draft,
+    },
+  };
+
+  const lines: Line[] = [];
+  const ui: UiEvent[] = [
+    { kind: 'mailArrives', thread: id, msg: theirs, delayMs: offer.giverAnswer.delayMs },
+  ];
+  if (def.onAccept) {
+    const r = def.onAccept(cur);
+    cur = r.state;
+    lines.push(...r.lines);
+    ui.push(...r.ui);
+  }
+  return step(cur, lines, ui);
+}
+
+export function stageIndex(s: GameState): number {
+  const id = focusMission(s);
+  return id ? missionDef(id).stageIndex(s) : -1;
+}
+
+export function coachLine(s: GameState): string | null {
+  const id = focusMission(s);
+  return id ? (missionDef(id).stages[stageIndex(s)]?.coach ?? null) : null;
+}
+
+export type StageViewRow = {
+  title: string;
+  sub: string;
+  mark: string;
+  state: 'done' | 'now' | 'todo';
+  coach: string | null;
+};
+
+export function stageView(s: GameState): StageViewRow[] {
+  const id = focusMission(s);
+  if (!id) return [];
+  const def = missionDef(id);
+  const cur = def.stageIndex(s);
+  return def.stages.map((st, i) => {
+    const state = i < cur ? 'done' : i === cur ? 'now' : 'todo';
+    return {
+      title: st.title,
+      sub: def.stageSub?.(s, i) ?? st.sub,
+      mark: state === 'done' ? '✓' : state === 'now' ? '▶' : `${i + 1}.`,
+      state,
+      coach: state === 'now' ? st.coach : null,
+    };
+  });
 }
