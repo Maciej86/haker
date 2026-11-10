@@ -1,7 +1,7 @@
 import type { MissionDef } from '../../engine/missions';
 import type { GameState } from '../../engine/types';
 import { step } from '../../engine/types';
-import { drawBake } from './logic';
+import { drawBake, kubaConnectLocked, kubaCrack } from './logic';
 import { K_ACCEPT_LINE, K_NOTE_HTML, KUBA_IP } from './texts';
 
 const hasPlaylist = (s: GameState) => s.downloads.some((f) => f.fileId === `${KUBA_IP}:playlista.txt`);
@@ -52,7 +52,16 @@ export const kuba: MissionDef = {
     return step(next, [{ html: K_ACCEPT_LINE }]);
   },
   appBadges: (s) => (s.active === 'kuba' && !s.owned.includes('wyt') ? ['darknet'] : []),
-  hosts: [{ ip: KUBA_IP, name: 'zenek-muzyka', promptName: 'zenek' }],
+  hosts: [{
+    ip: KUBA_IP,
+    name: 'zenek-muzyka',
+    promptName: 'zenek',
+    access: 'direct',
+    usageHint: ' Adres serwera Zenka masz w Notatkach.',
+    cracked: (s) => s.mission.kuba.cracked,
+    onConnectLocked: kubaConnectLocked,
+    onCrack: kubaCrack,
+  }],
   help: [
     {
       title: 'Podstawowe',

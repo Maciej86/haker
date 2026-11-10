@@ -75,3 +75,10 @@ export type UiEvent =
 export type TimerKind = 'download' | 'crackTrace';
 export type StepResult = { state: GameState; lines: Line[]; ui: UiEvent[] };
 export const step = (state: GameState, lines: Line[] = [], ui: UiEvent[] = []): StepResult => ({ state, lines, ui });
+
+/** (Nie `then`: moduł z eksportem `then` jest traktowany jak thenable przez dynamiczny import.)
+ * Skleja wynik `r` z krokiem `f` wykonanym na jego stanie: linie i zdarzenia UI się sumują, stan z `f`. */
+export const andThen = (r: StepResult, f: (s: GameState) => StepResult): StepResult => {
+  const n = f(r.state);
+  return { state: n.state, lines: [...r.lines, ...n.lines], ui: [...r.ui, ...n.ui] };
+};

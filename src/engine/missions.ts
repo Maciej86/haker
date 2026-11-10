@@ -11,7 +11,16 @@ import { THEME_UNLOCKS, unlockedThemes } from './profile';
 import { newGame } from './state';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
-export type HostDef = { ip: string; name: string; promptName?: string };
+export type HostDef = {
+  ip: string;
+  name: string;
+  promptName?: string;
+  access: 'direct' | 'S1';
+  usageHint?: string;                              // dopisek do „Użycie: connect <ip>.”
+  cracked: (s: GameState) => boolean;
+  onConnectLocked: (s: GameState) => StepResult;   // connect bez znanego hasła (1 min już naliczona)
+  onCrack: (s: GameState) => StepResult;           // crack na tym hoście (koszt nalicza misja)
+};
 export type NetworkOverlay = { nodes: { ip: string }[] };
 export type TripDef = { packageFrom: string };
 export type DeliveryDef = { kind: 'file' | 'report' };
@@ -86,6 +95,12 @@ export function findHost(ip: string): HostDef | undefined {
     if (h) return h;
   }
   return undefined;
+}
+
+/** Host o tym IP z hostów misji w fokusie (w odróżnieniu od `findHost`, który szuka we wszystkich). */
+export function missionHost(s: GameState, ip: string): HostDef | undefined {
+  const id = focusMission(s);
+  return id ? missionDef(id).hosts?.find((h) => h.ip === ip) : undefined;
 }
 
 export function visibleOffers(s: GameState): MissionId[] {
