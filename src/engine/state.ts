@@ -70,7 +70,7 @@ const isObj = (v: unknown): v is Record<string, unknown> => kindOf(v) === 'objec
 const arrays = (o: unknown, keys: string[]) => isObj(o) && keys.every((k) => Array.isArray(o[k]));
 const objects = (o: unknown, keys: string[]) => isObj(o) && keys.every((k) => isObj(o[k]));
 const NULLABLE: Record<string, Kind[]> = {
-  overlay: ['string'], active: ['string'], dayCheckpoint: ['object'], summary: ['array'], summaryMeta: ['object'],
+  overlay: ['string'], active: ['string'], mapCityDistrict: ['string'], dayCheckpoint: ['object'], summary: ['array'], summaryMeta: ['object'],
 };
 const SCREENS = ['desktop', 'mapPoland', 'mapCity', 'trip'];
 const SKILLS = ['Sieć', 'Linux', 'Skrypty', 'Social'];
@@ -101,7 +101,9 @@ export function deserialize(raw: string | null): GameState | null {
     return null;
   }
   if (!isObj(o) || o.version !== 1 || typeof o.t !== 'number' || !DAYS.includes(o.day as never)) return null;
-  return validShape(o) ? (o as unknown as GameState) : null;
+  if (!validShape(o)) return null;
+  // stary zapis mógł mieć `trip: {}`: uzupełnij brakujące pola
+  return { ...o, trip: { ...initTripState(), ...(o.trip as object) } } as unknown as GameState;
 }
 
 export function interruptOnLoad(s: GameState): GameState {
