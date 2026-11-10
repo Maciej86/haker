@@ -4,6 +4,7 @@ import type { AppId } from '../../engine/types';
 import { useGame } from '../../ui/useGame';
 import { useWindows } from '../../ui/windows';
 import { StartMenu } from './StartMenu';
+import { DevPanel } from '../overlays/DevPanel';
 
 // Otwarte okna w stałej kolejności (jak w makiecie: kolejność okien w DOM), nie w kolejności warstw.
 export function openApps(order: AppId[]): AppId[] {
@@ -27,7 +28,7 @@ export function TaskBar() {
             </button>
           ))}
         </span>
-        {/* Zadanie 18: <DevPanel /> */}
+        <DevPanel />
         <span className="net">{hw.netName} {hw.net} Mb/s</span>
       </footer>
       {menu ? <StartMenu onClose={() => setMenu(false)} /> : null}

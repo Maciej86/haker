@@ -1,6 +1,5 @@
 import { APPS } from '../../apps/registry';
 import { useGame } from '../../ui/useGame';
-import { useUiEvents } from '../../ui/useUiEvents';
 import { useWindows } from '../../ui/windows';
 import { Window } from '../../ui/Window';
 import { ToastHost } from '../../ui/Toast';
@@ -33,8 +32,8 @@ function Windows() {
   );
 }
 
+// Zdarzenia UI (useUiEvents) obsługuje Game w App.tsx przez całą sesję, także poza pulpitem.
 export function Desktop() {
-  useUiEvents();
   return (
     <div data-screen="desktop">
       <Wallpaper />

@@ -18,3 +18,8 @@
 .ovl .retry{text-align:center;margin-top:12px}
 .ovl .acts{text-align:right;margin-top:16px}
 .ovl.pause .card{text-align:center;cursor:pointer}
+
+/* Panel DEV w pasku zadań: misja.html linie 73–75 */
+#mk{display:flex;gap:4px;align-items:center;margin-left:12px;color:var(--dim);font-size:11px}
+#mk button{background:none;border:1px dashed var(--edge);border-radius:3px;color:var(--dim);padding:1px 8px;font-size:11px}
+#mk button:hover{color:var(--acc);border-color:var(--acc-dim)}

@@ -51,3 +51,38 @@ describe('App: wybór ekranu', () => {
     expect(screen.getByRole('button', { name: 'Kopiuj link' })).toBeInTheDocument();
   });
 });
+
+describe('App: złożenie gry', () => {
+  it('nowa gra: Terminal i Poczta', () => {
+    setWidth(1280); render(<App store={createStore(game(), { persist: null })} fresh />);
+    expect(screen.getByRole('region', { name: 'Terminal' })).toBeInTheDocument(); expect(screen.getByRole('region', { name: 'Poczta' })).toBeInTheDocument();
+  });
+  it('wczytany zapis: sam Terminal', () => {
+    setWidth(1280); render(<App store={createStore(game(), { persist: null })} fresh={false} />);
+    expect(screen.getByRole('region', { name: 'Terminal' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Poczta' })).toBeNull();
+  });
+  it('niezarejestrowany ekran: zaślepka z powrotem', async () => {
+    setWidth(1280); const store = createStore(game({ screen: 'mapPoland' }), { persist: null });
+    render(<App store={store} fresh />);
+    await userEvent.click(screen.getByRole('button', { name: '✕ wróć na pulpit' })); expect(store.get().screen).toBe('desktop');
+  });
+  it('bez ?dev=1 nie ma panelu DEV', () => {
+    setWidth(1280); render(<App store={createStore(game(), { persist: null })} fresh />); expect(screen.queryByText('DEV:')).toBeNull();
+  });
+  it('overlay podsumowania nad pulpitem', () => {
+    setWidth(1280);
+    render(<App store={createStore(game({ overlay: 'summary', summary: [], summaryMeta: { log: [], xp: 5, money: 0, next: 'nextDay' } }), { persist: null })} fresh />);
+    expect(screen.getByRole('dialog', { name: 'Misja zakończona' })).toBeInTheDocument();
+  });
+  it('odpowiedź „po chwili” i toast działają także poza pulpitem', () => {
+    vi.useFakeTimers();
+    try {
+      setWidth(1280); const store = createStore(game({ screen: 'mapPoland' }), { persist: null });
+      render(<App store={store} fresh />);
+      act(() => store.apply({ state: store.get(), lines: [], ui: [{ kind: 'toast', text: 'Sygnał z daleka' }] }));
+      expect(screen.getByText('Sygnał z daleka')).toBeInTheDocument();
+    } finally { vi.useRealTimers(); }
+  });
+});
+
