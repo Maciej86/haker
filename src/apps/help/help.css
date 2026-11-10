@@ -1,0 +1,13 @@
+.help{padding:12px 16px}
+.help h4{margin:14px 0 6px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:400}
+.help h4:first-child{margin-top:0}
+.cmd{display:grid;grid-template-columns:200px 1fr auto;gap:10px;align-items:start;padding:6px 0;border-bottom:1px solid rgba(var(--edge-rgb),.5);font-size:12px}
+.cmd code{color:var(--acc)}
+.cmd small{display:block;color:var(--dim)}
+.cmd.lk{opacity:.45} .cmd.lk code{color:var(--dim)}
+.cmd .new{color:var(--on-acc);background:var(--acc);border-radius:3px;font-size:10px;padding:0 5px;margin-left:6px}
+.cmd button{background:none;border:1px solid var(--edge);border-radius:3px;color:var(--dim);font-size:11px;padding:1px 8px}
+.cmd button:hover{color:var(--acc);border-color:var(--acc-dim)}
+.prog{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:5px 0;font-size:12px;border-bottom:1px solid rgba(var(--edge-rgb),.5)}
+.prog b{font-weight:500;color:var(--acc)}
+.help-intro { color: var(--dim); font-size: 12px; margin: 0 0 10px }
