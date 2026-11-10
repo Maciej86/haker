@@ -8,6 +8,8 @@ import { ICONS } from './icons';
 import { Placeholder } from './Placeholder';
 import { Terminal } from './terminal/Terminal';
 import { Mail } from './mail/Mail';
+import { Browser } from './browser/Browser';
+import { Darknet } from './darknet/Darknet';
 
 export type AppEntry = {
   title: string;
@@ -32,8 +34,8 @@ function entry(id: AppId, e: Omit<AppEntry, 'icon' | 'badge' | 'component'> & { 
 export const APPS: Record<AppId, AppEntry> = {
   terminal: entry('terminal', { title: 'Terminal', winTitle: () => 'ghost@neonos: ~ · Nowy Tomyśl', rect: R(220, 64, 680, 440), desktop: always, component: Terminal }),
   mail: entry('mail', { title: 'Poczta', winTitle: () => 'Poczta: ghost@neonmail.net', rect: (vw) => ({ x: Math.max(0, vw - 1120), y: 80, w: 760, h: 540 }), desktop: always, component: Mail }),
-  browser: entry('browser', { title: 'Przeglądarka', winTitle: () => 'Przeglądarka', rect: R(200, 96, 720, 480), desktop: always }),
-  darknet: entry('darknet', { title: 'Darknet', winTitle: () => 'Darknet: Czarny Rynek', rect: R(260, 130, 700, 460), desktop: always, tone: 'red' }),
+  browser: entry('browser', { title: 'Przeglądarka', winTitle: () => 'Przeglądarka', rect: R(200, 96, 720, 480), desktop: always, component: Browser }),
+  darknet: entry('darknet', { title: 'Darknet', winTitle: () => 'Darknet: Czarny Rynek', rect: R(260, 130, 700, 460), desktop: always, tone: 'red', component: Darknet }),
   netmap: entry('netmap', { title: 'NetMap', winTitle: () => 'NetMap', rect: (vw, vh) => ({ x: 200, y: 58, w: Math.max(760, Math.min(1000, vw - 480)), h: vh - 110 }), desktop: always, placeNext: true }),
   wytrych: entry('wytrych', { title: 'Wytrych', winTitle: () => 'Wytrych 1.0', rect: R(220, 70, 820, 560), desktop: (s) => s.owned.includes('wyt'), placeNext: true }),
   help: entry('help', { title: 'Ściąga', winTitle: () => 'Ściąga · polecenia i programy', rect: R(330, 90, 680, 520), desktop: always, component: HelpApp }),
