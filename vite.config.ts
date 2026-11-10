@@ -10,5 +10,6 @@ export default defineConfig({
     exclude: ['tests/e2e/**', 'node_modules/**'],
     environment: 'node',
     setupFiles: ['tests/setup.ts'],
+    env: { BASE_URL: '/haker/' },
   },
 });

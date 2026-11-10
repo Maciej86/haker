@@ -1,0 +1,43 @@
+.mobile {
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  background: var(--bg, #0a1116);
+  color: var(--text, #cfe8e1);
+  font: 13px/1.5 var(--font, 'JetBrains Mono', ui-monospace, monospace);
+}
+.mobile-logo {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--acc, #34f0b0);
+}
+.mobile p {
+  margin: 0;
+}
+.mobile input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--dim, #6d8c87);
+  border: 1px solid var(--edge, #1d4446);
+  border-radius: 4px;
+  font: inherit;
+}
+.mobile .btn {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--acc, #34f0b0);
+  color: var(--acc, #34f0b0);
+  border-radius: 4px;
+  padding: 6px 16px;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
