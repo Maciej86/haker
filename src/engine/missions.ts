@@ -1,11 +1,14 @@
 import type { AppId, GameState, Line, MailMsg, MissionId, StepResult, SummaryRow, UiEvent } from './types';
 import { step } from './types';
 import { advance, dayVars, gclk } from './clock';
-import { esc, fill } from './text';
+import { esc, fill, fmt } from './text';
 import type { CommandTable } from './terminal';
 import type { HelpGroup } from './help';
 import type { RealtimeSource } from './realtime';
-import { MISSIONS, MAIL_ORDER } from '../missions';
+import { MISSIONS, MAIL_ORDER, MISSION_ORDER } from '../missions';
+import { addXp, skillSummaryRows } from './skills';
+import { THEME_UNLOCKS, unlockedThemes } from './profile';
+import { newGame } from './state';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string };
 export type HostDef = { ip: string; name: string; promptName?: string };
@@ -181,4 +184,69 @@ export function stageView(s: GameState): StageViewRow[] {
       coach: state === 'now' ? st.coach : null,
     };
   });
+}
+
+export function finishMission(s: GameState, id: MissionId): StepResult {
+  const def = missionDef(id);
+  const r0 = def.onFinish?.(s) ?? step(s);
+  const st = r0.state;
+  const base = def.adjustReward?.(st) ?? { money: def.rewards.money, label: 'Nagroda za zlecenie' };
+  const bonuses = def.bonuses.map((b) => ({ b, ok: b.when(st) }));
+  const bonusMoney = bonuses.reduce((sum, x) => sum + (x.ok ? x.b.money : 0), 0);
+  const total = base.money + bonusMoney;
+
+  const done = st.done.includes(id) ? st.done : [...st.done, id];
+  const next: GameState = {
+    ...addXp(st, def.rewards.xp),
+    money: st.money + total,
+    done,
+    active: null,
+    failed: false,
+    overlay: 'summary',
+  };
+
+  const rows: SummaryRow[] = [{ label: base.label, value: `${fmt(base.money)} ¤`, tone: 'ok' }];
+  for (const { b, ok } of bonuses) {
+    if (ok) {
+      rows.push({ label: '✓ ' + b.label, value: b.money ? `+${fmt(b.money)} ¤` : (b.note ?? ''), tone: 'ok' });
+    } else {
+      rows.push({ label: '· ' + b.label, value: b.money ? '—' : (b.note ?? '') });
+    }
+  }
+  const before = unlockedThemes(st.done.length);
+  for (const themeId of unlockedThemes(done.length)) {
+    if (before.includes(themeId)) continue;
+    const name = THEME_UNLOCKS.find((t) => t.id === themeId)?.name ?? themeId;
+    rows.push({ label: `Odblokowano: motyw ${name} (Start → Motyw)`, value: '', tone: 'ok' });
+  }
+  rows.push(...def.summary(next), ...skillSummaryRows(next));
+
+  const withSummary: GameState = {
+    ...next,
+    summary: rows,
+    summaryMeta: {
+      log: def.doneLog,
+      xp: def.rewards.xp,
+      money: total,
+      next: MISSION_ORDER.every((m) => done.includes(m)) ? 'end' : 'nextDay',
+    },
+  };
+  return step(withSummary, r0.lines, r0.ui);
+}
+
+export function failMission(s: GameState): StepResult {
+  const def = missionDef(s.active);
+  return step({
+    ...s,
+    failed: true,
+    overlay: 'summary',
+    summary: skillSummaryRows(s),
+    summaryMeta: { log: def?.failLog ?? ['> Zlecenie nieudane.'], xp: 0, money: 0, next: 'retry' },
+  });
+}
+
+export function retryDay(s: GameState): GameState {
+  const cp = s.dayCheckpoint;
+  if (cp) return { ...structuredClone(cp), dayCheckpoint: structuredClone(cp) };
+  return newGame(s.seed);
 }
