@@ -2,6 +2,7 @@ import { test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { generateAll, serialize, SCENE_KEYS, rng as genRng } from '../../scripts/citygen.mjs';
 import { rng } from '../../src/engine/rng';
+import chrome from './fixtures/mockup-chrome.json';
 
 const FILES = [...SCENE_KEYS, 'poznan', 'trip-routes', 'names'];
 
@@ -16,22 +17,22 @@ test('pliki w src/world/city są aktualne (npm run gen:cities)', () => {
 test('generator nie używa Math.random', () => {
   expect(readFileSync('scripts/citygen.mjs', 'utf8')).not.toMatch(/Math\.random/);
 });
-// liczby policzone w Node na kodzie makiety (mapa-miasta.html, V8 = Chrome)
+// liczby z makiety uruchomionej w Chromium (tests/world/fixtures/mockup-chrome.json); Node sortuje inaczej niż Chrome
 test('sceny jak w makiecie: liczba budynków i ulic', () => {
   const g = generateAll() as any;
-  const want = { nt: [178, 13], leszno: [485, 13], centrum: [770, 26], jezyce: [902, 35], winogrady: [374, 32],
-    grunwald: [649, 23], wilda: [1105, 30], rataje: [469, 32], lawica: [764, 29] };
+  const want = { nt: [178, 13], leszno: [412, 15], centrum: [710, 25], jezyce: [900, 29], winogrady: [327, 27],
+    grunwald: [642, 29], wilda: [1105, 30], rataje: [469, 32], lawica: [857, 23] };
   for (const [k, [boxes, streets]] of Object.entries(want))
     expect([g[k].boxes.length, g[k].streets.length], k).toEqual([boxes, streets]);
   expect([g.poznan.boxes.length, g.poznan.cells.length]).toEqual([1287, 450]);
 });
 test('trasy wyjazdu jak w makiecie', () => {
-  expect(generateAll()['trip-routes']).toMatchObject({ homeStreet: 'ul. Młyńska', s1Street: 'ul. Wąska',
-    parkStreet: 'ul. Mickiewicza', stationStreet: 'Długa', entryStreet: 'ul. Długa' });
+  expect(generateAll()['trip-routes']).toMatchObject({ homeStreet: 'ul. Młyńska', s1Street: 'ul. Polna',
+    parkStreet: 'ul. Łąkowa', stationStreet: 'Łąkowa', entryStreet: 'ul. Długa' });
 });
-test('Centrum: 7 wieżowców jak w makiecie, S1, dworzec i wieżowiec celu', () => {
+test('Centrum: 3 wieżowce jak w makiecie, S1, dworzec i wieżowiec celu', () => {
   const c = generateAll().centrum as any;
-  expect(c.boxes.filter((b: any) => b.tower).length).toBe(7);
+  expect(c.boxes.filter((b: any) => b.tower).length).toBe(3);
   expect(c.srcs[0].k).toBe('S1');
   expect(c.boxes.some((b: any) => b.label === 'dworzec')).toBe(true);
   expect(c.boxes[c.targetIndex].tower).toBe(1);
@@ -54,4 +55,15 @@ test('rng generatora jest ten sam co w silniku (mulberry32)', () => {
     const a = genRng(seed), b = rng(seed);
     for (let i = 0; i < 50; i++) expect(a()).toBe(b());
   }
+});
+test('ulice, liczba budynków i podpisy jak w makiecie w Chromium', () => {
+  const g = generateAll() as any;
+  for (const k of SCENE_KEYS) {
+    const want = (chrome as any)[k];
+    expect(g[k].streets.map((s: any) => s.n), k).toEqual(want.streets);
+    expect(g[k].boxes.length, k).toBe(want.boxes);
+    expect(g[k].boxes.map((b: any) => b.label).filter(Boolean), k).toEqual(want.labels);
+  }
+  expect([g.poznan.boxes.length, g.poznan.cells.length]).toEqual([chrome.poznan.boxes, chrome.poznan.cells]);
+  expect(g['trip-routes']).toMatchObject(chrome.trip);
 });

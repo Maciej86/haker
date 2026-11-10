@@ -1,8 +1,15 @@
 // Generator miast NeonOS: port 1:1 z mockups/mapa-miasta.html (linie 85–298, 406–492)
 // oraz tras wyjazdu z mockups/_src/wyjazd.tpl.html (linie 164–179).
-// Uruchamiany tylko w Node (npm run gen:cities). Wynik zależy od Array.prototype.sort
-// w V8 (TimSort, jak w Chrome), dlatego package.json wymaga node >= 22.
+// Uruchamiany tylko w Node (npm run gen:cities). Makieta tasuje przez sort(()=>R()-.5), a wynik takiego
+// sortowania zależy od algorytmu silnika. Node (TimSort ze zliczaniem serii) daje inną kolejność niż Chrome,
+// w którym ogląda się makietę (krótkie tablice: czyste wstawianie binarne). Dlatego tasowanie idzie przez
+// chromeSort niżej, sprawdzone w Chromium na makiecie (tests/world/fixtures/mockup-chrome.json).
 // Nie zmieniaj liczby ani kolejności wywołań R(): każda zmiana przestawia całe miasto.
+
+// Sortowanie jak Array.prototype.sort w Chrome dla krótkich tablic (tu 4, 9 i 12 elementów):
+// wstawianie binarne od indeksu 1, porównanie cmp(wstawiany, a[mid]), mid = l + ((r - l) >> 1).
+// Ta sama kolejność wywołań komparatora co w przeglądarce, więc ten sam strumień R().
+function chromeSort(a,cmp){for(let i=1;i<a.length;i++){const p=a[i];let l=0,r=i;while(l<r){const m=l+((r-l)>>1);if(cmp(p,a[m])<0)r=m;else l=m+1}for(let j=i;j>l;j--)a[j]=a[j-1];a[l]=p}return a}
 
 export function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 export const hashStr=s=>{let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
@@ -80,8 +87,8 @@ const TEMPLATES={
   skwer:(L)=>{const o=O();o.grounds.push({x:0,y:0,w:L.w,d:L.h,kind:'park',cross:1});
       for(let k=0;k<Math.floor(L.w*L.h/900);k++){const x=rr(8,L.w-8),y=rr(8,L.h-8);if(Math.hypot(x-L.w/2,y-L.h/2)>22&&Math.abs((x/L.w)-(y/L.h))>.06&&Math.abs((x/L.w)+(y/L.h)-1)>.06)o.trees.push({x,y})}return o},
   wiezowce:(L)=>{const o=O();o.grounds.push({x:0,y:0,w:L.w,d:L.h,kind:'plaza'});
-      // celowo jak w makiecie (sort(()=>R()-.5)); generator działa tylko w Node, zob. engines w package.json
-      const n=L.w*L.h>30000?ri(2,3):ri(1,2);const spots=[[.05,.05],[.55,.08],[.08,.55],[.55,.55]].sort(()=>R()-.5).slice(0,n);
+      // makieta: .sort(()=>R()-.5); tu chromeSort, żeby kolejność była jak w Chrome
+      const n=L.w*L.h>30000?ri(2,3):ri(1,2);const spots=chromeSort([[.05,.05],[.55,.08],[.08,.55],[.55,.55]],()=>R()-.5).slice(0,n);
       spots.forEach(([fx,fy])=>{const w=rr(34,Math.min(52,L.w*.38)),d=rr(34,Math.min(52,L.h*.38));const x=fx*L.w,y=fy*L.h;
         o.boxes.push({x:x-4,y:y-4,w:w+8,d:d+8,h:12,kind:'podium'});
         const h=ri(20,32)*FLOOR;o.boxes.push({x,y,w,d,h,z0:12,kind:'tower',tower:1});
@@ -131,9 +138,9 @@ function build(tierKey,D){const T=D?{...TIERS.big,...D}:TIERS[tierKey];R=rng(has
   const lines=(max,names,mains)=>{const out=[];let p=rr(100,150);let ni=0;const used=new Set();
     while(p<max-70){const m=mains.find(m=>!used.has(m)&&Math.abs(p-m[0])<110);if(m)used.add(m);const c=m?m[0]:p;
       out.push({c,w:m?m[2]:pick([14,16,16,18]),main:!!m,dual:!!m&&T.dual,n:m?m[1]:names[ni++%names.length]});p=c+(m?m[2]/2:0)+rr(...T.spacing)}return out};
-  // celowo jak w makiecie; generator działa tylko w Node, zob. engines w package.json
-  lines(W,VN.slice().sort(()=>R()-.5),T.mains.v).forEach(s=>STREETS.push({...s,v:1}));
-  lines(H,HN.slice().sort(()=>R()-.5),T.mains.h).forEach(s=>STREETS.push({...s,v:0}));
+  // makieta: .slice().sort(()=>R()-.5); tu chromeSort, żeby kolejność była jak w Chrome
+  lines(W,chromeSort(VN.slice(),()=>R()-.5),T.mains.v).forEach(s=>STREETS.push({...s,v:1}));
+  lines(H,chromeSort(HN.slice(),()=>R()-.5),T.mains.h).forEach(s=>STREETS.push({...s,v:0}));
   const cuts=(list,max)=>{const iv=list.map(s=>[s.c-s.w/2,s.c+s.w/2]).sort((a,b)=>a[0]-b[0]);const out=[];let p=0;iv.forEach(([a,b])=>{out.push([p,a]);p=b});out.push([p,max]);return out};
   const xs=cuts(STREETS.filter(s=>s.v),W),ys=cuts(STREETS.filter(s=>!s.v),H);
   const M=6;let cells=[];xs.forEach(([x0,x1])=>ys.forEach(([y0,y1])=>cells.push({x:x0+M,y:y0+M,w:x1-x0-2*M,h:y1-y0-2*M})));
