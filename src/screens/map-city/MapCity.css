@@ -1,0 +1,32 @@
+/* Mapa miasta (mapa-miasta.html 8–65), tryb aplikacji. Kolory przez tokeny. */
+.mc .map-stage{background:var(--bg)}
+.mc .tabs .cbtn.back{padding:6px 12px;font-size:13px;border-color:var(--acc);color:var(--acc)}
+.mc .cbtn{background:var(--panel);border:1px solid var(--acc);color:var(--acc);font:inherit;font-size:11px;padding:2px 8px;border-radius:4px;cursor:pointer}
+.mc .cbtn:disabled{border-color:var(--edge);color:var(--dim);cursor:default}
+.mc svg.map .b{transition:opacity .15s}
+.mc .map-stage.xray svg.map .b.tall{opacity:.18}
+/* kolory wielokątów są w atrybucie style, więc podświetlenie potrzebuje !important */
+.mc svg.map .b.hov polygon{stroke:var(--text)!important}
+.mc svg.map .dist polygon{transition:fill .15s}
+.mc svg.map .dist.hov polygon{fill:var(--map-dist-hover)!important}
+.mc svg.mini{position:absolute;right:10px;top:10px;width:190px;height:auto;border:1px solid var(--edge);background:color-mix(in srgb, var(--bg) 85%, transparent);cursor:pointer}
+.mc .mc-info{position:absolute;left:10px;bottom:10px;max-width:420px}
+.mc .mc-info h4{margin:0 0 4px;font-size:13px;color:var(--acc)}
+.mc .mc-info li span{color:var(--dim);min-width:68px}
+.mc .citybox{position:absolute;left:10px;top:44px;background:rgba(var(--win-rgb),.9);border:1px solid var(--edge);border-radius:6px;padding:6px 10px;font-size:12px;max-width:300px}
+.mc .citybox b{color:var(--acc)}
+.mc .citybox .dim{color:var(--dim)}
+.mc .citybox p{margin:2px 0;color:var(--dim)}
+.mc .citybox p.txt{color:var(--text)}
+.mc .citybox .crumb a{color:var(--text);border-bottom:1px dashed var(--map-btn-edge);cursor:pointer}
+.mc .citybox .btns{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.mc .gocard{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:20;width:min(420px,90%);background:var(--panel);border:1px solid var(--acc);border-radius:8px;padding:14px 16px;box-shadow:0 20px 60px color-mix(in srgb, var(--trip-shadow) 60%, transparent)}
+.mc .gocard h4{margin:0 0 6px;color:var(--acc);font-size:14px}
+.mc .gocard ul{margin:0 0 10px;padding:0;list-style:none;font-size:12px}
+.mc .gocard li{display:grid;grid-template-columns:110px 1fr;padding:2px 0}
+.mc .gocard li span{color:var(--dim)}
+.mc .gocard .note{font-size:12px;color:var(--dim);margin:0 0 10px}
+.mc .gocard .row{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.mc .gocard .msg{color:var(--red);font-size:12px;margin-right:auto}
+.mc .gocard button{font:inherit;border-radius:4px;padding:6px 14px;cursor:pointer;background:none;border:1px solid var(--map-btn-edge);color:var(--dim)}
+.mc .gocard button.pri{background:var(--acc);border-color:var(--acc);color:var(--map-on-acc);font-weight:700}
