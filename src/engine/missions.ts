@@ -12,6 +12,7 @@ import { THEME_UNLOCKS, unlockedThemes } from './profile';
 import { newGame } from './state';
 import type { DeliveryDef } from './delivery';
 import type { TripDef } from './trip';
+import type { TowerNode } from '../world/tower';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
 export type HostFile = { name: string; kb: number; body: string; gotNote?: string };
@@ -30,7 +31,16 @@ export type HostDef = {
   flat?: boolean;         // domyślnie true; plan 21 obsłuży foldery przy flat === false
   onFile?: (s: GameState, ev: FileEvent) => StepResult;   // przyrosty i flagi misji po poleceniu plikowym
 };
-export type NetworkOverlay = { nodes: { ip: string }[] };
+export type NetSide = {
+  html: string;
+  buttons?: { label: string; hint?: string; cmd?: string; act?: (s: GameState) => StepResult }[];
+};
+export type NetworkOverlay = {
+  addNodes?: TowerNode[];                              // np. kamery p. 7 w planie 30
+  isTarget?: (s: GameState, n: TowerNode) => boolean;  // trafienie: zielone ✓ zamiast czerwonego ✗
+  targetFound?: (s: GameState) => boolean;             // chowa „Skreśl” i „Sprawdź w Terminalu”
+  side?: (s: GameState) => { top?: NetSide; hints?: NetSide }; // panel NetMap: karta celu, podpowiedzi
+};
 export type { TripDef } from './trip';
 export type { DeliveryDef } from './delivery';
 export type BonusDef = { label: string; money: number; when: (s: GameState) => boolean; note?: string };
@@ -74,6 +84,8 @@ export type MissionDef = {
   hints?: { price: number; text: string }[];
   onAccept?: (s: GameState) => StepResult;
   onBuy?: (s: GameState, itemId: string) => StepResult;
+  /** Po naliczeniu kosztu i oznaczeniu jako sprawdzone; zastępuje domyślną linię polecenia probe. */
+  onProbe?: (s: GameState, node: TowerNode) => StepResult;
   onTripDone?: (s: GameState) => StepResult;
   onFinish?: (s: GameState) => StepResult;
   onDeadline?: (s: GameState) => StepResult;
