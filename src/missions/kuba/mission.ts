@@ -1,9 +1,10 @@
 import type { MissionDef } from '../../engine/missions';
 import type { CommandTable } from '../../engine/terminal';
+import { fileDelivery } from '../../engine/delivery';
 import type { GameState } from '../../engine/types';
 import { step } from '../../engine/types';
 import { drawBake, kubaConnectLocked, kubaCrack, kubaOnFile, kubaWytrychAct, kubaWytrychView } from './logic';
-import { K_ACCEPT_LINE, K_FLAT, K_HELP_TERM, K_NOTE_HTML, K_NOTHERE, KUBA_IP, ZENEK_FILES } from './texts';
+import { K_ACCEPT_LINE, K_DONE_REPLY, K_FLAT, K_HELP_TERM, K_NOTE_HTML, K_NOTHERE, K_WRONG, KUBA_IP, ZENEK_FILES } from './texts';
 
 const say = (html: string): CommandTable[string] => (_a, s) => step(s, [{ html }]);
 const onZenek = (s: GameState) => s.terminal.location.kind === 'host' && s.terminal.location.ip === KUBA_IP;
@@ -131,7 +132,15 @@ export const kuba: MissionDef = {
   ],
   helpReplacesBase: true,
   hidePrograms: ['NetMap'],
-  delivery: { kind: "file" },
+  delivery: fileDelivery('kuba', {
+    title: 'Odpowiedz Kubie',
+    text: 'Proszę bardzo.',
+    emptyAttach: 'pusto: pobierz plik z serwera Zenka (get)',
+    cost: 1,
+    judge: (_s, file) => file.fileId === `${KUBA_IP}:playlista.txt`
+      ? { ok: true, reply: K_DONE_REPLY }
+      : { ok: false, reply: K_WRONG[file.name] ?? K_WRONG['podpowiedz_hasla.txt'] },
+  }),
   rewards: { money: 300, xp: 80 },
   bonuses: [],
   summary: () => [],

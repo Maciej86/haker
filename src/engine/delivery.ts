@@ -1,6 +1,8 @@
-import type { GameState, MissionId, StepResult } from './types';
+import type { FileRef, GameState, MailMsg, MissionId, StepResult } from './types';
 import { step } from './types';
-import { missionDef } from './missions';
+import { advance, gclk } from './clock';
+import { esc } from './text';
+import { finishMission, missionDef } from './missions';
 
 /** Pole oddania w Poczcie (dane do <DeliveryBox>). */
 export type ReplyBox = {
@@ -33,4 +35,42 @@ export function deliver(s: GameState, id: MissionId, text: string, fileId: strin
   const box = replyBox(s, id)!;
   if (box.attach && !fileId) return step(s);
   return missionDef(id).delivery.send!(s, text, box.attach ? fileId : null);
+}
+
+/** Pobrane pliki tej misji, w kolejności pobrania. */
+export function deliveryFiles(s: GameState, id: MissionId): FileRef[] {
+  return s.downloads.filter((f) => f.mission === id);
+}
+
+export type FileDeliveryCfg = {
+  title: string; text: string; emptyAttach: string; cost: number;
+  judge: (s: GameState, file: FileRef) => { ok: boolean; reply: string };
+};
+
+/** Oddanie zlecenia plikiem z Pobranych: zły plik dostaje odpowiedź zleceniodawcy, dobry kończy misję. */
+export function fileDelivery(id: MissionId, cfg: FileDeliveryCfg): DeliveryDef {
+  return {
+    kind: 'file',
+    title: cfg.title,
+    box: (s) => (s.active === id
+      ? { title: cfg.title, text: cfg.text, button: 'Wyślij', cost: cfg.cost, attach: true, emptyAttach: cfg.emptyAttach }
+      : null),
+    send: (s, text, fileId) => {
+      const file = deliveryFiles(s, id).find((f) => f.fileId === fileId);
+      if (!file) return step(s);
+      const giver = missionDef(id).giver;
+      const s1 = advance(s, cfg.cost);
+      const mine: MailMsg = { from: 'Ty', when: gclk(s1), html: esc(text), attachment: file.name };
+      const { ok, reply } = cfg.judge(s1, file);
+      const answer: MailMsg = ok
+        ? { from: giver.name, when: gclk(s1, s1.t + 2), html: reply }
+        : { from: giver.name, when: gclk(s1, s1.t + 1), html: reply, bad: true };
+      const st: GameState = {
+        ...s1,
+        mail: { ...s1.mail, threads: { ...s1.mail.threads, [id]: [...(s1.mail.threads[id] ?? []), mine, answer] } },
+      };
+      if (!ok) return step(st, [], [{ kind: 'toast', text: `${giver.name}: ${reply}`, bad: true }]);
+      return finishMission(st, id);
+    },
+  };
 }
