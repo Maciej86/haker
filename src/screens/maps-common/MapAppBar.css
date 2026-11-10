@@ -1,0 +1,29 @@
+/* Wspólne dla ekranów map: pasek aplikacji (#appbar, mapa-miasta.html 60–65), zakładki, scena, HUD, podpowiedź (8–27). */
+.mapscr{position:fixed;inset:0;padding:8px 10px;overflow:hidden;background:var(--bg);color:var(--text);font:13px/1.5 var(--font)}
+.map-appbar{display:flex;align-items:center;gap:14px;margin:-8px -10px 8px;padding:8px 14px;background:var(--map-bar);border-bottom:1px solid var(--edge);font-size:13px}
+.map-appbar .lg{color:var(--acc);font-weight:700}
+.map-appbar .ms{color:var(--dim)}
+.map-appbar .ck{margin-left:auto;color:var(--coin)}
+.map-appbar button{background:none;font:inherit;color:var(--text);border:1px solid var(--map-btn-edge);border-radius:4px;padding:3px 10px}
+.map-appbar button:hover{border-color:var(--acc);color:var(--acc)}
+.mapscr .tabs{display:flex;gap:6px;align-items:center;margin:0 0 10px;flex-wrap:wrap}
+.mapscr .tabs button{background:var(--panel);border:1px solid var(--edge);color:var(--text);font:inherit;padding:6px 14px;border-radius:4px;cursor:pointer}
+.mapscr .tabs button.on{border-color:var(--acc);color:var(--acc);background:var(--acc-bg)}
+.mapscr .tabs button:disabled{color:var(--map-tab-off);cursor:not-allowed}
+.mapscr .tabs small{color:var(--dim)}
+.mapscr .map-stage{position:relative;height:calc(100vh - 118px);min-height:300px;border:1px solid var(--edge);border-radius:6px;overflow:hidden;background:var(--bg)}
+.mapscr svg.map{width:100%;height:100%;display:block;cursor:grab;touch-action:none;user-select:none}
+.mapscr svg.map.drag{cursor:grabbing}
+.mapscr .hud{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.mapscr .hud button{background:var(--panel);border:1px solid var(--edge);color:var(--text);font:inherit;padding:3px 10px;border-radius:4px;cursor:pointer}
+.mapscr .hud button:hover,.mapscr .hud button.on{border-color:var(--acc);color:var(--acc)}
+.mapscr .hint{position:absolute;right:10px;bottom:8px;color:var(--dim);font-size:11px;background:color-mix(in srgb, var(--bg) 80%, transparent);padding:2px 8px;border-radius:4px}
+.mapscr .loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);pointer-events:none}
+.mapscr .info{background:rgba(var(--win-rgb),.97);border:1px solid var(--edge);border-radius:6px;padding:8px 12px;font-size:12px}
+.mapscr .info .k{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.mapscr .info ul{margin:4px 0 0;padding:0;list-style:none}
+.mapscr .info li{display:flex;gap:10px;padding:1px 0}
+.mapscr .info li.t{color:var(--red)} .mapscr .info li.h{color:var(--acc)} .mapscr .info li.s{color:var(--coin)}
+.mapscr .info .foot{margin-top:6px;color:var(--acc);font-size:11px}
+.mapscr .info .foot.dim{color:var(--dim)}
+.mapscr .info .lock{margin-top:6px;color:var(--coin);font-size:11px}

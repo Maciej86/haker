@@ -1,0 +1,18 @@
+/* Mapa Polski (mapa-polski.tpl.html 8–69), tryb aplikacji. Kolory przez tokeny. */
+.mp .map-stage{background:var(--geo-sea)}
+.mp svg.map .city{cursor:pointer}
+.mp svg.map .sc{transform:scale(var(--k,1))}
+/* kolory kropek są w atrybucie style, więc podświetlenie potrzebuje !important */
+.mp svg.map .city:hover .dot,.mp svg.map .city.hov .dot{stroke:var(--geo-dot-hover)!important;stroke-width:2}
+.mp svg.map.far .lod{display:none}
+.mp .map-stage.noroads .roads,.mp .map-stage.noair .air,.mp .map-stage.novoi .voi{display:none}
+.mp .pl-info{position:absolute;right:10px;top:10px;width:380px;pointer-events:none}
+.mp .pl-info h4{margin:0 0 4px;font-size:14px;color:var(--acc)}
+.mp .pl-info li span{color:var(--dim);min-width:92px;flex:none}
+.mp .side{position:absolute;left:10px;top:46px;width:300px;background:rgba(var(--win-rgb),.92);border:1px solid var(--edge);border-radius:6px;padding:8px 10px;font-size:11.5px}
+.mp .side b{color:var(--acc)}
+.mp .side .dim{color:var(--dim)}
+.mp .side .mis{border:1px solid var(--map-mis-edge);background:color-mix(in srgb, var(--red) 6%, transparent);border-radius:4px;padding:5px 8px;margin:4px 0 8px;color:var(--text)}
+.mp .side .mis b{color:var(--red)}
+.mp .side .lg{display:grid;grid-template-columns:18px 1fr;gap:2px 6px;align-items:center;color:var(--text)}
+.mp .side svg{display:block}
