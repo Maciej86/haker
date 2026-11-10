@@ -1,5 +1,6 @@
 import type { Skill } from '../../engine/types';
 import { toolsCount } from '../../engine/shop';
+import { SKILL_MAX, xpNeed } from '../../engine/skills';
 import { fmt, fmtSkill } from '../../engine/text';
 import { useSkillFlash } from '../../ui/GainBubble';
 import { Card } from '../../ui/Card';
@@ -11,7 +12,7 @@ import { StageCard } from './StageCard';
 export function PlayerPanel() {
   const s = useGame((x) => x);
   const flash = useSkillFlash();
-  const need = s.lvl * 200;
+  const need = xpNeed(s.lvl);
   return (
     <aside id="hud" aria-label="Twój profil">
       <StageCard />
@@ -31,7 +32,7 @@ export function PlayerPanel() {
         <div id="skills">
           {(Object.entries(s.skills) as [Skill, number][]).map(([sk, v]) => (
             <div key={sk} className={flash === sk ? 'skill up' : 'skill'}>
-              <span>{sk}</span><Meter value={v / 5} /><span>{fmtSkill(v)}</span>
+              <span>{sk}</span><Meter value={v / SKILL_MAX} /><span>{fmtSkill(v)}</span>
             </div>
           ))}
         </div>

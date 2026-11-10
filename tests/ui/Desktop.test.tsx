@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, expect, it } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 import { Desktop } from '../../src/screens/desktop/Desktop';
 import { TopBar } from '../../src/screens/desktop/TopBar';
 import { barLabel } from '../../src/engine/desktop';
@@ -65,4 +65,13 @@ it('Postęp zlecenia: bieżący etap z „co teraz”, wyłączenie podpowiedzi'
   expect(screen.getByText(st.title).closest('.stage')).toHaveClass('now');
   expect(screen.getByText(/^co teraz:/)).toBeInTheDocument();
   act(() => setPref('neonos-coach', 'off')); expect(screen.queryByText(/^co teraz:/)).toBeNull();
+});
+it('termin bez separatora: bez osieroconego „· ”', async () => {
+  cleanup();
+  const clock = await import('../../src/engine/clock');
+  const spy = vi.spyOn(clock, 'deadlineLabel').mockReturnValue({ text: 'czw 19:00', red: false });
+  renderWithStore(<TopBar />, day2());
+  expect(screen.getByText('czw 19:00')).toBeInTheDocument();
+  expect(document.getElementById('dl-left')).toBeNull();
+  spy.mockRestore();
 });

@@ -2,11 +2,19 @@ import type { GameState, Skill, StepResult, SummaryRow } from './types';
 import { step } from './types';
 import { fmtSkill } from './text';
 
+/** Maksymalny poziom umiejętności. */
+export const SKILL_MAX = 5;
+
+/** XP potrzebne do przejścia z poziomu `lvl` na następny. */
+export function xpNeed(lvl: number): number {
+  return lvl * 200;
+}
+
 export function gain(s: GameState, sk: Skill, v: number, why: string): StepResult {
   if (s.gains.some((g) => g.sk === sk && g.why === why)) return step(s);
   const next: GameState = {
     ...s,
-    skills: { ...s.skills, [sk]: Math.min(5, +(s.skills[sk] + v).toFixed(2)) },
+    skills: { ...s.skills, [sk]: Math.min(SKILL_MAX, +(s.skills[sk] + v).toFixed(2)) },
     gains: [...s.gains, { sk, v, why }],
   };
   return step(next, [], [{ kind: 'gain', sk, v, why }]);
@@ -15,7 +23,7 @@ export function gain(s: GameState, sk: Skill, v: number, why: string): StepResul
 export function addXp(s: GameState, n: number): GameState {
   let xp = s.xp + n;
   let lvl = s.lvl;
-  while (xp >= lvl * 200) lvl++;
+  while (xp >= xpNeed(lvl)) lvl++;
   return { ...s, xp, lvl };
 }
 

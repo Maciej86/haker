@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { gain, addXp, skillSummaryRows } from '../../src/engine/skills';
+import { gain, addXp, skillSummaryRows, xpNeed, SKILL_MAX } from '../../src/engine/skills';
 import { game } from './fixtures';
 
 test('gain dodaje przyrost, zdarzenie i liczy się raz na powód', () => {
@@ -30,4 +30,9 @@ test('skillSummaryRows grupuje przyrosty z powodami', () => {
     { label: 'Sieć    ▮▮▯▯▯ +0,4', value: 'hasło złamane za pierwszym razem', tone: 'ok' },
     { label: 'Linux   ▮▮▯▯▯ +0,5', value: 'pierwsze ls na cudzym serwerze, pobranie i czyste rozłączenie', tone: 'ok' }]);
   expect(skillSummaryRows(game())).toEqual([]);
+});
+
+test('próg XP i maksimum umiejętności', () => {
+  expect(xpNeed(1)).toBe(200); expect(xpNeed(3)).toBe(600); expect(SKILL_MAX).toBe(5);
+  expect(addXp(game({ xp: 0, lvl: 1 }), xpNeed(1)).lvl).toBe(2);
 });

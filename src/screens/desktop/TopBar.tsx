@@ -20,7 +20,9 @@ export function TopBar() {
         {dl ? (
           <span className="hb" id="dl">
             <small>termin</small><b>{head}</b>
-            <span id="dl-left" style={{ color: dl.red ? 'var(--red)' : 'var(--dim)' }}>· {rest.join(' · ')}</span>
+            {rest.length ? (
+              <span id="dl-left" style={{ color: dl.red ? 'var(--red)' : 'var(--dim)' }}>· {rest.join(' · ')}</span>
+            ) : null}
           </span>
         ) : null}
       </span>
