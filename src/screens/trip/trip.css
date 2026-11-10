@@ -54,15 +54,15 @@
 .trip .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
 .trip .btn.red{border-color:var(--red);background:var(--red);color:var(--trip-on-red);font-weight:700}
 /* dziennik */
-.trip .logwrap{display:flex;flex-direction:column;min-height:0;flex:1}
+.trip .logwrap{display:flex;flex-direction:column;min-height:0;flex:1;overflow-y:auto}
 .trip .logwrap .lh{padding:12px 14px 0}
-.trip .log{flex:1;overflow:auto;padding:4px 14px 14px}
+.trip .log{flex:1;min-height:120px;overflow:auto;padding:4px 14px 14px}
 .trip .log>div{padding:3px 0;border-bottom:1px solid var(--trip-log-line);animation:trip-in .35s ease-out}
 .trip .log time{color:var(--coin);margin-right:8px}
 .trip .log .dim{color:var(--dim)} .trip .log .acc{color:var(--acc)} .trip .log .red{color:var(--red)}
 @keyframes trip-in{from{opacity:0;transform:translateY(4px)}}
 /* prawa strona */
-.trip .rh{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--edge)}
+.trip .rh{height:41px;display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--edge)}
 .trip .rh .leg{font-weight:700;color:var(--text)}
 /* nazwa odcinka z atrybutu: ten sam napis bywa nagłówkiem karty końcowej */
 .trip .rh .leg::after{content:attr(data-name)}
@@ -87,3 +87,77 @@
 .trip .status .clk{font-size:20px;font-weight:700;color:var(--coin);letter-spacing:.04em;min-width:130px}
 .trip .status .k{color:var(--dim);margin-right:6px}
 .trip .status .dline{margin-left:auto}
+/* na miejscu (wyjazd.tpl.html 84–120) */
+.trip .site{z-index:2}
+.trip .site.alarm{animation:trip-al 1s ease-in-out infinite}
+@keyframes trip-al{50%{box-shadow:inset 0 0 0 3px color-mix(in srgb, var(--red) 70%, transparent),inset 0 0 60px color-mix(in srgb, var(--red) 15%, transparent)}}
+/* [decyzja] kroki, przycisk i plecak w jednej kolumnie, żeby przy niskim oknie plecak nie zasłaniał przycisków.
+   Plecak stoi przy dolnej krawędzi i nie przesuwa się, gdy pojawia się podpowiedź (przeciąganie celuje w stałe miejsce). */
+.trip .sitecol{position:absolute;left:24px;top:24px;bottom:16px;width:330px;display:flex;flex-direction:column}
+.trip .steps{flex:0 1 auto;min-height:0;overflow:auto}
+.trip .act{flex:none;min-height:72px;margin-top:12px}
+.trip .spacer{flex:1 1 0}
+.trip .step{display:grid;grid-template-columns:20px 1fr;gap:2px 8px;padding:6px 0;color:var(--dim)}
+.trip .step .ic{width:14px;height:14px;border:1px solid var(--dim);border-radius:50%;margin-top:3px}
+.trip .step .ssub{font-size:11.5px}
+.trip .step.now{color:var(--text)} .trip .step.now .ic{border-color:var(--coin);background:radial-gradient(var(--coin) 0 3px,transparent 4px);animation:trip-bl 1s infinite}
+.trip .step.done{color:var(--text)} .trip .step.done .ic{border-color:var(--acc);background:var(--acc)}
+.trip .step .pb{grid-column:2;height:4px;background:var(--trip-pb);border-radius:2px;overflow:hidden;display:none}
+.trip .step.now .pb{display:block}
+.trip .step .pb i{display:block;height:100%;width:0;background:var(--coin)}
+@keyframes trip-pb{from{width:0}to{width:100%}}
+@keyframes trip-bl{50%{opacity:.4}}
+.trip .bag{flex:none;border:1px solid var(--edge);border-radius:6px;background:var(--panel);padding:8px 10px}
+.trip .bag .lh{margin:0 0 6px}
+.trip .items{display:flex;flex-direction:column;gap:6px}
+.trip .it{display:flex;gap:10px;align-items:center;border:1px solid var(--edge);border-radius:5px;padding:5px 8px;background:var(--trip-win);user-select:none;touch-action:none}
+.trip .it .g{width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--trip-win-edge);border-radius:4px;color:var(--acc);font-size:15px}
+.trip .it small{color:var(--dim)}
+.trip .it.ready{border-color:var(--coin);cursor:grab;animation:trip-rd 1.2s ease-in-out infinite}
+@keyframes trip-rd{50%{box-shadow:0 0 0 3px color-mix(in srgb, var(--coin) 25%, transparent)}}
+.trip .it.lift{opacity:.35} .trip .it.used{opacity:.35;text-decoration:line-through}
+.trip .it.ghost{position:fixed;z-index:50;pointer-events:none;width:240px;border-color:var(--acc);box-shadow:0 8px 24px color-mix(in srgb, var(--trip-shadow) 60%, transparent);opacity:.95}
+.trip .drag-hint{border:1px dashed var(--coin);color:var(--coin);border-radius:5px;padding:6px 10px;font-size:12px}
+.trip .drag-hint.shake{animation:trip-sh .35s}
+@keyframes trip-sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* kolory celów są w atrybucie style, więc stan „want” / „over” potrzebuje !important */
+.trip .cabinet .tgt.want{stroke:var(--coin)!important;stroke-width:2.5;stroke-dasharray:none;animation:trip-bl 1s infinite}
+.trip .cabinet .tgt.over{stroke:var(--acc)!important;stroke-width:3.5}
+.trip .cabinet{position:absolute;right:30px;top:16px;bottom:16px;width:calc(100% - 400px);height:calc(100% - 32px)}
+.trip .talk{position:absolute;right:24px;top:16px;width:460px;max-width:calc(100% - 400px);z-index:5}
+.trip .tk{background:rgba(var(--win-rgb),.98);border:1px solid var(--red);border-radius:8px;padding:12px 14px;box-shadow:0 10px 40px color-mix(in srgb, var(--trip-shadow) 60%, transparent)}
+.trip .tk .who{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.trip .tk .who b{display:inline;font-weight:700}
+.trip .tk .k{color:var(--red);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.trip .tk .wsub{color:var(--dim);font-size:11px}
+.trip .bubble{background:var(--trip-bubble);border-radius:8px;padding:8px 10px;margin:6px 0;color:var(--text)}
+.trip .bubble.bad{background:var(--trip-bubble-bad);color:var(--red)} .trip .bubble.okb{background:var(--trip-bubble-ok);color:var(--acc)}
+.trip .you{margin:6px 0 0 30px;padding:6px 10px;border-left:2px solid var(--acc);color:var(--acc);font-size:12px}
+.trip .meters{display:flex;gap:14px;font-size:11px;color:var(--dim);margin:4px 0 8px}
+.trip .meters .mg{color:var(--acc)} .trip .meters .mm{color:var(--red)} .trip .meters .soc{margin-left:auto}
+.trip .ans{display:flex;flex-direction:column;gap:6px}
+.trip .a{display:flex;gap:10px;text-align:left;background:var(--panel);border:1px solid var(--edge);color:var(--text);font:inherit;font-size:12px;padding:7px 10px;border-radius:5px;cursor:pointer}
+.trip .a:hover{border-color:var(--acc)} .trip .a span{color:var(--coin)}
+.trip .gain{display:inline-block;margin-top:8px;padding:3px 10px;border:1px solid var(--acc);border-radius:12px;color:var(--acc);font-size:12px;animation:trip-gpop .9s ease}
+@keyframes trip-gpop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+.trip .res{display:block;margin:8px 0 0;padding:6px 10px;border-radius:5px;font-size:12px}
+.trip .res.okr{background:var(--trip-bubble-ok);color:var(--acc)} .trip .res.badr{background:var(--trip-bubble-bad);color:var(--red)}
+.trip .tnext{margin-top:10px}
+.trip .phone{flex:none;width:250px;border:2px solid var(--trip-win-edge);border-radius:14px;background:var(--trip-phone);padding:10px 12px;font-size:11.5px;box-shadow:0 8px 30px color-mix(in srgb, var(--trip-shadow) 50%, transparent)}
+.trip .ph-top{color:var(--dim);font-size:10.5px;border-bottom:1px solid var(--trip-row);padding-bottom:5px;margin-bottom:5px}
+.trip .ph-row{padding:2px 0;color:var(--text)} .trip .ph-row.ok{color:var(--acc)} .trip .ph-row.dim{color:var(--dim)} .trip .ph-row code{color:var(--acc);font-family:inherit}
+/* koniec */
+.trip .done-card{margin:10px 14px}
+.trip .done-card.bad{border-color:var(--trip-tgt-edge)}
+.trip .done-card .sum{margin-top:6px}
+.trip .done-card .note{margin:8px 0 0}
+.trip .note code{color:var(--acc);font-family:inherit}
+.trip .red-t{color:var(--red)!important}
+.trip .card .acc-t{color:var(--acc)}
+.trip .progcard{margin:0 14px 10px}
+.trip .stages{margin-top:6px}
+.trip .pst{display:grid;grid-template-columns:22px 1fr;gap:2px 6px;padding:3px 0;color:var(--dim)}
+.trip .pst b{color:inherit}
+.trip .pst.done{color:var(--text)} .trip .pst.next{color:var(--acc)} .trip .pst.fail{color:var(--red)}
+.trip .pst .nx{font-size:11px}
+.trip .pst .psub{font-size:11px;color:var(--dim)}
