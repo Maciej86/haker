@@ -12,6 +12,8 @@ import { THEME_UNLOCKS, unlockedThemes } from './profile';
 import { newGame } from './state';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
+export type HostFile = { name: string; kb: number; body: string; gotNote?: string };
+export type FileEvent = { cmd: 'ls' } | { cmd: 'get'; file: HostFile } | { cmd: 'disconnect' };
 export type HostDef = {
   ip: string;
   name: string;
@@ -21,6 +23,10 @@ export type HostDef = {
   cracked: (s: GameState) => boolean;
   onConnectLocked: (s: GameState) => StepResult;   // connect bez znanego hasła (1 min już naliczona)
   onCrack: (s: GameState) => StepResult;           // crack na tym hoście (koszt nalicza misja)
+  files?: HostFile[];
+  enterCmd?: string;      // jak wejść na serwer, np. 'connect 83.21.40.17'
+  flat?: boolean;         // domyślnie true; plan 21 obsłuży foldery przy flat === false
+  onFile?: (s: GameState, ev: FileEvent) => StepResult;   // przyrosty i flagi misji po poleceniu plikowym
 };
 export type NetworkOverlay = { nodes: { ip: string }[] };
 export type TripDef = { packageFrom: string };

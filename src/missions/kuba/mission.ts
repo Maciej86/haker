@@ -2,8 +2,8 @@ import type { MissionDef } from '../../engine/missions';
 import type { CommandTable } from '../../engine/terminal';
 import type { GameState } from '../../engine/types';
 import { step } from '../../engine/types';
-import { drawBake, kubaConnectLocked, kubaCrack, kubaWytrychAct, kubaWytrychView } from './logic';
-import { K_ACCEPT_LINE, K_FLAT, K_HELP_TERM, K_NOTE_HTML, K_NOTHERE, KUBA_IP } from './texts';
+import { drawBake, kubaConnectLocked, kubaCrack, kubaOnFile, kubaWytrychAct, kubaWytrychView } from './logic';
+import { K_ACCEPT_LINE, K_FLAT, K_HELP_TERM, K_NOTE_HTML, K_NOTHERE, KUBA_IP, ZENEK_FILES } from './texts';
 
 const say = (html: string): CommandTable[string] => (_a, s) => step(s, [{ html }]);
 const onZenek = (s: GameState) => s.terminal.location.kind === 'host' && s.terminal.location.ip === KUBA_IP;
@@ -86,6 +86,9 @@ export const kuba: MissionDef = {
     cracked: (s) => s.mission.kuba.cracked,
     onConnectLocked: kubaConnectLocked,
     onCrack: kubaCrack,
+    files: ZENEK_FILES,
+    enterCmd: `connect ${KUBA_IP}`,
+    onFile: kubaOnFile,
   }],
   commands: KUBA_COMMANDS,
   wytrych: { view: kubaWytrychView, act: kubaWytrychAct },

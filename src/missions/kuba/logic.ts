@@ -7,6 +7,7 @@ import { andThen, step } from '../../engine/types';
 import { KUBA_IP } from './texts';
 import type { BakeItem, WytrychAction, WytrychView } from '../../engine/wytrych';
 import type { Bake } from './state';
+import type { FileEvent } from '../../engine/missions';
 
 export function drawBake(seed: number): Bake {
   const R = rng(seed ^ 0x6b75);
@@ -109,4 +110,15 @@ export function kubaWytrychAct(s: GameState, a: WytrychAction): StepResult {
       [{ html: `<span class="c">Hasło złamane: ${n}. Zalogowano na ${KUBA_IP} jako zenek.</span> <span class="d">Pliki: ls</span>` }],
       [{ kind: 'toast', text: 'Dostęp uzyskany · krok „Włamanie” zaliczony' }]),
   );
+}
+
+/** Przyrosty i flagi Kuby po poleceniach plikowych na serwerze Zenka. */
+export function kubaOnFile(s: GameState, ev: FileEvent): StepResult {
+  if (ev.cmd === 'ls') return gain(s, 'Linux', 0.2, 'pierwsze ls na cudzym serwerze');
+  if (ev.cmd === 'disconnect') {
+    const d = setKuba(s, { disc: true });
+    const got = d.downloads.some((f) => f.fileId === `${KUBA_IP}:playlista.txt`);
+    return got ? gain(d, 'Linux', 0.3, 'pobranie i czyste rozłączenie') : step(d);
+  }
+  return step(s);
 }

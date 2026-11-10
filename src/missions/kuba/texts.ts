@@ -1,4 +1,18 @@
+import type { HostFile } from '../../engine/missions';
+
 export const KUBA_IP = '83.21.40.17';
+
+/** Pliki na serwerze Zenka (płaska lista). */
+export const ZENEK_FILES: HostFile[] = [
+  {
+    name: 'playlista.txt', kb: 4,
+    body: 'IMPREZA · sobota · u Kuby\n 1. Kapela Spod Pieca – Drożdżowa noc\n 2. DJ Makowiec – Na zakwasie (remix)\n 3. Bułki z Masłem – Chrupiąca\n 4. Lukier – Pączek w maśle\n 5. Zespół Piekarnia – Do białego rana\n 6. Kruszonka – Ostatni tramwaj',
+    gotNote: ' <span class="y">Teraz disconnect, potem odeślij plik Kubie.</span>',
+  },
+  { name: 'przepis_na_paczki.txt', kb: 2, body: 'Mąka, drożdże, cierpliwość.\nSmażyć w 175°C. Nikomu nie mówić o skórce pomarańczowej.' },
+  { name: 'zamowienia_sobota.txt', kb: 3, body: 'Kuba – 20 pączków (impreza?) – gotówka\nPani Halinka – chleb żytni ×2\nSzkoła nr 2 – 150 drożdżówek' },
+  { name: 'podpowiedz_hasla.txt', kb: 1, body: 'Hasło = wynik zagadki. Nikt nie zgadnie, bo kto liczy rogale?' },
+];
 
 export const K_NOTHERE =
   `<span class="d">Tego teraz nie potrzebujesz. Znasz IP serwera Zenka, więc łączysz się wprost: connect ${KUBA_IP}.\nSkanowanie okolicy wymaga urządzenia przy antenie albo skrzynce operatora. Poznasz je w kolejnych zleceniach.</span>`;
