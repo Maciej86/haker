@@ -53,3 +53,9 @@ test('onAccept: stan, linie i zdarzenia dołączone po mailArrives', () => {
     expect(r.ui.map(u => u.kind)).toEqual(['mailArrives', 'toast']);
   } finally { restore(); }
 });
+test('acceptOffer nie mutuje wejścia', () => {
+  const s = game({ mail: { ...game().mail, draft: { kuba: 'szkic' }, threads: { kuba: [{ from: 'Kuba', when: 'śr 20:12', html: 'x' }] } } });
+  const before = structuredClone(s);
+  acceptOffer(s, 'kuba');
+  expect(s).toEqual(before);
+});

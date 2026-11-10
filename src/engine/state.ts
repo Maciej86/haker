@@ -1,4 +1,4 @@
-import type { GameState, Line } from './types';
+import type { GameState, Line, MissionId } from './types';
 import { DAYS, gclk } from './clock';
 import { missionDef } from './missions';
 import { MISSION_ORDER } from '../missions';
@@ -62,6 +62,36 @@ export function serialize(s: GameState): string {
   return JSON.stringify(s);
 }
 
+type Kind = 'array' | 'object' | 'number' | 'string' | 'boolean' | 'null';
+const kindOf = (v: unknown): Kind =>
+  v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v === 'object' ? 'object'
+    : typeof v === 'number' ? 'number' : typeof v === 'string' ? 'string' : 'boolean';
+const isObj = (v: unknown): v is Record<string, unknown> => kindOf(v) === 'object';
+const arrays = (o: unknown, keys: string[]) => isObj(o) && keys.every((k) => Array.isArray(o[k]));
+const objects = (o: unknown, keys: string[]) => isObj(o) && keys.every((k) => isObj(o[k]));
+const NULLABLE: Record<string, Kind[]> = {
+  overlay: ['string'], active: ['string'], dayCheckpoint: ['object'], summary: ['array'], summaryMeta: ['object'],
+};
+const SCREENS = ['desktop', 'mapPoland', 'mapCity', 'trip'];
+const SKILLS = ['Sieć', 'Linux', 'Skrypty', 'Social'];
+
+function validShape(o: Record<string, unknown>): boolean {
+  const ref = newGame(0) as unknown as Record<string, unknown>;
+  for (const k of Object.keys(ref)) {
+    const want = kindOf(ref[k]);
+    const got = kindOf(o[k]);
+    if (want === 'null' ? got !== 'null' && !NULLABLE[k]?.includes(got) : got !== want) return false;
+  }
+  const { mail, terminal, skills, done, active, mission, screen } = o;
+  return arrays(mail, ['read', 'hidden']) && objects(mail, ['threads', 'draft'])
+    && arrays(terminal, ['lines', 'history']) && objects(terminal, ['location'])
+    && isObj(skills) && SKILLS.every((k) => typeof skills[k] === 'number' && Number.isFinite(skills[k]) && skills[k] >= 0 && skills[k] <= 5)
+    && (done as unknown[]).every((d) => MISSION_ORDER.includes(d as MissionId))
+    && (active === null || MISSION_ORDER.includes(active as MissionId))
+    && objects(mission, MISSION_ORDER)
+    && SCREENS.includes(screen as string);
+}
+
 export function deserialize(raw: string | null): GameState | null {
   if (raw === null) return null;
   let o: unknown;
@@ -70,10 +100,8 @@ export function deserialize(raw: string | null): GameState | null {
   } catch {
     return null;
   }
-  if (typeof o !== 'object' || o === null || Array.isArray(o)) return null;
-  const g = o as Partial<GameState>;
-  if (g.version !== 1 || typeof g.t !== 'number' || !DAYS.includes(g.day as never)) return null;
-  return o as GameState;
+  if (!isObj(o) || o.version !== 1 || typeof o.t !== 'number' || !DAYS.includes(o.day as never)) return null;
+  return validShape(o) ? (o as unknown as GameState) : null;
 }
 
 export function interruptOnLoad(s: GameState): GameState {

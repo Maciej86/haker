@@ -31,7 +31,7 @@ export function skillSummaryRows(s: GameState): SummaryRow[] {
   }
   const rows: SummaryRow[] = [{ label: 'Umiejętności w tej misji', value: '', tone: 'dim' }];
   for (const sk of order) {
-    const lv = Math.floor(s.skills[sk]);
+    const lv = Math.max(0, Math.min(5, Math.floor(s.skills[sk])));
     rows.push({
       label: `${sk.padEnd(7, ' ')} ${'▮'.repeat(lv)}${'▯'.repeat(5 - lv)} +${fmtSkill(sum.get(sk)!)}`,
       value: why.get(sk)!.join(', '),

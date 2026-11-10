@@ -1,6 +1,9 @@
-import { test, expect } from 'vitest';
+import { test, expect, afterEach } from 'vitest';
 import { newGame, serialize, deserialize, interruptOnLoad } from '../../src/engine/state';
 import { game, withMission } from './fixtures';
+
+let restore: (() => void) | undefined;
+afterEach(() => { restore?.(); restore = undefined; });
 
 test('newGame: stan startowy misji Kuby', () => {
   const s = newGame(5);
@@ -25,12 +28,26 @@ test('interruptOnLoad: nic w toku → ten sam obiekt', () => {
   const s = game(); expect(interruptOnLoad(s)).toBe(s);
 });
 test('interruptOnLoad: misja przerywa czynność i Terminal dopisuje linię', () => {
-  const restore = withMission('kuba', { interrupt: s => ({ ...s, sec: 0 }) });
+  restore = withMission('kuba', { interrupt: s => ({ ...s, sec: 0 }) });
   const n = interruptOnLoad(game({ active: 'kuba', sec: 30 }));
   expect(n.sec).toBe(0);
   expect(n.terminal.lines.at(-1)).toEqual({ html: '<span class="r">połączenie przerwane</span>' });
-  restore();
 });
 test('interruptOnLoad: zapis z ekranu wyjazdu wraca na pulpit', () => {
   expect(interruptOnLoad(game({ screen: 'trip' })).screen).toBe('desktop');
+});
+test('deserialize odrzuca zapisy o złym kształcie', () => {
+  const real = JSON.parse(serialize(newGame(1)));
+  const { mail: _m, ...noMail } = real;
+  expect(deserialize('{"version":1,"t":5,"day":"śr"}')).toBeNull();
+  expect(deserialize(JSON.stringify(noMail))).toBeNull();
+  expect(deserialize(JSON.stringify({ ...real, skills: { ...real.skills, Linux: 9 } }))).toBeNull();
+  expect(deserialize(JSON.stringify({ ...real, active: 'xyz' }))).toBeNull();
+  expect(deserialize(JSON.stringify({ ...real, done: ['xyz'] }))).toBeNull();
+  expect(deserialize(JSON.stringify({ ...real, screen: 'x' }))).toBeNull();
+  expect(deserialize(JSON.stringify({ ...real, terminal: { ...real.terminal, lines: 1 } }))).toBeNull();
+});
+test('deserialize przyjmuje poprawny zapis z aktywną misją i nullami', () => {
+  const s = game({ active: 'kuba', done: ['w'], overlay: 'summary', summary: [], summaryMeta: { log: [], xp: 1, money: 2, next: 'end' } });
+  expect(deserialize(serialize(s))).toEqual(s);
 });
