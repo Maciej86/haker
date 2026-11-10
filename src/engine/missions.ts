@@ -10,6 +10,7 @@ import { MISSIONS, MAIL_ORDER, MISSION_ORDER } from '../missions';
 import { addXp, skillSummaryRows } from './skills';
 import { THEME_UNLOCKS, unlockedThemes } from './profile';
 import { newGame } from './state';
+import type { DeliveryDef } from './delivery';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
 export type HostFile = { name: string; kb: number; body: string; gotNote?: string };
@@ -30,7 +31,7 @@ export type HostDef = {
 };
 export type NetworkOverlay = { nodes: { ip: string }[] };
 export type TripDef = { packageFrom: string };
-export type DeliveryDef = { kind: 'file' | 'report' };
+export type { DeliveryDef } from './delivery';
 export type BonusDef = { label: string; money: number; when: (s: GameState) => boolean; note?: string };
 export type StageDef = { title: string; sub: string; coach: string };
 
