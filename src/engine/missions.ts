@@ -11,6 +11,7 @@ import { addXp, skillSummaryRows } from './skills';
 import { THEME_UNLOCKS, unlockedThemes } from './profile';
 import { newGame } from './state';
 import type { DeliveryDef } from './delivery';
+import type { TripDef } from './trip';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
 export type HostFile = { name: string; kb: number; body: string; gotNote?: string };
@@ -30,7 +31,7 @@ export type HostDef = {
   onFile?: (s: GameState, ev: FileEvent) => StepResult;   // przyrosty i flagi misji po poleceniu plikowym
 };
 export type NetworkOverlay = { nodes: { ip: string }[] };
-export type TripDef = { packageFrom: string };
+export type { TripDef } from './trip';
 export type { DeliveryDef } from './delivery';
 export type BonusDef = { label: string; money: number; when: (s: GameState) => boolean; note?: string };
 export type StageDef = { title: string; sub: string; coach: string };
