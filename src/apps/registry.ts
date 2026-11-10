@@ -10,6 +10,9 @@ import { Terminal } from './terminal/Terminal';
 import { Mail } from './mail/Mail';
 import { Browser } from './browser/Browser';
 import { Darknet } from './darknet/Darknet';
+import { Achievements } from './achievements/Achievements';
+import { Notes } from './notes/Notes';
+import { Downloads } from './downloads/Downloads';
 
 export type AppEntry = {
   title: string;
@@ -39,10 +42,10 @@ export const APPS: Record<AppId, AppEntry> = {
   netmap: entry('netmap', { title: 'NetMap', winTitle: () => 'NetMap', rect: (vw, vh) => ({ x: 200, y: 58, w: Math.max(760, Math.min(1000, vw - 480)), h: vh - 110 }), desktop: always, placeNext: true }),
   wytrych: entry('wytrych', { title: 'Wytrych', winTitle: () => 'Wytrych 1.0', rect: R(220, 70, 820, 560), desktop: (s) => s.owned.includes('wyt'), placeNext: true }),
   help: entry('help', { title: 'Ściąga', winTitle: () => 'Ściąga · polecenia i programy', rect: R(330, 90, 680, 520), desktop: always, component: HelpApp }),
-  notes: entry('notes', { title: 'Notatki', winTitle: (s) => notesView(s).title, rect: R(300, 150, 440, 380), desktop: always }),
-  achievements: entry('achievements', { title: 'Osiągnięcia', winTitle: () => 'Osiągnięcia', rect: R(380, 100, 520, 440), desktop: always }),
+  notes: entry('notes', { title: 'Notatki', winTitle: (s) => notesView(s).title, rect: R(300, 150, 440, 380), desktop: always, component: Notes }),
+  achievements: entry('achievements', { title: 'Osiągnięcia', winTitle: () => 'Osiągnięcia', rect: R(380, 100, 520, 440), desktop: always, component: Achievements }),
   // [decyzja Claude'a] w makiecie nie ma tej ikony; pokazuje się po pierwszym pobraniu
-  downloads: entry('downloads', { title: 'Pobrane', winTitle: () => 'Pobrane', rect: R(340, 170, 440, 320), desktop: (s) => s.downloads.length > 0 }),
+  downloads: entry('downloads', { title: 'Pobrane', winTitle: () => 'Pobrane', rect: R(340, 170, 440, 320), desktop: (s) => s.downloads.length > 0, component: Downloads }),
   plan: entry('plan', { title: 'Plan piętra', winTitle: () => 'Plan piętra · Hotel Luksus, p. 7', rect: (vw) => ({ x: 230, y: 70, w: Math.min(820, vw - 300), h: 440 }), desktop: never, placeNext: true }),
   clock: entry('clock', { title: 'Zegar', winTitle: () => 'Zegar', rect: R(0, 0, 320, 180), desktop: never }),
 };
