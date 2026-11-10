@@ -1,0 +1,89 @@
+/* Ekran wyjazdu (wyjazd.tpl.html 8–120). Kolory przez tokeny; klasy pod .trip, bo .card, .btn, .opt, .res, .who są też globalne. */
+.trip{position:fixed;inset:0;background:var(--trip-desk);color:var(--text);font:13px/1.5 var(--font);overflow:hidden}
+/* pulpit w tle */
+.trip .desk{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,var(--trip-desk-glow) 0,var(--trip-desk) 70%);filter:blur(1.5px) brightness(.45)}
+.trip .desk .dic{position:absolute;left:28px;width:70px;text-align:center;color:var(--dim);font-size:11px}
+.trip .desk .dic i{display:block;width:44px;height:44px;margin:0 auto 4px;border:1px solid var(--edge);border-radius:8px}
+.trip .desk .deskbar{position:absolute;left:0;right:0;bottom:0;height:34px;border-top:1px solid var(--edge);background:var(--trip-win)}
+/* okno */
+.trip .twin{position:fixed;inset:22px 28px;display:flex;flex-direction:column;background:var(--trip-win);border:1px solid var(--trip-win-edge);border-radius:8px;box-shadow:0 0 0 1px var(--trip-shadow),0 20px 60px color-mix(in srgb, var(--trip-shadow) 60%, transparent)}
+.trip .tb{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--edge);background:var(--trip-title);border-radius:8px 8px 0 0}
+.trip .tb .t{color:var(--acc);font-weight:700;letter-spacing:.04em}
+.trip .tb .s{color:var(--dim)}
+.trip .tb .lock{margin-left:auto;color:var(--coin);font-size:11px;border:1px solid var(--trip-clock-edge);padding:2px 8px;border-radius:4px}
+.trip .tbody{flex:1;display:grid;grid-template-columns:400px 1fr;min-height:0}
+.trip .left{border-right:1px solid var(--edge);display:flex;flex-direction:column;min-height:0}
+.trip .right{position:relative;display:flex;flex-direction:column;min-height:0}
+.trip .dim-t{color:var(--dim)} .trip .coin-t{color:var(--coin)} .trip .acc-t{color:var(--acc)}
+/* plan */
+.trip .plan{padding:12px 14px;overflow:auto}
+.trip .plan h3,.trip .lh{margin:10px 0 6px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:400}
+.trip .plan h3:first-child{margin-top:0}
+.trip .card{border:1px solid var(--edge);border-radius:6px;padding:8px 10px;background:var(--panel)}
+.trip .card b{color:var(--acc)}
+.trip .card.tgt{border-color:var(--trip-tgt-edge);background:color-mix(in srgb, var(--red) 5%, transparent)}
+.trip .card.tgt b{color:var(--red)}
+.trip .opt{display:grid;grid-template-columns:16px 1fr auto;gap:2px 8px;align-items:start;border:1px solid var(--edge);border-radius:6px;padding:7px 10px;margin-bottom:6px;cursor:pointer;background:var(--panel);font-size:13px;color:var(--text)}
+.trip .opt:hover{border-color:var(--trip-opt-hover)}
+.trip .opt.on{border-color:var(--acc);background:rgba(var(--acc-rgb),.06)}
+.trip .opt.off{opacity:.45;cursor:not-allowed}
+.trip .opt.off:hover{border-color:var(--edge)}
+.trip .opt .r{width:12px;height:12px;border:1px solid var(--dim);border-radius:50%;margin-top:3px}
+.trip .opt.on .r{border-color:var(--acc);background:radial-gradient(var(--acc) 0 3px,transparent 4px)}
+.trip .opt .n{font-weight:700}
+.trip .opt .tt{display:grid;grid-template-columns:52px 1fr;gap:1px 6px;margin:2px 0 3px}
+.trip .opt .tt span:nth-child(odd){color:var(--dim)}
+.trip .opt .tt b{color:var(--text);font-weight:500}
+.trip .opt .d{grid-column:2/4;color:var(--dim);font-size:11.5px}
+.trip .opt .c{color:var(--coin);white-space:nowrap}
+.trip .opt .poor{color:var(--red)}
+.trip .kit{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--trip-row)}
+.trip .kit span:first-child{white-space:nowrap}
+.trip .kit span:last-child{text-align:right}
+.trip .kit:last-child{border:none}
+.trip .sum{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12px}
+.trip .sum .sumrow{display:contents}
+.trip .sum .sumrow>span:first-child{color:var(--dim)}
+.trip .sum .good{color:var(--acc)} .trip .sum .warn{color:var(--coin)}
+.trip .go{display:flex;gap:8px;margin-top:12px}
+.trip .note{color:var(--dim);font-size:11px;margin-top:10px}
+.trip .btn{background:var(--panel);border:1px solid var(--edge);color:var(--text);font:inherit;padding:8px 16px;border-radius:5px;cursor:pointer}
+.trip .btn:hover{border-color:var(--acc);color:var(--acc);background:var(--panel)}
+.trip .btn.pri{border-color:var(--acc);color:var(--trip-on-acc);background:var(--acc);font-weight:700}
+.trip .btn.pri:hover{filter:brightness(1.1);color:var(--trip-on-acc)}
+.trip .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.trip .btn.red{border-color:var(--red);background:var(--red);color:var(--trip-on-red);font-weight:700}
+/* dziennik */
+.trip .logwrap{display:flex;flex-direction:column;min-height:0;flex:1}
+.trip .logwrap .lh{padding:12px 14px 0}
+.trip .log{flex:1;overflow:auto;padding:4px 14px 14px}
+.trip .log>div{padding:3px 0;border-bottom:1px solid var(--trip-log-line);animation:trip-in .35s ease-out}
+.trip .log time{color:var(--coin);margin-right:8px}
+.trip .log .dim{color:var(--dim)} .trip .log .acc{color:var(--acc)} .trip .log .red{color:var(--red)}
+@keyframes trip-in{from{opacity:0;transform:translateY(4px)}}
+/* prawa strona */
+.trip .rh{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--edge)}
+.trip .rh .leg{font-weight:700;color:var(--text)}
+/* nazwa odcinka z atrybutu: ten sam napis bywa nagłówkiem karty końcowej */
+.trip .rh .leg::after{content:attr(data-name)}
+.trip .rh .mode{font-size:11px;color:var(--trip-on-acc);background:var(--acc);padding:1px 7px;border-radius:3px;font-weight:700}
+.trip .rh .eta{margin-left:auto;color:var(--dim)}
+.trip svg.m{flex:1;width:100%;min-height:0;display:block;background:var(--trip-map)}
+.trip .site{position:absolute;inset:41px 0 76px 0;background:var(--trip-map)}
+.trip .tl{border-top:1px solid var(--edge);padding:8px 14px 10px}
+.trip .btn.skip{position:absolute;right:14px;bottom:78px}
+.trip .tl-track{position:relative;height:46px}
+.trip .tl-track i{position:absolute;font-style:normal}
+.trip .tl-h{top:0;bottom:12px;border-left:1px solid var(--trip-row)}
+.trip .tl-hl{bottom:0;font-size:10px;color:var(--dim);transform:translateX(-50%)}
+.trip .tl-leg{top:8px;height:16px;border-radius:2px}
+.trip .tl-dl{top:0;bottom:12px;border-left:2px solid var(--red)}
+.trip .tl-dlt{top:-2px;font-size:10px;color:var(--red);padding-left:4px}
+.trip .tl-now{top:4px;height:24px;border-left:2px solid var(--coin)}
+.trip .tl-key{display:flex;gap:14px;font-size:10.5px;color:var(--dim);margin-top:2px}
+.trip .tl-key i{display:inline-block;width:10px;height:8px}
+/* pasek stanu */
+.trip .status{display:flex;gap:22px;align-items:center;padding:8px 14px;border-top:1px solid var(--edge);background:var(--trip-title);border-radius:0 0 8px 8px;font-size:12px}
+.trip .status .clk{font-size:20px;font-weight:700;color:var(--coin);letter-spacing:.04em;min-width:130px}
+.trip .status .k{color:var(--dim);margin-right:6px}
+.trip .status .dline{margin-left:auto}

@@ -12,8 +12,9 @@ export const TRIP_TEXT = {
   // --- plan (262–268) ---
   planTitle: '· Poznań, Centrum · skrzynka S1',
   planLegName: 'Trasa: Nowy Tomyśl → Poznań, Centrum',
-  targetCard: (streets: TripRoutes, def: TripDef) =>
-    `<b>◎ Skrzynka S1</b> · Net-Operator · zabezpieczenia ▮▯▯<br><span style="color:var(--dim)">${streets.s1Street}, Poznań, dzielnica Centrum. Obsługuje wieżowiec z centralą Banku Wiślanego i Hotelem Luksus.<br>📦 Paczka od ${def.packageFrom} (PODSŁUCH-1 i klucz do szafki): pod ławką na przystanku autobusowym obok banku.</span>`,
+  /** `showPackage`: linia o paczce tylko, gdy PODSŁUCH-1 nie jest jeszcze w plecaku. */
+  targetCard: (streets: TripRoutes, def: TripDef, showPackage = true) =>
+    `<b>◎ Skrzynka S1</b> · Net-Operator · zabezpieczenia ▮▯▯<br><span style="color:var(--dim)">${streets.s1Street}, Poznań, dzielnica Centrum. Obsługuje wieżowiec z centralą Banku Wiślanego i Hotelem Luksus.${showPackage ? `<br>📦 Paczka od ${def.packageFrom} (PODSŁUCH-1 i klucz do szafki): pod ławką na przystanku autobusowym obok banku.` : ''}</span>`,
   optionDesc: (t: Transport, p: TripPlan) => {
     if (t.kind === 'train') {
       return `<span class="tt"><span>tam</span><span>odjazd <b>${hm(p.dep!)}</b> · w Poznaniu <b>${hm(p.dep! + t.ride)}</b></span><span>powrót</span><span>odjazd <b>${hm(p.backDep!)}</b> · w Tomyślu <b>${hm(p.backDep! + t.ride)}</b></span></span>w pociągu łącznie ${dur(2 * t.ride)} · przy skrzynce ${hm(p.arrive)} · w domu ${hm(p.end)}`;
