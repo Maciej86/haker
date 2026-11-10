@@ -99,10 +99,13 @@ function place(S,key,c,k,op){const odd=k%2===1;const L={w:odd?c.h:c.w,h:odd?c.w:
 // ================= NAJEMCY (fikcyjni) =================
 export const SHOPS=['Fryzjer „Grzywka”','Kwiaciarnia Bratek','Piekarnia u Józka','Kebab Sułtan','Lombard Złoty Róg','Komis RTV Iskra','Biuro rachunkowe Suma','Gabinet stomatologiczny','Pizzeria Piec','Sklep Wiklina i Kosz','Zakład szewski','Kantor Grosz','Optyk Soczewka','Sklep zoologiczny Ara'];
 export const OFFICES=['Kancelaria Wróbel i wsp.','Data-Tech sp. z o.o.','Agencja reklamowa Pixel','Coworking Rój','Ubezpieczenia Tarcza','Biuro podróży Albatros','Klinika Medica','Logistyka Mrówka S.A.','Fundusz Orzeł Capital','Software House Kłos'];
+// [plan 04, zad. 2] Hotel Luksus jest tylko w wieżowcu celu; pick losuje raz, więc strumień R się nie przesuwa.
+const TARGET_TENANTS=[{n:'Recepcja, kawiarnia Ziarno',f:'p. 0'},{n:'Bank Wiślany, centrala',f:'p. 1–4'},{n:'Hotel Luksus',f:'p. 5–10'},
+  {n:'Data-Tech sp. z o.o.',f:'p. 11–14'},{n:'Agencja reklamowa Pixel',f:'p. 15–19'},{n:'Siłownia FitTower',f:'p. 20'},{n:'Restauracja Panorama',f:'p. 21 (ostatnie)'}];
 function towerTenants(b){const floors=Math.round(b.h/FLOOR);const t=[];let f=1;
   const fl=(a,e)=>e>a?`p. ${a}–${e}`:`p. ${a}`;
   t.push({n:pick(['Recepcja i lobby','Lobby, ochrona budynku','Recepcja, kawiarnia Ziarno','Lobby, kiosk Prasa']),f:'p. 0'});
-  if(R()<.6){const e=f+ri(6,10);t.push({n:pick(['Hotel Horyzont','Hotel Meridian','Hotel Wieża','Hotel Luksus']),f:fl(f,e)});f=e+1}
+  if(R()<.6){const e=f+ri(6,10);t.push({n:pick(['Hotel Horyzont','Hotel Meridian','Hotel Wieża']),f:fl(f,e)});f=e+1}
   const pool=OFFICES.slice(); // każda firma raz na budynek
   while(f<=floors-3){const e=Math.min(floors-3,f+ri(2,6));const k=Math.floor(R()*pool.length);t.push({n:pool.length?pool.splice(k,1)[0]:'Biura do wynajęcia',f:fl(f,e)});f=e+1}
   t.push({n:'Siłownia FitTower',f:`p. ${floors-2}`});t.push({n:'Restauracja Panorama',f:`p. ${floors-1} (ostatnie)`});return t}
@@ -183,9 +186,12 @@ function build(tierKey,D){const T=D?{...TIERS.big,...D}:TIERS[tierKey];R=rng(has
   else if(tierKey==='medium'){targetCell=cells.filter(c=>c.tpl==='mieszana'||(!cells.some(x=>x.tpl==='mieszana')&&c.tpl==='kamienice')).reduce((m,c)=>{const d=Math.hypot(c.x-ctr.x,c.y-ctr.y);return d<m.d?{c,d}:m},{d:1e9}).c;
     target=special(targetCell,{w:56,d:30,h:30,kind:'modern',target:1,tenants:[{n:'Bank Wiślany, oddział Leszno',f:'p. 0–1',t:1,floors:[0,1]},{n:'Ubezpieczenia Tarcza',f:'p. 2'},{n:'Kancelaria Wróbel i wsp.',f:'p. 3–4'}]})}
   else if(T.target!==false){const towers=S.boxes.filter(b=>b.tower);target=towers.reduce((m,b)=>{const d=Math.hypot(b.x-ctr.x,b.y-ctr.y);return d<m.d?{b,d}:m},{d:1e9}).b;
-    target.target=1;target.tenants.splice(1,0,{n:'Bank Wiślany, centrala',f:'p. 1–4',t:1,floors:[1,4]});
-    // przesuń pozostałych najemców ponad bank
-    target.tenants=target.tenants.map(t=>{if(t.t)return t;const m=t.f.match(/p\. (\d+)/);if(m&&+m[1]>=1&&+m[1]<=4)t.f=t.f.replace(/p\. \d+/,'p. 5');t.f=t.f.replace(/p\. (\d+)–(\d+)/,(x,a,e)=>+e>+a?x:`p. ${a}`);return t}).filter(t=>t.t||!/p\. (\d+)–(\d+)/.test(t.f)||+t.f.match(/–(\d+)/)[1]>=5)}
+    // [plan 04, zad. 2] wieżowiec celu: stali lokatorzy (mapa-swiata.md rozdz. 8) i 22 piętra; antena na nowym dachu
+    target.target=1;target.tenants=TARGET_TENANTS.map(t=>({...t}));target.h=22*FLOOR;
+    const ant=S.boxes.find(b=>b.kind==='antenna'&&b.x===target.x+target.w/2-3&&b.y===target.y+target.d/2-3);
+    // x/y/w/d celu do 0,5 (przesunięcie < 0,25 jednostki), żeby środek dachu był dokładny także po zaokrągleniu w JSON
+    const half=v=>Math.round(v*2)/2;['x','y','w','d'].forEach(k=>target[k]=half(target[k]));
+    if(ant){ant.x=target.x+target.w/2-3;ant.y=target.y+target.d/2-3;ant.z0=target.z0+target.h}}
   const PLACES={small:[['dworzec',70,26,12,'Dworzec kolejowy Nowy Tomyśl'],['poczta',40,24,14,'Poczta Krajowa'],['apteka',34,22,12,'Apteka Pod Wagą'],['kawiarnia',30,20,12,'Kawiarnia Ziarno'],['sklep',34,22,12,'Sklep „U Heńka”']],
     medium:[['URZĄD',80,40,26,'Urząd Miasta'],['poczta',50,30,20,'Poczta Krajowa'],['apteka',36,24,16,'Apteka Centralna'],['kawiarnia',36,22,16,'Kawiarnia Ziarno'],['dworzec',100,36,20,'Dworzec kolejowy']],
     big:[['URZĄD',90,46,34,'Urząd Dzielnicy'],['poczta',54,34,24,'Poczta Krajowa'],['kawiarnia',40,24,22,'Kawiarnia Ziarno'],['dworzec',120,40,24,'Dworzec Główny']]}[tierKey];
