@@ -6,6 +6,7 @@ import { place, type Rect, type WinState } from '../ui/windows';
 import { HelpApp } from './help/HelpApp';
 import { ICONS } from './icons';
 import { Placeholder } from './Placeholder';
+import { Terminal } from './terminal/Terminal';
 
 export type AppEntry = {
   title: string;
@@ -28,7 +29,7 @@ function entry(id: AppId, e: Omit<AppEntry, 'icon' | 'badge' | 'component'> & { 
 }
 
 export const APPS: Record<AppId, AppEntry> = {
-  terminal: entry('terminal', { title: 'Terminal', winTitle: () => 'ghost@neonos: ~ · Nowy Tomyśl', rect: R(220, 64, 680, 440), desktop: always }),
+  terminal: entry('terminal', { title: 'Terminal', winTitle: () => 'ghost@neonos: ~ · Nowy Tomyśl', rect: R(220, 64, 680, 440), desktop: always, component: Terminal }),
   mail: entry('mail', { title: 'Poczta', winTitle: () => 'Poczta: ghost@neonmail.net', rect: (vw) => ({ x: Math.max(0, vw - 1120), y: 80, w: 760, h: 540 }), desktop: always }),
   browser: entry('browser', { title: 'Przeglądarka', winTitle: () => 'Przeglądarka', rect: R(200, 96, 720, 480), desktop: always }),
   darknet: entry('darknet', { title: 'Darknet', winTitle: () => 'Darknet: Czarny Rynek', rect: R(260, 130, 700, 460), desktop: always, tone: 'red' }),
