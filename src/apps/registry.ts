@@ -13,6 +13,8 @@ import { Darknet } from './darknet/Darknet';
 import { Achievements } from './achievements/Achievements';
 import { Notes } from './notes/Notes';
 import { Downloads } from './downloads/Downloads';
+import { Wytrych } from './wytrych/Wytrych';
+import { wytrychView } from '../engine/wytrych';
 
 export type AppEntry = {
   title: string;
@@ -41,7 +43,7 @@ export const APPS: Record<AppId, AppEntry> = {
   browser: entry('browser', { title: 'Przeglądarka', winTitle: () => 'Przeglądarka', rect: R(200, 96, 720, 480), desktop: always, component: Browser }),
   darknet: entry('darknet', { title: 'Darknet', winTitle: () => 'Darknet: Czarny Rynek', rect: R(260, 130, 700, 460), desktop: always, tone: 'red', component: Darknet }),
   netmap: entry('netmap', { title: 'NetMap', winTitle: () => 'NetMap', rect: (vw, vh) => ({ x: 200, y: 58, w: Math.max(760, Math.min(1000, vw - 480)), h: vh - 110 }), desktop: always, placeNext: true }),
-  wytrych: entry('wytrych', { title: 'Wytrych', winTitle: () => 'Wytrych 1.0', rect: R(220, 70, 820, 560), desktop: (s) => s.owned.includes('wyt'), placeNext: true }),
+  wytrych: entry('wytrych', { title: 'Wytrych', winTitle: (s) => wytrychView(s).title, rect: R(220, 70, 820, 560), desktop: (s) => s.owned.includes('wyt'), placeNext: true, component: Wytrych }),
   help: entry('help', { title: 'Ściąga', winTitle: () => 'Ściąga · polecenia i programy', rect: R(330, 90, 680, 520), desktop: always, component: HelpApp }),
   notes: entry('notes', { title: 'Notatki', winTitle: (s) => notesView(s).title, rect: R(300, 150, 440, 380), desktop: always, component: Notes }),
   achievements: entry('achievements', { title: 'Osiągnięcia', winTitle: () => 'Osiągnięcia', rect: R(380, 100, 520, 440), desktop: always, component: Achievements }),
