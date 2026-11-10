@@ -5,6 +5,7 @@ import { esc, fill, fmt } from './text';
 import type { CommandTable } from './terminal';
 import type { HelpGroup } from './help';
 import type { RealtimeSource } from './realtime';
+import type { WytrychAction, WytrychView } from './wytrych';
 import { MISSIONS, MAIL_ORDER, MISSION_ORDER } from '../missions';
 import { addXp, skillSummaryRows } from './skills';
 import { THEME_UNLOCKS, unlockedThemes } from './profile';
@@ -76,6 +77,8 @@ export type MissionDef = {
   /** Pokazywany, gdy gracz próbuje podróżować w tej misji, a ta nie ma `trip`. */
   noTripText?: string;
   appBadges?: (s: GameState) => (AppId | 'map')[];
+  /** Okno Wytrych w tej misji: widok i akcje gracza. */
+  wytrych?: { view: (s: GameState) => WytrychView; act: (s: GameState, a: WytrychAction) => StepResult };
   termLabel?: string;
   termStep?: (s: GameState) => string;
   notesTitle?: string;

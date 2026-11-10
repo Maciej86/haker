@@ -2,7 +2,7 @@ import type { MissionDef } from '../../engine/missions';
 import type { CommandTable } from '../../engine/terminal';
 import type { GameState } from '../../engine/types';
 import { step } from '../../engine/types';
-import { drawBake, kubaConnectLocked, kubaCrack } from './logic';
+import { drawBake, kubaConnectLocked, kubaCrack, kubaWytrychAct, kubaWytrychView } from './logic';
 import { K_ACCEPT_LINE, K_FLAT, K_HELP_TERM, K_NOTE_HTML, K_NOTHERE, KUBA_IP } from './texts';
 
 const say = (html: string): CommandTable[string] => (_a, s) => step(s, [{ html }]);
@@ -88,6 +88,7 @@ export const kuba: MissionDef = {
     onCrack: kubaCrack,
   }],
   commands: KUBA_COMMANDS,
+  wytrych: { view: kubaWytrychView, act: kubaWytrychAct },
   help: [
     {
       title: 'Podstawowe',
