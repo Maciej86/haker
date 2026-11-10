@@ -54,7 +54,7 @@ export function kubaConnectLocked(s: GameState): StepResult {
 export function kubaCrack(s: GameState): StepResult {
   const next = setKuba(advance(s, 1), { conn: true, open: true, wrong: null });
   return step(next, [{
-    html: `<span class="d">Wytrych 1.0 · cel ${KUBA_IP} · zabezpieczenie: hasło z podpowiedzią</span>\n<span class="c">Podpowiedź Zenka to zagadka. Wynik ostatniego równania jest hasłem.</span> <span class="d">Namierzanie: brak.</span>`,
+    html: `<span class="d">Wytrych 1.0 · cel ${KUBA_IP} · zabezpieczenie: hasło z podpowiedzią</span>\n<span class="d">Namierzanie: brak.</span>`,
   }], [{ kind: 'open', app: 'wytrych' }]);
 }
 
@@ -107,7 +107,7 @@ export function kubaWytrychAct(s: GameState, a: WytrychAction): StepResult {
   return andThen(
     gain(next, 'Sieć', first ? 0.4 : 0.3, first ? 'hasło złamane za pierwszym razem' : 'pierwsze włamanie Wytrychem'),
     (g) => step(g,
-      [{ html: `<span class="c">Hasło złamane: ${n}. Zalogowano na ${KUBA_IP} jako zenek.</span> <span class="d">Pliki: ls</span>` }],
+      [{ html: `<span class="c">Hasło złamane: ${n}. Zalogowano na ${KUBA_IP} jako zenek.</span>` }],
       [{ kind: 'toast', text: 'Dostęp uzyskany · krok „Włamanie” zaliczony' }]),
   );
 }

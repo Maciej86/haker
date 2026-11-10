@@ -7,7 +7,6 @@ export const ZENEK_FILES: HostFile[] = [
   {
     name: 'playlista.txt', kb: 4,
     body: 'IMPREZA · sobota · u Kuby\n 1. Kapela Spod Pieca – Drożdżowa noc\n 2. DJ Makowiec – Na zakwasie (remix)\n 3. Bułki z Masłem – Chrupiąca\n 4. Lukier – Pączek w maśle\n 5. Zespół Piekarnia – Do białego rana\n 6. Kruszonka – Ostatni tramwaj',
-    gotNote: ' <span class="y">Teraz disconnect, potem odeślij plik Kubie.</span>',
   },
   { name: 'przepis_na_paczki.txt', kb: 2, body: 'Mąka, drożdże, cierpliwość.\nSmażyć w 175°C. Nikomu nie mówić o skórce pomarańczowej.' },
   { name: 'zamowienia_sobota.txt', kb: 3, body: 'Kuba – 20 pączków (impreza?) – gotówka\nPani Halinka – chleb żytni ×2\nSzkoła nr 2 – 150 drożdżówek' },

@@ -2,7 +2,7 @@ import type { CommandTable } from '../terminal';
 import type { GameState, StepResult } from '../types';
 import { andThen, step } from '../types';
 import { esc } from '../text';
-import { focusMission, missionDef, missionHost } from '../missions';
+import { focusMission, missionHost } from '../missions';
 import type { FileEvent, HostDef, HostFile } from '../missions';
 
 /** Host misji, na którym gracz jest teraz połączony (albo nic). */
@@ -15,8 +15,7 @@ const afterEvent = (r: StepResult, host: HostDef | undefined, ev: FileEvent): St
   host?.onFile ? andThen(r, (st) => host.onFile!(st, ev)) : r;
 
 function notOnServer(s: GameState): StepResult {
-  const enter = missionDef(focusMission(s))?.hosts?.[0]?.enterCmd;
-  return step(s, [{ html: `<span class="r">Nie jesteś na serwerze.${enter ? ` Najpierw: ${enter}` : ''}</span>` }]);
+  return step(s, [{ html: `<span class="r">Nie jesteś na serwerze.</span>` }]);
 }
 
 /** Plik z bieżącego hosta po nazwie z linii poleceń; albo gotowy wynik z komunikatem błędu. */
@@ -42,7 +41,7 @@ export function leaveHost(s: GameState): StepResult {
   const left: GameState = { ...s, terminal: { ...s.terminal, location: { kind: 'home' } } };
   const got = s.downloads.some((f) => f.host === loc.ip);
   const r = step(left, [{
-    html: `<span class="c">Rozłączono z ${loc.ip}.</span>${got ? ' <span class="d">Pliki czekają w Pobranych. Odeślij je w Poczcie.</span>' : ''}`,
+    html: `<span class="c">Rozłączono z ${loc.ip}.</span>${got ? ' <span class="d">Pliki czekają w Pobranych.</span>' : ''}`,
   }]);
   return afterEvent(r, host, { cmd: 'disconnect' });
 }

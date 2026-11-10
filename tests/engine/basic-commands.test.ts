@@ -33,7 +33,7 @@ test('abort bez czynności', () => {
 });
 test('status: bez połączenia, przy S1 i na serwerze przez S1', () => {
   const bug: Device = { id: 'bug1', where: 'S1', minutes: 47 };
-  expect(out(at({ kind: 'home' }, [bug]), 'status')).toEqual(['<span class="d">Brak połączenia. Wpisz use S1.</span>']);
+  expect(out(at({ kind: 'home' }, [bug]), 'status')).toEqual(['<span class="d">Brak połączenia.</span>']);
   const online = '<span class="c">PODSŁUCH-1 online</span> · łącze S1 (Net-Operator) · zapas pracy 47 min · <span class="d">widoczny w sieci banku jako 10.42.0.250</span>';
   expect(out(at({ kind: 'S1' }, [bug]), 'status')).toEqual([online]);
   expect(out(at({ kind: 'host', ip: '10.42.7.12', path: '/', via: 'S1' }, [bug]), 'status')).toEqual([online]);

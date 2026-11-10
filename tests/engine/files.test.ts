@@ -19,14 +19,14 @@ test('cat: treść, esc w nazwie, brak nazwy', () => {
   expect(txt(runLine(onZenek(), 'get'))).toBe('<span class="r">Podaj nazwę pliku. Lista: ls</span>');
 });
 test('cat poza serwerem', () => {
-  expect(txt(runLine(kubaAccepted(), 'cat playlista.txt'))).toBe('<span class="r">Nie jesteś na serwerze. Najpierw: connect 83.21.40.17</span>');
+  expect(txt(runLine(kubaAccepted(), 'cat playlista.txt'))).toBe('<span class="r">Nie jesteś na serwerze.</span>');
 });
 test('get playlisty: FileRef, toast, etap 5, drugi get odmawia', () => {
   const s = onZenek(); const r = runLine(s, 'get playlista.txt');
   expect(r.state.downloads).toEqual([{ name: 'playlista.txt', size: '4 KB', mission: 'kuba', host: '83.21.40.17', fileId: '83.21.40.17:playlista.txt' }]);
   expect(r.state.t).toBe(s.t);
   expect(r.ui).toContainEqual({ kind: 'toast', text: 'Pobrano playlista.txt' });
-  expect(txt(r)).toContain('Teraz disconnect, potem odeślij plik Kubie.');
+  expect(txt(r)).not.toContain('Teraz disconnect');
   expect(stageIndex(r.state)).toBe(5);
   expect(txt(runLine(r.state, 'get playlista.txt'))).toBe('<span class="d">Ten plik już masz w Pobranych.</span>');
 });

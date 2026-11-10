@@ -29,7 +29,7 @@ export const DIRECT_COMMANDS: CommandTable = {
         stats: { ...t.stats, first: true },
         terminal: { ...t.terminal, location: { kind: 'host', ip, path: '~', via: 'direct' } },
       };
-      return step(next, [{ html: `<span class="c">Połączono z ${ip}.</span> <span class="d">Hasło już znasz. Pliki: ls</span>` }]);
+      return step(next, [{ html: `<span class="c">Połączono z ${ip}.</span> <span class="d">Hasło już znasz.</span>` }]);
     }
     return host.onConnectLocked(t);
   },
@@ -41,7 +41,7 @@ export const DIRECT_COMMANDS: CommandTable = {
     const host = directHost(s, ip);
     if (!host) return step(s, [{ html: `<span class="r">crack: brak odpowiedzi od ${esc(ip)}.</span>` }]);
     if (host.cracked(s)) {
-      return step(s, [{ html: `<span class="d">Hasło już złamane. Połącz się: connect ${ip}</span>` }]);
+      return step(s, [{ html: `<span class="d">Hasło już złamane.</span>` }]);
     }
     return host.onCrack(s);
   },

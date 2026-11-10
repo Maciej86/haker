@@ -37,7 +37,7 @@ export const BASIC_COMMANDS: CommandTable = {
   notes: (_a, s) =>
     step(s, [{ html: '<span class="d">Otwarto Notatki.</span>' }], [{ kind: 'open', app: 'notes' }]),
   status: (_a, s) => {
-    if (!isLinkedToS1(s)) return step(s, [{ html: '<span class="d">Brak połączenia. Wpisz use S1.</span>' }]);
+    if (!isLinkedToS1(s)) return step(s, [{ html: '<span class="d">Brak połączenia.</span>' }]);
     const min = s.devices.find((d) => d.where === 'S1')?.minutes ?? 0;
     return step(s, [{
       html: `<span class="c">PODSŁUCH-1 online</span> · łącze S1 (Net-Operator) · zapas pracy ${min} min · <span class="d">widoczny w sieci banku jako 10.42.0.250</span>`,

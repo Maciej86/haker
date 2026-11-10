@@ -43,9 +43,11 @@ test('po złamaniu: connect loguje, crack bez kosztu, drugi connect „Już poł
   const c = runLine(s, 'connect 83.21.40.17');
   expect(c.state.terminal.location).toEqual({ kind: 'host', ip: '83.21.40.17', path: '~', via: 'direct' });
   expect(promptFor(c.state)).toBe('zenek:~ >');
-  expect(txt(c)).toContain('Hasło już znasz. Pliki: ls');
+  expect(txt(c)).toContain('Hasło już znasz.');
+  expect(txt(c)).not.toContain('Pliki: ls');
   const k = runLine(s, 'crack 83.21.40.17');
   expect(k.state.t).toBe(s.t);
-  expect(txt(k)).toContain('Hasło już złamane. Połącz się: connect 83.21.40.17');
+  expect(txt(k)).toContain('Hasło już złamane.');
+  expect(txt(k)).not.toContain('connect');
   expect(txt(runLine(c.state, 'connect 83.21.40.17'))).toContain('Już połączono.');
 });
