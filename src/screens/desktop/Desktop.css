@@ -65,3 +65,20 @@
 
 /* 408 */
 @media (max-width:1100px){#hud{display:none}#toast{right:16px}}
+
+/* Menu Start (222–231, 238–239) */
+#startmenu{position:fixed;left:12px;bottom:52px;z-index:60;width:300px;display:none}
+#startmenu.open{display:block;animation:open .16s ease-out}
+.theme{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:6px;padding:8px;margin:2px 0}
+.theme:hover:not([disabled]){border-color:var(--edge);background:rgba(255,255,255,.02)}
+.theme[aria-pressed=true]{border-color:var(--acc-dim);background:var(--acc-bg)}
+.theme[disabled]{cursor:default;opacity:.55}
+.theme .sw{display:flex;height:28px;border-radius:4px;overflow:hidden;border:1px solid var(--edge)}
+.theme .sw i{flex:1}
+.theme small{display:block;color:var(--dim)}
+.theme .st{color:var(--acc)}
+.opt{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim);padding:6px 2px;cursor:pointer}
+.opt input{accent-color:var(--acc)}
+/* [decyzja Claude'a] sekcja nowej gry: odstępy jak w karcie, tekst jak .opt */
+#startmenu .newgame{margin-top:10px;padding-top:10px;border-top:1px solid var(--edge)}
+#startmenu .newgame p{margin:0 0 8px;font-size:12px;color:var(--dim)}

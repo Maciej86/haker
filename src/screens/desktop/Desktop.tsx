@@ -6,6 +6,7 @@ import { Window } from '../../ui/Window';
 import { ToastHost } from '../../ui/Toast';
 import { GainBubble } from '../../ui/GainBubble';
 import { Wallpaper } from './Wallpaper';
+import { Rain } from './Rain';
 import { TopBar } from './TopBar';
 import { Icons } from './Icons';
 import { PlayerPanel } from './PlayerPanel';
@@ -37,6 +38,7 @@ export function Desktop() {
   return (
     <div data-screen="desktop">
       <Wallpaper />
+      <Rain />
       <TopBar />
       <Icons />
       <Windows />

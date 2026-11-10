@@ -1,11 +1,13 @@
 import { gclk, deadlineLabel } from '../../engine/clock';
 import { barLabel } from '../../engine/desktop';
 import { useGame } from '../../ui/useGame';
+import { usePref } from '../../ui/prefs';
 import { slots } from './slots';
 
 // misja.html linie 437–447
 export function TopBar() {
   const s = useGame((x) => x);
+  const [rain, setRain] = usePref('neonos-rain', 'on');
   const dl = deadlineLabel(s);
   const [head, ...rest] = dl ? dl.text.split(' · ') : [];
   return (
@@ -22,6 +24,8 @@ export function TopBar() {
           </span>
         ) : null}
       </span>
+      <button id="weather" aria-pressed={rain !== 'off'} title="Włącz lub wyłącz deszcz na tapecie"
+        onClick={() => setRain(rain === 'off' ? 'on' : 'off')}>☂ Deszcz</button>
     </header>
   );
 }
