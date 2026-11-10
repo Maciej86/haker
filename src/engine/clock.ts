@@ -1,4 +1,6 @@
-import type { Day, GameState } from './types';
+import type { Day, GameState, Line, MissionId, StepResult, UiEvent } from './types';
+import { step } from './types';
+import { missionDef, visibleOffers } from './missions';
 
 export const DAYS: Day[] = ['pon', 'wt', 'śr', 'czw', 'pt', 'sob', 'nd'];
 export const DAY_LONG: Record<Day, string> = {
@@ -43,4 +45,57 @@ export function advance(s: GameState, gameMin: number, deviceMin = 0): GameState
 
 export function dayVars(s: GameState): Record<string, string> {
   return { 'dzień': s.day, 'dzień_długi': DAY_LONG[s.day] };
+}
+
+export function deadlineLabel(s: GameState): { text: string; red: boolean } | null {
+  const time = missionDef(s.active)?.deadline?.time;
+  if (time === undefined) return null;
+  const left = time - s.t;
+  return {
+    text: `${s.day} ${hhmm(time)} · ${left > 0 ? 'zostało ' + dur(left) : 'po terminie'}`,
+    red: left < 30,
+  };
+}
+
+export function nextDay(s: GameState): StepResult {
+  const revealed = s.mail.hidden.filter((id) =>
+    missionDef(id as MissionId).availability.afterMissions.every((m) => s.done.includes(m)),
+  );
+  const cur: GameState = {
+    ...s,
+    day: nextDayName(s.day),
+    t: NEXT_DAY_T,
+    sec: 0,
+    gains: [],
+    screen: 'desktop',
+    overlay: null,
+    summary: null,
+    summaryMeta: null,
+    failed: false,
+    mail: {
+      ...s.mail,
+      hidden: s.mail.hidden.filter((id) => !revealed.includes(id)),
+      read: s.mail.read.filter((id) => !revealed.includes(id)),
+    },
+    terminal: { ...s.terminal, location: { kind: 'home' }, lines: [] },
+  };
+  const free = visibleOffers(cur).filter((id) => !cur.done.includes(id)).length;
+  const text =
+    free >= 2 ? 'nowy dzień. W Poczcie czekają dwie oferty. Przyjąć można jedną naraz.'
+      : free === 1 ? 'nowy dzień. W Poczcie czeka oferta, która została z wczoraj.'
+        : 'nowy dzień.';
+  const lines: Line[] = [
+    { html: '<span class="c">NeonOS 0.4</span>' },
+    { html: `<span class="d">${gclk(cur)} · ${text}</span>` },
+    { html: '' },
+  ];
+  const state: GameState = { ...cur, terminal: { ...cur.terminal, lines } };
+  const { dayCheckpoint: _cp, ...rest } = state;
+  const withCp: GameState = { ...state, dayCheckpoint: structuredClone(rest) };
+
+  const ui: UiEvent[] = [];
+  if (free >= 2) ui.push({ kind: 'toast', text: '2 nowe oferty w Poczcie' });
+  else if (free === 1) ui.push({ kind: 'toast', text: 'Oferta z wczoraj czeka w Poczcie' });
+  ui.push({ kind: 'open', app: 'terminal' }, { kind: 'open', app: 'mail' });
+  return step(withCp, [], ui);
 }
