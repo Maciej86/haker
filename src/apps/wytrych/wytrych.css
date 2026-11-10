@@ -1,22 +1,22 @@
 /* misja.html linie 331–332, 335 i 339–354; selektory trybu wypieków → .wyt-bake (okno 820×560 w rejestrze) */
-.crkside{font-size:12px;display:flex;flex-direction:column;gap:12px}
-.crkside h3{margin:0 0 6px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:400}
-.crkres{border:1px solid var(--acc);border-radius:6px;padding:10px 12px;background:rgba(var(--acc-rgb),.08)}
 .wyt-bake{display:grid;grid-template-columns:auto 1fr;gap:20px;padding:14px 16px;align-items:start}
+.wyt-bake .crkside{font-size:12px;display:flex;flex-direction:column;gap:12px}
+.wyt-bake .crkside h3{margin:0 0 6px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:400}
+.wyt-bake .crkres{border:1px solid var(--acc);border-radius:6px;padding:10px 12px;background:rgba(var(--acc-rgb),.08)}
 .wyt-bake .ic{display:contents}
-.wyt-none{color:var(--dim);padding:30px 10px}
-.wyt-none b{color:var(--acc)}
-.eqs{background:var(--term);border:1px solid var(--edge);border-radius:6px;padding:12px 18px;display:flex;flex-direction:column;gap:6px;min-width:380px}
-.eqs.shake{animation:shake .32s}
-@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.eq{display:flex;align-items:center;gap:8px;min-height:60px}
-.eq svg{width:54px;height:54px;flex:none}
-.eq .op{font-size:22px;color:var(--dim);width:18px;text-align:center}
-.eq .eqsign{margin-left:auto}
-.eq .res{font-size:26px;color:var(--acc);font-weight:500;min-width:58px;text-align:center}
-.eq.last{border-top:1px dashed var(--edge);padding-top:8px;margin-top:4px}
-.eq input{width:58px;font:inherit;font-size:22px;background:rgb(var(--win-rgb));border:1px solid var(--acc-dim);color:var(--acc);border-radius:4px;padding:4px 6px;text-align:center}
-.eq input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(var(--acc-rgb),.18)}
-.eqs.won input{border-color:var(--acc);background:rgba(var(--acc-rgb),.12)}
-.legendk{display:flex;gap:14px;flex-wrap:wrap;color:var(--dim)} .legendk span{display:flex;align-items:center;gap:6px} .legendk svg{width:26px;height:26px}
-.hintk{border-left:2px solid var(--coin);padding:4px 8px;margin-top:6px;color:var(--text)}
+.wyt-bake .wyt-none{color:var(--dim);padding:30px 10px}
+.wyt-bake .wyt-none b{color:var(--acc)}
+.wyt-bake .eqs{background:var(--term);border:1px solid var(--edge);border-radius:6px;padding:12px 18px;display:flex;flex-direction:column;gap:6px;min-width:380px}
+.wyt-bake .eqs.shake{animation:wyt-shake .32s}
+@keyframes wyt-shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.wyt-bake .eq{display:flex;align-items:center;gap:8px;min-height:60px}
+.wyt-bake .eq svg{width:54px;height:54px;flex:none}
+.wyt-bake .eq .op{font-size:22px;color:var(--dim);width:18px;text-align:center}
+.wyt-bake .eq .eqsign{margin-left:auto}
+.wyt-bake .eq .res{font-size:26px;color:var(--acc);font-weight:500;min-width:58px;text-align:center}
+.wyt-bake .eq.last{border-top:1px dashed var(--edge);padding-top:8px;margin-top:4px}
+.wyt-bake .eq input{width:58px;font:inherit;font-size:22px;background:rgb(var(--win-rgb));border:1px solid var(--acc-dim);color:var(--acc);border-radius:4px;padding:4px 6px;text-align:center}
+.wyt-bake .eq input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(var(--acc-rgb),.18)}
+.wyt-bake .eqs.won input{border-color:var(--acc);background:rgba(var(--acc-rgb),.12)}
+.wyt-bake .legendk{display:flex;gap:14px;flex-wrap:wrap;color:var(--dim)} .wyt-bake .legendk span{display:flex;align-items:center;gap:6px} .wyt-bake .legendk svg{width:26px;height:26px}
+.wyt-bake .hintk{border-left:2px solid var(--coin);padding:4px 8px;margin-top:6px;color:var(--text)}

@@ -66,3 +66,9 @@ test('stary zapis bez wypieków: zagadka z ziarna, bez awarii', () => {
   const good = String(bakeAnswer(drawBake(s.seed)));
   expect(wytrychAct(s, { kind: 'answer', value: good }).state.mission.kuba.cracked).toBe(true);
 });
+test('podpowiedź zdejmuje komunikat o złym haśle', () => {
+  const bad = wytrychAct(opened(), { kind: 'answer', value: '0' }).state;
+  const h = wytrychAct(bad, { kind: 'hint' }).state;
+  expect(h.mission.kuba).toMatchObject({ wrong: null, hints: 1, tries: 1 });
+  const v = wytrychView(h); if (v.mode === 'bake') expect(v.bake.wrong).toBeNull();
+});

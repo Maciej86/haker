@@ -36,6 +36,8 @@ it('Brak celu bez crack, wypieki po crack, zła odpowiedź pokazuje komunikat', 
   expect(container.querySelector('.eqs')).toHaveClass('shake');
   await user.click(screen.getByRole('button', { name: 'Pokaż podpowiedź · za darmo' }));
   expect(screen.getByText(/Pierwsze równanie ma same chleby/)).toBeInTheDocument();
+  expect(screen.queryByText('Złe hasło (0). Policz jeszcze raz.')).toBeNull();
+  expect(inp).toHaveValue('0');
   await user.click(screen.getByRole('button', { name: 'Następna podpowiedź · za darmo' }));
   await user.click(screen.getByRole('button', { name: 'Następna podpowiedź · za darmo' }));
   expect(container.querySelectorAll('.hintk')).toHaveLength(3);

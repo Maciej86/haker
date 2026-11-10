@@ -86,7 +86,7 @@ export function kubaWytrychView(s: GameState): WytrychView {
 export function kubaWytrychAct(s: GameState, a: WytrychAction): StepResult {
   const k = s.mission.kuba;
   if (k.cracked || !k.open) return step(s);
-  if (a.kind === 'hint') return step(setKuba(s, { hints: Math.min(3, k.hints + 1) }));
+  if (a.kind === 'hint') return step(setKuba(s, { hints: Math.min(3, k.hints + 1), wrong: null }));
   const v = a.value.trim();
   if (!v) return step(s);
   const b = bakeOf(s);
