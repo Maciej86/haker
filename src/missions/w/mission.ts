@@ -1,0 +1,48 @@
+import type { MissionDef } from '../../engine/missions';
+
+export const w: MissionDef = {
+  id: "w",
+  title: "Zestawienie oddziałów",
+  giver: { id: "w", name: "W." },
+  barName: "Dane z centrali Banku Wiślanego",
+  availability: { afterMissions: ['kuba'], offerGroup: 'po-kubie' },
+  offer: {
+    subject: "Zestawienie oddziałów",
+    when: "{dzień} 13:50",
+    reward: 2500,
+    levelLabel: "Poziom 2",
+    body: [
+      "Potrzebuję zestawienia oddziałów z centrali <b>Banku Wiślanego</b> w <b>Poznaniu</b>. Centrala mieści się w <b>centrum miasta</b>. Plik leży na ich serwerze w budynku centrali.",
+      "Interesuje mnie wersja <b>przyjęta na zarządzie 20 października</b>, podpisana przez <b>dyr. Nowak</b>. Robocze szkice, „finalne” wersje bez podpisu i stare lata mnie nie obchodzą.",
+      "Termin: <b>dziś 19:00</b>. Wynik odeślij mi jako załącznik. Dasz radę?",
+    ],
+    acceptReply: "Zdobędę dla Ciebie ten plik.",
+    acceptCost: 1,
+    giverAnswer: {
+      delayMs: 1200,
+      cost: 2,
+      text: "Świetnie. Do ich sieci najłatwiej wejść przez <b>skrzynkę operatora</b>, która obsługuje budynek banku. Znajdź ją na mapie i podepnij tam <b>PODSŁUCH-1</b> (ok. godziny pracy). Paczkę znajdziesz <b>pod ławką na przystanku autobusowym obok banku</b>. W środku jest <b>PODSŁUCH-1</b> i <b>klucz do szafki</b> operatora. Jeśli masz już własny sprzęt przy tej skrzynce, tym lepiej.",
+      toast: "W. odpisał: paczka czeka na przystanku obok banku",
+    },
+  },
+  deadline: { time: 19 * 60 },
+  introLine: "w Poczcie czeka wiadomość od W.",
+  notes: [],
+  stages: [
+    { title: "Przyjęcie zlecenia", sub: "odpowiedz W. w Poczcie", coach: "Przeczytaj mail od W. w Poczcie i odpowiedz, żeby przyjąć zlecenie." },
+    { title: "Rozpoznanie: cel na mapie", sub: "Mapa → Poznań → bank i skrzynka", coach: "Otwórz <code>Mapę</code>: Polska → Poznań → Centrum. Najedź na budynki, żeby zobaczyć lokatorów. Kliknięcie budynku planuje wyjazd." },
+    { title: "Wyjazd i podłożenie podsłuchu", sub: "paczka z przystanku, skrzynka S1", coach: "Wyjazd odbywa się poza komputerem." },
+    { title: "Połączenie z podsłuchem", sub: "Terminal → use S1", coach: "Terminal: połącz się z urządzeniem przy skrzynce (<code>use S1</code>). Licznik urządzenia jest w górnym pasku." },
+    { title: "Znalezienie celu", sub: "schemat sieci za S1 + rozpoznanie", coach: "Terminal: <code>scan</code>, potem filtry (<code>--net</code>, <code>--type</code>, <code>--off</code>) i <code>probe &lt;ip&gt;</code>. NetMap rysuje wynik, Notatki mają wiedzę z rozpoznania." },
+    { title: "Włamanie", sub: "łamigłówka z namierzaniem", coach: "Terminal: <code>crack &lt;ip&gt;</code>, potem połącz przewody w oknie Wytrych. <code>abort</code> przerywa." },
+    { title: "Oddanie zlecenia", sub: "plik mailem przed terminem, 19:00", coach: "Terminal: <code>mc</code> otwiera pliki serwera. Szukaj po szczegółach (Enter na pliku), pobierz <code>F5</code>. Na koniec <code>disconnect</code> (serwer, potem S1) i wyślij plik W. w Poczcie." },
+  ],
+  stageIndex: () => 0,
+  help: [],
+  delivery: { kind: "file" },
+  rewards: { money: 2500, xp: 80 },
+  bonuses: [],
+  summary: () => [],
+  doneLog: ["> Plik dostarczony: zestawienie oddziałów.", "> W. potwierdził odbiór.", "> Zlecenie zakończone."],
+  failLog: ["> Plik dotarł po terminie.", "> Zlecenie nieudane."],
+};

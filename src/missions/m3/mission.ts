@@ -1,0 +1,47 @@
+import type { MissionDef } from '../../engine/missions';
+
+export const m3: MissionDef = {
+  id: "m3",
+  title: "Spacer o 21:14",
+  giver: { id: "l", name: "L." },
+  barName: "Kamery w Hotelu Luksus",
+  availability: { afterMissions: ['kuba'], offerGroup: 'po-kubie' },
+  offer: {
+    subject: "Spacer o 21:14",
+    when: "{dzień} 13:52",
+    reward: 2000,
+    levelLabel: "Poziom 2",
+    body: [
+      "Dziś wieczorem nasz człowiek idzie na spotkanie w <b>Hotelu Luksus</b> (wieżowiec w <b>centrum Poznania</b>). O <b>21:14</b> wyjdzie z windy na <b>7. piętrze</b> i przejdzie do <b>pokoju 712</b>. Zajmie mu to 3 minuty. Potem wróci tą samą drogą do windy. Godziny wyjścia jeszcze nie znam: napiszę do Ciebie <b>5 minut przed tym, jak wyjdzie z pokoju</b>.",
+      "Nie może go być na nagraniach z kamer hotelu. Kamery na jego drodze muszą być wyłączone, kiedy wyjdzie z windy. Wyłącz je najwcześniej o 21:13. Jeśli przestaną działać wcześniej, ochrona zauważy awarię i pójdzie sprawdzić. Jeśli wyłączysz je za późno, kamera go nagra. I pamiętaj: kamerę, która nie działa dłużej niż <b>7 minut</b>, ochrona idzie sprawdzić.",
+      "Płacę 2000 ¤. Wchodzisz w to?",
+    ],
+    acceptReply: "Wchodzę w to. Twój człowiek przejdzie niezauważony.",
+    acceptCost: 1,
+    giverAnswer: {
+      delayMs: 900,
+      cost: 2,
+      text: "Dobrze. Hotel ma kamery w sieci wieżowca, a do niej wchodzi się przez <b>skrzynkę operatora S1</b> obok budynku. Paczkę z <b>PODSŁUCHEM-1</b> i <b>kluczem do szafki</b> zostawię pod ławką na przystanku obok wieżowca. Jeśli masz już własny sprzęt przy tej skrzynce, tym lepiej.<br>W załączniku <b>plan 7. piętra</b> z kamerami. Adresów kamer nie znam, to już Twoja działka.",
+      toast: "L. odpisał: paczka pod ławką, plan piętra w Notatkach",
+    },
+  },
+  introLine: "w Poczcie czeka wiadomość od L.",
+  notes: [],
+  stages: [
+    { title: "Przyjęcie zlecenia", sub: "oferta L. w Poczcie", coach: "Przeczytaj ofertę od L. w Poczcie i odpowiedz, żeby przyjąć." },
+    { title: "Wyjazd i podłożenie podsłuchu", sub: "paczka z przystanku, skrzynka S1", coach: "Mapa → Poznań → Centrum → wieżowiec z hotelem → „Zaplanuj wyjazd”. Jeśli przy S1 wisi już Twój PODSŁUCH-1, wystarczy <code>use S1</code>." },
+    { title: "Połączenie z podsłuchem", sub: "Terminal → use S1", coach: "W Terminalu: <code>use S1</code>." },
+    { title: "Kamery na trasie", sub: "scan, probe, Plan piętra", coach: "<code>scan</code>, potem <code>probe</code> na kamerach z podsieci hotelu. Na Planie piętra zobacz, które dwie kamery widzą drogę winda → korytarz B → 712." },
+    { title: "Okno 21:14: do 712", sub: "cam off albo at", coach: "Do 21:14 masz czas. Najprościej: <code>at 21:14 cam off &lt;ip&gt; 3m</code> dla obu kamer z drogi, a potem „⏩ Przewiń” na dużym zegarze u góry. Ręcznie: „⏩ Przewiń do 21:10”, <code>use S1</code>, a o 21:13 <code>cam off</code> dla obu kamer. Ostatnie minuty płyną na żywo." },
+    { title: "Powrót z 712", sub: "L. napisze 5 min przed wyjściem", coach: "Najpierw włącz kamery (<code>cam on</code>), jeśli wyłączałeś ręcznie: po 7 min awarii ochrona sprawdza. Potem czekaj na wiadomość od L.: „⏩ Czekaj na wiadomość od L.” na zegarze u góry. Gdy napisze, masz 5 minut: te same dwie kamery, w drugą stronę. Szybko: <code>use S1</code> i <code>at &lt;godzina&gt; cam off &lt;ip&gt; 3m</code> albo <code>cam off</code> od minuty przed wyjściem." },
+    { title: "Raport dla L.", sub: "posprzątaj, rozłącz się, odpisz", coach: "Włącz kamery (<code>cam on</code>) albo poczekaj na koniec zadań at, potem <code>disconnect</code> i odpisz L. w Poczcie." },
+  ],
+  stageIndex: () => 0,
+  help: [],
+  delivery: { kind: "report" },
+  rewards: { money: 2000, xp: 80 },
+  bonuses: [],
+  summary: () => [],
+  doneLog: ["> Raport wysłany: wszedł i wyszedł.", "> L. potwierdził.", "> Zlecenie zakończone."],
+  failLog: ["> L. odwołał zlecenie.", "> Zlecenie nieudane."],
+};

@@ -1,0 +1,48 @@
+import type { MissionDef } from '../../engine/missions';
+
+export const kuba: MissionDef = {
+  id: "kuba",
+  title: "Playlista z imprezy",
+  giver: { id: "kuba", name: "Kuba" },
+  barName: "Playlista z imprezy",
+  availability: { afterMissions: [] },
+  offer: {
+    subject: "Playlista z imprezy",
+    when: "śr 20:12",
+    reward: 300,
+    levelLabel: "Poziom 1",
+    body: [
+      "Siema! Pamiętasz Zenka z <b>piekarni na rogu</b>? Na imprezie puszczał muzykę ze swojego domowego serwerka i teraz nie chce oddać <b>playlisty</b>. Mówi, że to „tajemnica zawodowa”. A ja chcę ją puścić w sobotę.",
+      "Zenek na pewno ma hasło. Do łamania haseł potrzebny jest <b>Wytrych</b>: kupisz go w <b>Darknecie</b>, kosztuje ok. 100 ¤. Tylko nie mów Zenkowi :)",
+      "Dasz radę ją zdobyć?",
+    ],
+    acceptReply: "Jasne. Byłem u Zenka dwa dni temu i mam zapisane IP jego serwerka. Połączę się bezpośrednio.",
+    acceptCost: 1,
+    giverAnswer: {
+      delayMs: 1200,
+      cost: 2,
+      text: "O, to nawet nie musisz nigdzie jechać! Normalnie do cudzej sieci wchodzi się przez antenę albo skrzynkę operatora, ale Ty znasz adres.<br>W Terminalu: <b>connect</b> i jego IP. Zenek ma hasło, więc najpierw kup <b>Wytrycha</b> w Darknecie, a potem <b>crack</b> i to samo IP. Playlista to pewnie <b>playlista.txt</b>: ściągnij ją (<b>get</b>) i odeślij mi tutaj jako załącznik.",
+      toast: "Kuba odpisał: connect, Wytrych z Darknetu, crack",
+    },
+  },
+  introLine: "w Poczcie czeka wiadomość od Kuby.",
+  notes: [],
+  stages: [
+    { title: "Odpowiedź Kubie", sub: "Poczta: przyjmij zlecenie", coach: "Przeczytaj mail od Kuby w Poczcie i odpowiedz mu." },
+    { title: "Połączenie z serwerem Zenka", sub: "IP z Notatek, connect", coach: "IP serwera Zenka masz w <code>Notatkach</code>. W Terminalu: <code>connect &lt;ip&gt;</code>." },
+    { title: "Zakup Wytrycha", sub: "Darknet, 100 ¤", coach: "Serwer ma hasło. Otwórz <code>Darknet</code> i kup Wytrych 1.0." },
+    { title: "Włamanie", sub: "Wytrych: zagadka z piekarni", coach: "Terminal: <code>crack &lt;ip&gt;</code>, potem rozwiąż zagadkę w oknie Wytrych." },
+    { title: "Pobranie playlisty", sub: "ls, get, disconnect", coach: "Terminal: <code>ls</code> pokazuje pliki, <code>get playlista.txt</code> pobiera. Na koniec <code>disconnect</code>." },
+    { title: "Oddanie zlecenia", sub: "plik mailem do Kuby", coach: "Poczta: odpowiedz Kubie i dołącz plik z Pobranych." },
+  ],
+  stageIndex: () => 0,
+  hosts: [{ ip: '83.21.40.17', name: 'zenek-muzyka', promptName: 'zenek' }],
+  help: [],
+  helpReplacesBase: true,
+  hidePrograms: ['NetMap'],
+  delivery: { kind: "file" },
+  rewards: { money: 300, xp: 80 },
+  bonuses: [],
+  summary: () => [],
+  doneLog: ["> Plik dostarczony: playlista.txt", "> Kuba potwierdził odbiór.", "> Misja 1 zakończona."],
+};
