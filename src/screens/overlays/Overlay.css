@@ -1,0 +1,20 @@
+/* Overlaye: CSS z mockups/misja.html linie 189–195 i 369–371 */
+.ovl{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:rgba(var(--chrome-rgb),.7)}
+.ovl .card{width:min(420px,calc(100% - 32px));padding:22px 24px;border-color:var(--acc-dim);box-shadow:0 0 60px rgba(var(--acc-rgb),.15)}
+.ovl pre{margin:0;font:15px/1.7 var(--font);color:var(--acc);min-height:104px;white-space:pre-wrap}
+.ovl .xp{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
+.ovl .xp b{font-size:32px;font-weight:500;color:var(--acc)}
+.ovl .xp span{display:flex;gap:6px;align-items:center;font-size:16px}
+.ovl .bons{margin-top:10px}
+.ovl .bon{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);padding:1px 0}
+.ovl .bon.ok{color:var(--acc)}
+.ovl .bon.bad{color:var(--red)}
+.ovl .bon.coin{color:var(--coin)}
+.ovl .bon.sk{align-items:flex-start;gap:10px}
+.ovl .bon.sk span:first-child{white-space:pre}
+.ovl .bon.sk span:last-child{color:var(--dim);text-align:right}
+.ovl .sec{margin-top:10px;padding-top:8px;border-top:1px solid var(--edge);font-size:12px;color:var(--dim)}
+.ovl .head{font-size:12px;color:var(--dim);margin-bottom:4px}
+.ovl .retry{text-align:center;margin-top:12px}
+.ovl .acts{text-align:right;margin-top:16px}
+.ovl.pause .card{text-align:center;cursor:pointer}
