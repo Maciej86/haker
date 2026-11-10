@@ -12,7 +12,8 @@ import { game } from '../engine/fixtures';
 import { day2 } from '../helpers/states';
 import { renderWithStore } from './helpers';
 
-beforeEach(() => { renderWithStore(<Desktop />); });
+let store: ReturnType<typeof renderWithStore>['store'];
+beforeEach(() => { store = renderWithStore(<Desktop />).store; });
 
 it('korzeń ekranu', () => {
   expect(document.querySelector('[data-screen="desktop"]')).not.toBeNull();
@@ -50,9 +51,9 @@ it('przycisk na pasku zadań przenosi okno na wierzch', async () => {
   expect(bar.getByRole('button', { name: 'Przeglądarka' })).toHaveClass('active');
   expect(screen.getByRole('region', { name: 'Przeglądarka' })).toHaveClass('active');
 });
-it('Mapa u Kuby: tylko komunikat', async () => {
+it('Mapa u Kuby: otwiera mapę', async () => {
   await userEvent.click(screen.getByRole('button', { name: /Mapa/ }));
-  expect(screen.getByText('Do Zenka nie musisz jechać: znasz IP jego serwera.')).toBeInTheDocument();
+  expect(store.get().screen).toBe('mapPoland');
 });
 it('panel gracza bez stałych z makiety', () => {
   const hud = within(screen.getByRole('complementary', { name: 'Twój profil' }));

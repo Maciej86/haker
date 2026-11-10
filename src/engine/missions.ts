@@ -64,7 +64,8 @@ export type MissionDef = {
   realtime?: RealtimeSource[];
   apps?: AppId[];
   deviceDeadText?: string;
-  mapBlockedText?: string;
+  /** Pokazywany, gdy gracz próbuje podróżować w tej misji, a ta nie ma `trip`. */
+  noTripText?: string;
   appBadges?: (s: GameState) => (AppId | 'map')[];
   termLabel?: string;
   termStep?: (s: GameState) => string;
@@ -258,9 +259,6 @@ export function retryDay(s: GameState): GameState {
   return newGame(s.seed);
 }
 
-export function mapBlocked(s: GameState): string | null {
-  return missionDef(focusMission(s))?.mapBlockedText ?? null;
-}
 
 export function appBadges(s: GameState): (AppId | 'map')[] {
   return missionDef(focusMission(s))?.appBadges?.(s) ?? [];

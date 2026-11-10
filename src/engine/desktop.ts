@@ -1,7 +1,7 @@
 import type { AppId, GameState, StepResult } from './types';
 import { step } from './types';
 import type { NoteCard } from './missions';
-import { appBadges, focusMission, mapBlocked, missionDef, stageView, termStep } from './missions';
+import { appBadges, focusMission, missionDef, stageView, termStep } from './missions';
 import { unreadCount } from './mail';
 import { helpBadge } from './help';
 
@@ -39,8 +39,6 @@ export function appBadge(s: GameState, id: AppId | 'map'): string | null {
 }
 
 export function goMap(s: GameState): StepResult {
-  const text = mapBlocked(s);
-  if (text) return step(s, [], [{ kind: 'toast', text }]);
   return step({ ...s, screen: 'mapPoland' });
 }
 

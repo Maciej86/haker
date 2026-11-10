@@ -36,9 +36,8 @@ it('plakietki', () => {
   restore = withMission('kuba', { appBadges: () => ['darknet', 'map'] });
   expect(appBadge(game(), 'darknet')).toBe('!'); expect(appBadge(game(), 'map')).toBe('!'); expect(appBadge(game(), 'browser')).toBeNull();
 });
-it('Mapa: komunikat Kuby zamiast przejścia', () => {
-  const r = goMap(game());
-  expect(r.state.screen).toBe('desktop');
-  expect(r.ui).toEqual([{ kind: 'toast', text: 'Do Zenka nie musisz jechać: znasz IP jego serwera.' }]);
+it('Mapa: otwiera się także w misji Kuby', () => {
+  expect(goMap(game()).state.screen).toBe('mapPoland');
   expect(goMap({ ...day2(), active: 'w' }).state.screen).toBe('mapPoland');
+  expect(missionDef('kuba')?.noTripText).toBe('Do Zenka nie musisz jechać: znasz IP jego serwera.');
 });
