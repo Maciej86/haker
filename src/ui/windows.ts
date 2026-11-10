@@ -26,8 +26,9 @@ function patchRect(ws: WinState, app: AppId, f: (r: Rect) => Rect): WinState {
   const r = ws.rects[app];
   return r ? { ...ws, rects: { ...ws.rects, [app]: f(r) } } : ws;
 }
-export const moveWin = (ws: WinState, app: AppId, x: number, y: number): WinState =>
-  patchRect(ws, app, (r) => ({ ...r, x: Math.max(0, x), y: Math.max(BAR_H, y) }));
+// Pasek tytułu zostaje do chwycenia: co najmniej 80 px z lewej części i 30 px wysokości na ekranie.
+export const moveWin = (ws: WinState, app: AppId, x: number, y: number, vw = Infinity, vh = Infinity): WinState =>
+  patchRect(ws, app, (r) => ({ ...r, x: Math.max(0, Math.min(x, vw - 80)), y: Math.max(BAR_H, Math.min(y, vh - 30)) }));
 export const resizeWin = (ws: WinState, app: AppId, w: number, h: number): WinState =>
   patchRect(ws, app, (r) => ({ ...r, w: Math.max(MIN_W, w), h: Math.max(MIN_H, h) }));
 export const zIndex = (ws: WinState, app: AppId): number => 11 + ws.order.indexOf(app);
@@ -46,7 +47,7 @@ export function place(term: Rect | null, vw: number, vh: number): Rect | null {
 type Action =
   | { t: 'open'; app: AppId; rectFor: RectFor }
   | { t: 'close' | 'focus'; app: AppId }
-  | { t: 'move'; app: AppId; x: number; y: number }
+  | { t: 'move'; app: AppId; x: number; y: number; vw: number; vh: number }
   | { t: 'resize'; app: AppId; w: number; h: number }
   | { t: 'reset'; apps: AppId[]; rectFor: RectFor };
 
@@ -57,7 +58,7 @@ function reduce(ws: WinState, a: Action): WinState {
     case 'open': return openWin(ws, a.app, ws.rects[a.app] ?? a.rectFor(a.app, ws));
     case 'close': return closeWin(ws, a.app);
     case 'focus': return focusWin(ws, a.app);
-    case 'move': return moveWin(ws, a.app, a.x, a.y);
+    case 'move': return moveWin(ws, a.app, a.x, a.y, a.vw, a.vh);
     case 'resize': return resizeWin(ws, a.app, a.w, a.h);
     case 'reset': return a.apps.reduce((w, app) => reduce(w, { t: 'open', app, rectFor: a.rectFor }), EMPTY_WINS);
   }
@@ -91,7 +92,7 @@ export function WindowsProvider({ rectFor, children }: { rectFor: RectFor; child
     isActive: (app) => activeWin(ws) === app,
     rect: (app) => ws.rects[app] ?? FALLBACK,
     zIndex: (app) => zIndex(ws, app),
-    move: (app, x, y) => dispatch({ t: 'move', app, x, y }),
+    move: (app, x, y) => dispatch({ t: 'move', app, x, y, vw: window.innerWidth, vh: window.innerHeight }),
     resize: (app, w, h) => dispatch({ t: 'resize', app, w, h }),
     reset: (apps) => dispatch({ t: 'reset', apps, rectFor }),
   }), [ws, rectFor]);

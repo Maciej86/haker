@@ -18,6 +18,10 @@ it('z-index < 50 przy wszystkich 12 oknach', () => {
 it('przeciąganie zatrzymuje się na pasku i lewej krawędzi', () => {
   expect(moveWin(openWin(EMPTY_WINS, 'terminal', T), 'terminal', -50, 10).rects.terminal).toMatchObject({ x: 0, y: 44 });
 });
+it('przeciąganie zatrzymuje się przy prawej i dolnej krawędzi', () => {
+  expect(moveWin(openWin(EMPTY_WINS, 'terminal', T), 'terminal', 3000, 3000, 1280, 800).rects.terminal).toMatchObject({ x: 1200, y: 770 });
+  expect(moveWin(openWin(EMPTY_WINS, 'terminal', T), 'terminal', 500, 300, 1280, 800).rects.terminal).toMatchObject({ x: 500, y: 300 });
+});
 it('minimum 320×180', () => { expect(resizeWin(openWin(EMPTY_WINS, 'mail', T), 'mail', 100, 100).rects.mail).toMatchObject({ w: 320, h: 180 }); });
 it('place obok Terminala', () => {
   expect(place(T, 1920, 1080)).toEqual({ x: 912, y: 58, w: 746, h: 966 });

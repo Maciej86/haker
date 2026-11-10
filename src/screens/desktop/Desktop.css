@@ -1,0 +1,67 @@
+/* Pulpit: CSS z mockups/misja.html (numery linii przy blokach). */
+
+/* Tapeta (27–33) */
+#wall{position:fixed;inset:0;z-index:0;background:
+  radial-gradient(90% 60% at 50% 100%,rgba(var(--acc-rgb),.10),transparent 70%),
+  linear-gradient(rgba(var(--acc-rgb),.035) 1px,transparent 1px) 0 0/44px 44px,
+  linear-gradient(90deg,rgba(var(--acc-rgb),.035) 1px,transparent 1px) 0 0/44px 44px,
+  linear-gradient(var(--sky1) 0%,var(--sky2) 60%,var(--sky3) 100%)}
+#wall svg{position:absolute;bottom:0;left:0;width:100%;height:58%}
+#rain{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* Górny pasek (36–57) */
+#bar{position:fixed;top:0;left:0;right:0;height:44px;z-index:50;display:flex;align-items:center;gap:18px;padding:0 14px;
+  background:rgba(var(--chrome-rgb),.92);border-bottom:1px solid var(--edge)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--acc);font-size:15px}
+.logo i{display:grid;place-items:center;width:26px;height:22px;border:1.5px solid var(--acc);border-radius:3px;font-style:normal;font-size:11px}
+#mission{display:flex;gap:10px;align-items:center;padding:4px 12px;border:1px solid var(--edge);border-radius:4px;background:var(--panel);white-space:nowrap;overflow:hidden;min-width:0}
+#mission b{color:var(--acc);font-weight:500}
+#mission span:last-child{color:var(--dim)}
+#weather{background:none;border:1px solid transparent;border-radius:4px;color:var(--dim);padding:2px 8px}
+#weather:hover{border-color:var(--edge);color:var(--text)}
+#weather[aria-pressed=false]{text-decoration:line-through}
+#corner{display:flex;align-items:center;gap:8px;margin-left:auto}
+.hb{display:flex;align-items:center;gap:8px;padding:3px 10px;border:1px solid var(--edge);border-radius:4px;background:var(--panel);font-size:12px;white-space:nowrap}
+.hb small{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+#gclk{font-weight:700;color:var(--coin)}
+#dl b{color:var(--red);font-weight:500}
+#dl-left{color:var(--dim)}
+
+/* Postęp zlecenia (67–72, 236–237) */
+.stage{display:grid;grid-template-columns:16px 1fr;gap:0 6px;padding:3px 0;color:var(--dim);font-size:12px}
+.stage b{font-weight:500}
+.stage small{display:block;font-size:11px;color:var(--dim)}
+.stage.done{color:var(--text)} .stage.done i{color:var(--acc)}
+.stage.now{color:var(--acc)}
+.stage i{font-style:normal}
+.stage .coach{display:block;margin-top:4px;padding:4px 8px;border-left:2px solid var(--edge);background:rgba(var(--acc-rgb),.04);color:var(--dim);font-size:11px;line-height:1.45}
+.stage .coach code{color:var(--text);font-family:inherit}
+
+/* Ikony pulpitu (78; .ico, .tile, .badge w base.css) */
+#icons{position:fixed;top:64px;left:16px;z-index:5;display:grid;grid-template-columns:repeat(2,88px);gap:12px 8px}
+
+/* Panel gracza (87–101; .card i .bar w base.css) */
+#hud{position:fixed;top:56px;right:12px;bottom:56px;width:236px;z-index:6;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.who{display:flex;gap:12px;align-items:center}
+.avatar{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--acc);display:grid;place-items:center;color:var(--acc);background:var(--acc-bg);flex:none}
+.who b{display:block;font-weight:500}
+.who small{color:var(--dim)}
+.skill{display:grid;grid-template-columns:62px 1fr 14px;gap:10px;align-items:center;margin:6px 0;color:var(--dim)}
+.skill .bar{margin:0}
+.skill span:last-child{color:var(--text);text-align:right}
+.res{display:flex;justify-content:space-between;align-items:center;margin:7px 0}
+.res span:first-child{display:flex;gap:10px;align-items:center;color:var(--dim)}
+.res b{font-weight:500}
+.skill.up{animation:skup 1.6s ease}
+@keyframes skup{0%,40%{color:var(--acc);background:var(--acc-bg)}}
+.skill .gn{color:var(--acc);font-size:11px;margin-left:4px}
+
+/* Pasek zadań (198–202) */
+#taskbar{position:fixed;bottom:0;left:0;right:0;height:44px;z-index:50;display:flex;align-items:center;gap:6px;padding:0 12px;background:rgba(var(--chrome-rgb),.94);border-top:1px solid var(--edge)}
+#taskbar .start{color:var(--acc);border:1px solid var(--acc-dim);border-radius:4px;background:none;padding:4px 12px}
+#taskbar .task{background:var(--panel);border:1px solid var(--edge);border-radius:4px;padding:4px 12px;color:var(--dim)}
+#taskbar .task.active{color:var(--text);border-color:var(--acc-dim)}
+#taskbar .net{margin-left:auto;color:var(--dim)}
+
+/* 408 */
+@media (max-width:1100px){#hud{display:none}#toast{right:16px}}

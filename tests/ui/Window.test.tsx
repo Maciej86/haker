@@ -36,3 +36,16 @@ it('przeciąganie za pasek tytułu', () => {
   fireEvent.pointerMove(bar, { clientX: 600, clientY: 600, pointerId: 1 });
   expect(win.style.left).toBe('0px');
 });
+it('przeciąganie tylko lewym przyciskiem', () => {
+  const win = screen.getByRole('region', { name: 'Terminal' }); const bar = win.querySelector('.titlebar')!;
+  const before = [win.style.left, win.style.top];
+  fireEvent.pointerDown(bar, { clientX: 300, clientY: 100, pointerId: 1, button: 2 });
+  fireEvent.pointerMove(bar, { clientX: 400, clientY: 150, pointerId: 1 });
+  expect([win.style.left, win.style.top]).toEqual(before);
+});
+it('nie da się wyrzucić okna za prawą i dolną krawędź', () => {
+  const win = screen.getByRole('region', { name: 'Terminal' }); const bar = win.querySelector('.titlebar')!;
+  fireEvent.pointerDown(bar, { clientX: 300, clientY: 100, pointerId: 1 });
+  fireEvent.pointerMove(bar, { clientX: 5000, clientY: 5000, pointerId: 1 });
+  expect([win.style.left, win.style.top]).toEqual([`${window.innerWidth - 80}px`, `${window.innerHeight - 30}px`]);
+});

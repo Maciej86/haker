@@ -46,7 +46,7 @@ export function Window({ app, label, title, icon, tone, minW = 320, minH = 180, 
       <div
         className="titlebar"
         onPointerDown={(e) => {
-          if ((e.target as HTMLElement).closest('button')) return;
+          if (e.button !== 0 || (e.target as HTMLElement).closest('button')) return;
           const cur = rectRef.current;
           drag.current = { dx: e.clientX - cur.x, dy: e.clientY - cur.y };
           (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
