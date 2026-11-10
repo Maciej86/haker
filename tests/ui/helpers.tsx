@@ -3,7 +3,9 @@ import { render, type RenderResult } from '@testing-library/react';
 import { createStore, type Store } from '../../src/engine/store';
 import type { GameState } from '../../src/engine/types';
 import { StoreContext } from '../../src/ui/useGame';
-import { WindowsProvider } from '../../src/ui/windows';
+import { useUiEvents } from '../../src/ui/useUiEvents';
+import { useTerminalInput } from '../../src/apps/terminal/input';
+import { WindowsProvider, useWindows } from '../../src/ui/windows';
 import { ProfileProvider } from '../../src/ui/useProfile';
 import { game } from '../engine/fixtures';
 
@@ -15,4 +17,13 @@ export function renderWithStore(ui: ReactElement, state: GameState = game()): Re
     </StoreContext.Provider>,
   );
   return { ...r, store };
+}
+
+export function Probe() {
+  useUiEvents();
+  const w = useWindows();
+  return <><b data-testid="order">{w.order.join(',')}</b><TermInputProbe /></>;
+}
+export function TermInputProbe() {
+  return <i data-testid="input">{useTerminalInput()[0]}</i>;
 }
