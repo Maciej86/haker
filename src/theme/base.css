@@ -1,0 +1,21 @@
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font:13px/1.5 var(--font)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:1px solid var(--acc);outline-offset:2px}
+.coin{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--coin);color:#3a2600;font-size:10px;font-weight:700;font-style:normal;vertical-align:-3px}
+.ico{background:none;border:0;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:7px;border-radius:6px;text-shadow:0 1px 3px #000}
+.ico:hover .tile,.ico:focus-visible .tile{border-color:var(--acc);background:rgba(var(--acc-rgb),.14)}
+.tile{position:relative;display:grid;place-items:center;width:52px;height:52px;border:1px solid var(--acc-dim);border-radius:8px;background:rgba(var(--panel-rgb),.85);color:var(--acc);transition:border-color .15s,background .15s;flex:none}
+.tile svg{width:28px;height:28px}
+.ico.red .tile{color:var(--red);border-color:var(--red-edge)}
+.badge{position:absolute;top:-6px;right:-8px;min-width:18px;height:18px;border-radius:9px;background:var(--acc);color:var(--on-acc);font-size:11px;font-weight:700;font-style:normal;line-height:18px;text-align:center}
+.card{background:rgba(var(--panel-rgb),.94);border:1px solid var(--edge);border-radius:6px;padding:12px 14px}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:500}
+.bar{display:block;height:6px;background:var(--track);border-radius:3px;overflow:hidden;margin:6px 0 3px}
+.bar i{display:block;height:100%;background:var(--acc);transition:width .6s}
+.btn{background:transparent;border:1px solid var(--acc);color:var(--acc);border-radius:4px;padding:6px 16px;white-space:nowrap}
+.btn:hover{background:rgba(var(--acc-rgb),.12)}
+.btn[disabled]{border-color:var(--edge);color:var(--dim);cursor:default;background:none}
+.btn.red{border-color:var(--red);color:var(--red)} .btn.red:hover{background:rgba(255,93,115,.1)}
+@keyframes open{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
