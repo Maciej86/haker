@@ -82,6 +82,8 @@ export type MissionDef = {
   realtime?: RealtimeSource[];
   apps?: AppId[];
   deviceDeadText?: string;
+  /** Dopisek po podpięciu nowego podsłuchu (W.: „Cel już znasz, ale do serwera trzeba się włamać od nowa.”). */
+  bugReplacedText?: string;
   /** Pokazywany, gdy gracz próbuje podróżować w tej misji, a ta nie ma `trip`. */
   noTripText?: string;
   appBadges?: (s: GameState) => (AppId | 'map')[];
