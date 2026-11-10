@@ -25,7 +25,8 @@ test('get playlisty: FileRef, toast, etap 5, drugi get odmawia', () => {
   const s = onZenek(); const r = runLine(s, 'get playlista.txt');
   expect(r.state.downloads).toEqual([{ name: 'playlista.txt', size: '4 KB', mission: 'kuba', host: '83.21.40.17', fileId: '83.21.40.17:playlista.txt' }]);
   expect(r.state.t).toBe(s.t);
-  expect(r.ui).toContainEqual({ kind: 'toast', text: 'Pobrano playlista.txt' });
+  expect(r.ui).not.toContainEqual({ kind: 'toast', text: 'Pobrano playlista.txt' });
+  expect(r.ui).toContainEqual({ kind: 'termHold', ms: 1000, steps: 4, bar: r.lines[0], after: [r.lines[1]], toast: 'Pobrano playlista.txt' });
   expect(txt(r)).not.toContain('Teraz disconnect');
   expect(stageIndex(r.state)).toBe(5);
   expect(txt(runLine(r.state, 'get playlista.txt'))).toBe('<span class="d">Ten plik już masz w Pobranych.</span>');
@@ -45,4 +46,12 @@ test('disconnect bez pobrania: bez przyrostu; drugi raz: nic', () => {
 test('ls w domu pokazuje Pobrane', () => {
   expect(txt(runLine(kubaAccepted(), 'ls'))).toBe('<span class="d">dokumenty  pobrane (pusto)</span>');
   expect(txt(runLine(run(onZenek(), 'get playlista.txt', 'disconnect').state, 'ls'))).toBe('<span class="d">Pobrane:</span> playlista.txt');
+});
+test('get: linia „Pobieranie” z pustym paskiem, „Pobrano” już w stanie (odsłaniana po pobieraniu)', () => {
+  const r = runLine(onZenek(), 'get playlista.txt');
+  expect(r.lines).toHaveLength(2);
+  expect(r.lines[0].html).toBe('<span class="d">Pobieranie playlista.txt (4 KB)…</span> <span class="dl"><i></i></span>');
+  expect(r.lines[1].html).toBe('<span class="c">Pobrano: playlista.txt</span> <span class="d">→ Pobrane.</span>');
+  expect(r.ui.filter((e) => e.kind === 'termHold')).toHaveLength(1);
+  expect(r.ui.some((e) => e.kind === 'startTimer' || e.kind === 'stopTimer')).toBe(false);
 });

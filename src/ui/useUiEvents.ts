@@ -3,6 +3,7 @@ import { missionDef } from '../engine/missions';
 import { realtimeSpeed } from '../engine/realtime';
 import { hideMail } from '../apps/mail/delayed';
 import { setTerminalInput } from '../apps/terminal/input';
+import { startTermHold } from '../apps/terminal/hold';
 import { pushToast } from './Toast';
 import { useStore } from './useGame';
 import { useWindows } from './windows';
@@ -19,6 +20,8 @@ export function useUiEvents(): void {
       ref.current.open('terminal');
       setTerminalInput(e.cmd);
       pushToast('Polecenie wpisane w Terminalu. Zatwierdź Enterem.');
+    } else if (e.kind === 'termHold') {
+      startTermHold(e);
     } else if (e.kind === 'mailArrives') {
       const speed = realtimeSpeed(typeof location === 'undefined' ? '' : location.search);
       hideMail(e.thread, e.msg.html, e.delayMs / speed, () => {

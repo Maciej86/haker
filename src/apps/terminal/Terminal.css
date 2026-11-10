@@ -14,5 +14,5 @@
 .termview{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--term);font-size:13px;line-height:1.5;z-index:2}
 /* pasek pobierania (makieta misja.html 364–365); `#term` przesłania blok .dl z okna Pobrane */
 #term .dl{display:inline-block;width:160px;height:8px;margin:0;border:0;background:var(--track);border-radius:4px;overflow:hidden;vertical-align:middle}
-#term .dl i{display:block;height:100%;background:var(--acc);animation:dlfill 1s steps(4) forwards}
-@keyframes dlfill{from{width:0}to{width:100%}}
+/* stare paski są pełne i statyczne; trwające pobieranie ustawia szerokość w stylu (hold.ts) */
+#term .dl i{display:block;width:100%;height:100%;background:var(--acc)}

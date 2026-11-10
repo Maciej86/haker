@@ -70,7 +70,11 @@ export type UiEvent =
   | { kind: 'typeInTerminal'; cmd: string }                  // przycisk w programie wpisuje polecenie
   | { kind: 'startTimer'; timer: TimerKind }                 // pobieranie, Wytrych z namierzaniem
   | { kind: 'stopTimer'; timer: TimerKind }
-  | { kind: 'mailArrives'; thread: MissionId; msg: MailMsg; delayMs: number }; // odpowiedź zleceniodawcy „po chwili”
+  | { kind: 'mailArrives'; thread: MissionId; msg: MailMsg; delayMs: number } // odpowiedź zleceniodawcy „po chwili”
+  /** Krótkie wstrzymanie Terminala (makieta: `get`): pole wyłączone, pasek `bar` rośnie w `steps` krokach przez `ms`.
+   * Linie `after` są już w stanie (zapis spójny po odświeżeniu) — Terminal tylko ukrywa je do końca wstrzymania,
+   * potem pokazuje toast. To nie `startTimer 'download'` (to pobieranie z banku, z procentami). */
+  | { kind: 'termHold'; ms: number; steps: number; bar: Line; after: Line[]; toast?: string };
 
 export type TimerKind = 'download' | 'crackTrace';
 export type StepResult = { state: GameState; lines: Line[]; ui: UiEvent[] };

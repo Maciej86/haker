@@ -3,6 +3,7 @@ import { historyNav, promptFor, runLine } from '../../engine/terminal';
 import { termMissionLabel, termStepLabel } from '../../engine/desktop';
 import { useGame, useStore } from '../../ui/useGame';
 import { useTerminalInput } from './input';
+import { useTermHold } from './hold';
 import { activeTerminalView } from './views';
 import './Terminal.css';
 
@@ -16,16 +17,22 @@ export function Terminal() {
   const hi = useRef(s.terminal.history.length);
   const lines = s.terminal.lines;
   const view = activeTerminalView(s);
+  const hold = useTermHold();
+  const busy = hold !== null;
+  const shown = hold ? lines.filter((l) => !hold.after.has(l)) : lines;
+  // Tylko pasek trwającego pobierania ma szerokość z kroku; reszta to pełne, statyczne paski (CSS).
+  const htmlOf = (l: (typeof lines)[number]) =>
+    hold && l === hold.bar ? l.html.replace('<i></i>', `<i style="width:${hold.pct}%"></i>`) : l.html;
 
   useLayoutEffect(() => {
     const el = term.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [lines.length]);
+  }, [shown.length]);
 
   // Fokus przy otwarciu okna i gdy program wpisze polecenie (setTerminalInput).
   useEffect(() => {
     if (input.current && document.activeElement !== input.current) input.current.focus();
-  }, [value]);
+  }, [value, busy]);
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     const history = store.get().terminal.history;
@@ -39,7 +46,7 @@ export function Terminal() {
       setValue(r.value);
       return;
     }
-    if (e.key !== 'Enter') return;
+    if (e.key !== 'Enter' || busy) return;
     store.apply(runLine(store.get(), value));
     setValue('');
     hi.current = store.get().terminal.history.length;
@@ -52,7 +59,7 @@ export function Terminal() {
         <div className="body" id="term" ref={term} onClick={() => input.current?.focus()}>
           {/* Każda linia w osobnym <span> z „\n” na końcu: wygląda tak samo jak jeden blok tekstu. */}
           <div className="out">
-            {lines.map((l, i) => <span key={i} dangerouslySetInnerHTML={{ __html: l.html + '\n' }} />)}
+            {shown.map((l, i) => <span key={i} dangerouslySetInnerHTML={{ __html: htmlOf(l) + '\n' }} />)}
           </div>
           {view ? null : (
             <div className="line">
@@ -62,6 +69,7 @@ export function Terminal() {
                 aria-label="Polecenie"
                 autoComplete="off"
                 spellCheck={false}
+                disabled={busy}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={onKey}

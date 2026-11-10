@@ -1,5 +1,5 @@
 import type { CommandTable } from '../terminal';
-import type { GameState, StepResult } from '../types';
+import type { GameState, Line, StepResult } from '../types';
 import { andThen, step } from '../types';
 import { esc } from '../text';
 import { focusMission, missionHost } from '../missions';
@@ -77,10 +77,10 @@ export const FILE_COMMANDS: CommandTable = {
     }
     const ref = { name: file.name, size: `${file.kb} KB`, mission: focusMission(s)!, host: host.ip, fileId };
     const next: GameState = { ...s, downloads: [...s.downloads, ref] };
-    const r = step(next, [
-      { html: `<span class="d">Pobieranie ${file.name} (${file.kb} KB)…</span> <span class="dl"><i></i></span>` },
-      { html: `<span class="c">Pobrano: ${file.name}</span> <span class="d">→ Pobrane.</span>${file.gotNote ?? ''}` },
-    ], [{ kind: 'toast', text: `Pobrano ${file.name}` }]);
+    // Plik jest w Pobranych od razu; „Pobrano…” też trafia do stanu, a Terminal odsłania ją po pasku (makieta 1559–1563).
+    const bar: Line = { html: `<span class="d">Pobieranie ${file.name} (${file.kb} KB)…</span> <span class="dl"><i></i></span>` };
+    const done: Line = { html: `<span class="c">Pobrano: ${file.name}</span> <span class="d">→ Pobrane.</span>${file.gotNote ?? ''}` };
+    const r = step(next, [bar, done], [{ kind: 'termHold', ms: 1000, steps: 4, bar, after: [done], toast: `Pobrano ${file.name}` }]);
     return afterEvent(r, host, { cmd: 'get', file });
   },
   disconnect: (_a, s) => leaveHost(s),
