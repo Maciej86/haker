@@ -10,7 +10,7 @@ import { addXp, skillSummaryRows } from './skills';
 import { THEME_UNLOCKS, unlockedThemes } from './profile';
 import { newGame } from './state';
 
-export type NoteCard = { id: string; src: string; html: string; insert?: string };
+export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
 export type HostDef = { ip: string; name: string; promptName?: string };
 export type NetworkOverlay = { nodes: { ip: string }[] };
 export type TripDef = { packageFrom: string };
@@ -64,6 +64,13 @@ export type MissionDef = {
   realtime?: RealtimeSource[];
   apps?: AppId[];
   deviceDeadText?: string;
+  mapBlockedText?: string;
+  appBadges?: (s: GameState) => (AppId | 'map')[];
+  termLabel?: string;
+  termStep?: (s: GameState) => string;
+  notesTitle?: string;
+  notesIntro?: string;
+  notesFooter?: string;
 };
 
 export function missionDef(id: MissionId): MissionDef;
@@ -249,4 +256,16 @@ export function retryDay(s: GameState): GameState {
   const cp = s.dayCheckpoint;
   if (cp) return { ...structuredClone(cp), dayCheckpoint: structuredClone(cp) };
   return newGame(s.seed);
+}
+
+export function mapBlocked(s: GameState): string | null {
+  return missionDef(focusMission(s))?.mapBlockedText ?? null;
+}
+
+export function appBadges(s: GameState): (AppId | 'map')[] {
+  return missionDef(focusMission(s))?.appBadges?.(s) ?? [];
+}
+
+export function termStep(s: GameState): string | null {
+  return missionDef(focusMission(s))?.termStep?.(s) ?? null;
 }

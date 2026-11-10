@@ -5,6 +5,7 @@ export const kuba: MissionDef = {
   title: "Playlista z imprezy",
   giver: { id: "kuba", name: "Kuba" },
   barName: "Playlista z imprezy",
+  mapBlockedText: 'Do Zenka nie musisz jechać: znasz IP jego serwera.',
   availability: { afterMissions: [] },
   offer: {
     subject: "Playlista z imprezy",
