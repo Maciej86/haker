@@ -4,7 +4,7 @@ import { appBadge, notesView } from '../engine/desktop';
 import { focusMission, missionDef } from '../engine/missions';
 import { place, type Rect, type WinState } from '../ui/windows';
 import { HelpApp } from './help/HelpApp';
-import { ICONS } from './icons';
+import { ICONS, WIN_ICONS } from './icons';
 import { Placeholder } from './Placeholder';
 import { Terminal } from './terminal/Terminal';
 import { Mail } from './mail/Mail';
@@ -17,6 +17,7 @@ import { Downloads } from './downloads/Downloads';
 export type AppEntry = {
   title: string;
   icon: string;
+  winIcon?: string; // ikona paska tytułu, gdy inna niż na pulpicie
   component: FC;
   desktop: (s: GameState) => boolean;
   winTitle?: (s: GameState) => string;
@@ -30,8 +31,8 @@ const always = () => true;
 const never = () => false;
 const R = (x: number, y: number, w: number, h: number) => () => ({ x, y, w, h });
 
-function entry(id: AppId, e: Omit<AppEntry, 'icon' | 'badge' | 'component'> & { component?: FC }): AppEntry {
-  return { component: Placeholder, icon: ICONS[id], badge: (s) => appBadge(s, id), ...e };
+function entry(id: AppId, e: Omit<AppEntry, 'icon' | 'winIcon' | 'badge' | 'component'> & { component?: FC }): AppEntry {
+  return { component: Placeholder, icon: ICONS[id], winIcon: WIN_ICONS[id], badge: (s) => appBadge(s, id), ...e };
 }
 
 export const APPS: Record<AppId, AppEntry> = {

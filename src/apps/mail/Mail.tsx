@@ -77,8 +77,7 @@ function Thread({ id, hidden }: { id: MissionId; hidden: (thread: string, html: 
       ) : null}
       {status === 'open' ? (
         <div className="reply">
-          {/* [decyzja Claude'a] makieta: „Odpowiedz Kubie”; bez celownika w danych oferty bierzemy imię */}
-          <b style={{ fontWeight: 500 }}>Odpowiedz {giver.name}</b>
+          <b style={{ fontWeight: 500 }}>Odpowiedz {giver.dative ?? giver.name}</b>
           <textarea value={draft} onChange={(e) => store.apply(setDraft(store.get(), id, e.target.value))} />
           <button className="btn" onClick={() => store.apply(sendAccept(store.get(), id, draft))}>Wyślij i przyjmij zlecenie</button>{' '}
           <span style={{ ...DIM, fontSize: 11 }}>{offer.acceptCost} min gry</span>

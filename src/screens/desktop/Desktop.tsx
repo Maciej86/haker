@@ -23,7 +23,7 @@ function Windows() {
         const a = APPS[id];
         const C = a.component;
         return (
-          <Window key={id} app={id} label={a.title} title={a.winTitle?.(s) ?? a.title} icon={a.icon} tone={a.tone}>
+          <Window key={id} app={id} label={a.title} title={a.winTitle?.(s) ?? a.title} icon={a.winIcon ?? a.icon} tone={a.tone}>
             <C />
           </Window>
         );

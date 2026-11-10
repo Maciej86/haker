@@ -75,3 +75,13 @@ it('termin bez separatora: bez osieroconego „· ”', async () => {
   expect(document.getElementById('dl-left')).toBeNull();
   spy.mockRestore();
 });
+it('ikony pasków tytułu jak w makiecie (uproszczone dla Notatek, Darknetu, Osiągnięć)', async () => {
+  const nav = within(screen.getByRole('navigation', { name: 'Pulpit' }));
+  await userEvent.click(nav.getByRole('button', { name: /Osiągnięcia/ }));
+  await userEvent.click(nav.getByRole('button', { name: /Darknet/ }));
+  await userEvent.click(nav.getByRole('button', { name: /Notatki/ }));
+  const tb = (name: string) => screen.getByRole('region', { name }).querySelector('.titlebar svg')!.innerHTML;
+  expect(tb('Osiągnięcia')).toBe('<path d="M7 4h10v5a5 5 0 01-10 0zM12 14v4M8 21h8"></path>');
+  expect(tb('Darknet')).toBe('<path d="M12 2.5l8 3.5v6c0 5-3.4 8.4-8 9.5-4.6-1.1-8-4.5-8-9.5V6z"></path>');
+  expect(tb('Notatki')).toBe('<path d="M6 3h9l4 4v14H6z"></path>');
+});

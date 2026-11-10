@@ -30,3 +30,10 @@ export const SHOP_ICONS: Record<ShopIcon | 'lock', string> = {
   key: '<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
   lock: '<rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/>',
 };
+
+// Ikony w paskach tytułu, które w makiecie są uproszczone względem ikon pulpitu (misja.html linie 541, 567, 578).
+export const WIN_ICONS: Partial<Record<AppId, string>> = {
+  notes: '<path d="M6 3h9l4 4v14H6z"/>',
+  darknet: '<path d="M12 2.5l8 3.5v6c0 5-3.4 8.4-8 9.5-4.6-1.1-8-4.5-8-9.5V6z"/>',
+  achievements: '<path d="M7 4h10v5a5 5 0 01-10 0zM12 14v4M8 21h8"/>',
+};

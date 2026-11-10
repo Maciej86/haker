@@ -25,7 +25,7 @@ it('nieprzeczytana oferta i treść po kliknięciu', async () => {
 });
 it('gotowa odpowiedź przyjmuje zlecenie', async () => {
   const { store } = renderWithStore(<Mail />); const d = missionDef('kuba');
-  expect(screen.getByText(`Odpowiedz ${d.giver.name}`)).toBeInTheDocument();
+  expect(screen.getByText('Odpowiedz Kubie')).toBeInTheDocument(); expect(screen.queryByText('Odpowiedz Kuba')).toBeNull();
   expect(screen.getByRole('textbox')).toHaveValue(d.offer.acceptReply);
   expect(screen.getByText(`${d.offer.acceptCost} min gry`)).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Wyślij i przyjmij zlecenie' }));

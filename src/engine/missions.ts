@@ -21,7 +21,7 @@ export type StageDef = { title: string; sub: string; coach: string };
 export type MissionDef = {
   id: MissionId;
   title: string;
-  giver: { id: string; name: string };
+  giver: { id: string; name: string; dative?: string }; // dative: „Odpowiedz Kubie”
   barName: string;
   availability: { afterMissions: MissionId[]; offerGroup?: string };
   offer: {

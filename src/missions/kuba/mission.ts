@@ -3,7 +3,7 @@ import type { MissionDef } from '../../engine/missions';
 export const kuba: MissionDef = {
   id: "kuba",
   title: "Playlista z imprezy",
-  giver: { id: "kuba", name: "Kuba" },
+  giver: { id: "kuba", name: "Kuba", dative: "Kubie" },
   barName: "Playlista z imprezy",
   mapBlockedText: 'Do Zenka nie musisz jechać: znasz IP jego serwera.',
   availability: { afterMissions: [] },
