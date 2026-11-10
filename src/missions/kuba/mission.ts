@@ -1,4 +1,10 @@
 import type { MissionDef } from '../../engine/missions';
+import type { GameState } from '../../engine/types';
+import { step } from '../../engine/types';
+import { drawBake } from './logic';
+import { K_ACCEPT_LINE, K_NOTE_HTML, KUBA_IP } from './texts';
+
+const hasPlaylist = (s: GameState) => s.downloads.some((f) => f.fileId === `${KUBA_IP}:playlista.txt`);
 
 export const kuba: MissionDef = {
   id: "kuba",
@@ -27,7 +33,7 @@ export const kuba: MissionDef = {
     },
   },
   introLine: "w Poczcie czeka wiadomość od Kuby.",
-  notes: [],
+  notes: [{ id: 'zenek-ip', src: 'pon 18:40 · u Zenka w piekarni', html: K_NOTE_HTML, insert: `connect ${KUBA_IP}` }],
   stages: [
     { title: "Odpowiedź Kubie", sub: "Poczta: przyjmij zlecenie", coach: "Przeczytaj mail od Kuby w Poczcie i odpowiedz mu." },
     { title: "Połączenie z serwerem Zenka", sub: "IP z Notatek, connect", coach: "IP serwera Zenka masz w <code>Notatkach</code>. W Terminalu: <code>connect &lt;ip&gt;</code>." },
@@ -36,9 +42,54 @@ export const kuba: MissionDef = {
     { title: "Pobranie playlisty", sub: "ls, get, disconnect", coach: "Terminal: <code>ls</code> pokazuje pliki, <code>get playlista.txt</code> pobiera. Na koniec <code>disconnect</code>." },
     { title: "Oddanie zlecenia", sub: "plik mailem do Kuby", coach: "Poczta: odpowiedz Kubie i dołącz plik z Pobranych." },
   ],
-  stageIndex: () => 0,
-  hosts: [{ ip: '83.21.40.17', name: 'zenek-muzyka', promptName: 'zenek' }],
-  help: [],
+  stageIndex: (s) => {
+    const k = s.mission.kuba;
+    const wyt = s.owned.includes('wyt');
+    return s.done.includes('kuba') ? 6 : hasPlaylist(s) ? 5 : k.cracked ? 4 : k.conn && wyt ? 3 : k.conn ? 2 : s.active === 'kuba' ? 1 : 0;
+  },
+  onAccept: (s) => {
+    const next: GameState = { ...s, mission: { ...s.mission, kuba: { ...s.mission.kuba, bake: drawBake(s.seed) } } };
+    return step(next, [{ html: K_ACCEPT_LINE }]);
+  },
+  appBadges: (s) => (s.active === 'kuba' && !s.owned.includes('wyt') ? ['darknet'] : []),
+  hosts: [{ ip: KUBA_IP, name: 'zenek-muzyka', promptName: 'zenek' }],
+  help: [
+    {
+      title: 'Podstawowe',
+      unlocked: () => true,
+      entries: [
+        { cmd: 'help', desc: 'lista poleceń w Terminalu', cost: '' },
+        { cmd: 'whoami', desc: 'twój pseudonim', cost: '' },
+        { cmd: 'clear', desc: 'czyści ekran Terminala', cost: '' },
+        { cmd: 'notes', desc: 'otwiera Notatki', cost: '' },
+      ],
+    },
+    {
+      title: 'Połączenie',
+      unlocked: () => true,
+      entries: [
+        { cmd: 'connect &lt;ip&gt;', desc: 'łączy z serwerem pod znanym adresem', cost: '1 min gry' },
+        { cmd: 'status', desc: 'stan połączenia', cost: '' },
+      ],
+    },
+    {
+      title: 'Włamanie',
+      unlocked: (s) => s.owned.includes('wyt'),
+      need: 'po zakupie Wytrycha w Darknecie',
+      entries: [{ cmd: 'crack &lt;ip&gt;', desc: 'otwiera Wytrych: łamie hasło serwera', cost: '1 min gry · w misji 1 bez namierzania' }],
+    },
+    {
+      title: 'Na serwerze',
+      unlocked: (s) => s.mission.kuba.cracked,
+      need: 'po włamaniu',
+      entries: [
+        { cmd: 'ls', desc: 'lista plików', cost: '' },
+        { cmd: 'cat &lt;plik&gt;', desc: 'podgląd treści pliku', cost: '' },
+        { cmd: 'get &lt;plik&gt;', desc: 'pobiera plik do folderu Pobrane', cost: '' },
+        { cmd: 'disconnect', desc: 'rozłącza z serwerem', cost: '' },
+      ],
+    },
+  ],
   helpReplacesBase: true,
   hidePrograms: ['NetMap'],
   delivery: { kind: "file" },

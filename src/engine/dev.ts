@@ -1,5 +1,4 @@
 import type { GameState } from './types';
-import { newGame } from './state';
 
 export type DevJump = { id: string; label: string; make(): GameState };
 
@@ -18,5 +17,3 @@ export function devJumps(): DevJump[] {
 export function devEnabled(search: string): boolean {
   return new URLSearchParams(search).get('dev') === '1';
 }
-
-registerDevJump({ id: 'kuba', label: 'misja 1', make: () => newGame() });
