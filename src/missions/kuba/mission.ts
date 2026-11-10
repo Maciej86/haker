@@ -13,7 +13,7 @@ export const kuba: MissionDef = {
     reward: 300,
     levelLabel: "Poziom 1",
     body: [
-      "Siema! Pamiętasz Zenka z <b>piekarni na rogu</b>? Na imprezie puszczał muzykę ze swojego domowego serwerka i teraz nie chce oddać <b>playlisty</b>. Mówi, że to „tajemnica zawodowa”. A ja chcę ją puścić w sobotę.",
+      "Siema! Pamiętasz Zenka z <b>piekarni na rogu</b>? Na imprezie puszczał muzykę ze swojego domowego serwerka i nie chce się nią podzielić. Mówi, że to „tajemnica zawodowa”. A ja chcę ją puścić w sobotę.",
       "Zenek na pewno ma hasło. Do łamania haseł potrzebny jest <b>Wytrych</b>: kupisz go w <b>Darknecie</b>, kosztuje ok. 100 ¤. Tylko nie mów Zenkowi :)",
       "Dasz radę ją zdobyć?",
     ],
