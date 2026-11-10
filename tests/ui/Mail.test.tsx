@@ -30,7 +30,9 @@ it('gotowa odpowiedź przyjmuje zlecenie', async () => {
   expect(screen.getByText(`${d.offer.acceptCost} min gry`)).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Wyślij i przyjmij zlecenie' }));
   expect(store.get().active).toBe('kuba'); expect(screen.getByRole('button', { name: 'Przyjęte' })).toBeDisabled();
-  expect(screen.queryByRole('textbox')).toBeNull();
+  // pole przyjęcia znika; po przyjęciu w jego miejscu jest pole oddania (plan 11)
+  expect(screen.queryByRole('button', { name: 'Wyślij i przyjmij zlecenie' })).toBeNull();
+  expect(screen.getByRole('textbox')).toHaveValue('Proszę bardzo.');
 });
 it('tekst gracza w wątku jako tekst', async () => {
   renderWithStore(<Mail />); const ta = screen.getByRole('textbox');

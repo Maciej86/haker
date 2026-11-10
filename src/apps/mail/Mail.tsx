@@ -5,7 +5,9 @@ import { BUSY_NOTE, missionDef } from '../../engine/missions';
 import { dayVars } from '../../engine/clock';
 import { fill, fmt } from '../../engine/text';
 import { useGame, useStore } from '../../ui/useGame';
+import { canDeliver } from '../../engine/delivery';
 import { useHiddenMail } from './delayed';
+import { DeliveryBox } from './DeliveryBox';
 import './Mail.css';
 
 const DIM = { color: 'var(--dim)' };
@@ -44,7 +46,7 @@ export function Mail() {
 function Thread({ id, hidden }: { id: MissionId; hidden: (thread: string, html: string) => boolean }) {
   const store = useStore();
   const s = useGame((x) => x);
-  const { offer, giver } = missionDef(id);
+  const { offer, giver, delivery } = missionDef(id);
   const status = threadStatus(s, id);
   const vars = dayVars(s);
   const draft = s.mail.draft[id] ?? offer.acceptReply;
@@ -69,7 +71,7 @@ function Thread({ id, hidden }: { id: MissionId; hidden: (thread: string, html: 
           {m.attachment ? <><br />📎 {m.attachment}</> : null}
         </div>
       ))}
-      {/* plan 11: <DeliveryBox id={id} /> gdy canDeliver(s, id) */}
+      {canDeliver(s, id) && <DeliveryBox key={id} id={id} />}
       {status === 'blocked' ? (
         <div className="inbox">
           <b style={{ color: 'var(--coin)' }}>{BUSY_NOTE.title}</b><br /><span style={DIM}>{BUSY_NOTE.body}</span>
@@ -77,7 +79,7 @@ function Thread({ id, hidden }: { id: MissionId; hidden: (thread: string, html: 
       ) : null}
       {status === 'open' ? (
         <div className="reply">
-          <b style={{ fontWeight: 500 }}>Odpowiedz {giver.dative ?? giver.name}</b>
+          <b style={{ fontWeight: 500 }}>{delivery.title ?? `Odpowiedz ${giver.dative ?? giver.name}`}</b>
           <textarea value={draft} onChange={(e) => store.apply(setDraft(store.get(), id, e.target.value))} />
           <button className="btn" onClick={() => store.apply(sendAccept(store.get(), id, draft))}>Wyślij i przyjmij zlecenie</button>{' '}
           <span style={{ ...DIM, fontSize: 11 }}>{offer.acceptCost} min gry</span>
