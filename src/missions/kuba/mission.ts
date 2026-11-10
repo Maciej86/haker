@@ -1,6 +1,7 @@
 import type { MissionDef } from '../../engine/missions';
 import type { CommandTable } from '../../engine/terminal';
 import { fileDelivery } from '../../engine/delivery';
+import { gclk } from '../../engine/clock';
 import type { GameState } from '../../engine/types';
 import { step } from '../../engine/types';
 import { drawBake, kubaConnectLocked, kubaCrack, kubaOnFile, kubaWytrychAct, kubaWytrychView } from './logic';
@@ -142,7 +143,13 @@ export const kuba: MissionDef = {
       : { ok: false, reply: K_WRONG[file.name] ?? K_WRONG['podpowiedz_hasla.txt'] },
   }),
   rewards: { money: 300, xp: 80 },
-  bonuses: [],
-  summary: () => [],
+  // misja.html linie 1620–1623 (finishK)
+  bonuses: [{
+    label: 'Rozłączony z serwerem przed wysłaniem',
+    money: 0,
+    note: 'dobry nawyk',
+    when: (s) => s.mission.kuba.disc && s.terminal.location.kind !== 'host',
+  }],
+  summary: (s) => [{ label: `Czas: ${gclk(s)} · Wytrych 1.0 zostaje na pulpicie`, value: '' }],
   doneLog: ["> Plik dostarczony: playlista.txt", "> Kuba potwierdził odbiór.", "> Misja 1 zakończona."],
 };
