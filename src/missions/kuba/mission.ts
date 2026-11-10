@@ -1,8 +1,33 @@
 import type { MissionDef } from '../../engine/missions';
+import type { CommandTable } from '../../engine/terminal';
 import type { GameState } from '../../engine/types';
 import { step } from '../../engine/types';
 import { drawBake, kubaConnectLocked, kubaCrack } from './logic';
-import { K_ACCEPT_LINE, K_NOTE_HTML, KUBA_IP } from './texts';
+import { K_ACCEPT_LINE, K_FLAT, K_HELP_TERM, K_NOTE_HTML, K_NOTHERE, KUBA_IP } from './texts';
+
+const say = (html: string): CommandTable[string] => (_a, s) => step(s, [{ html }]);
+const onZenek = (s: GameState) => s.terminal.location.kind === 'host' && s.terminal.location.ip === KUBA_IP;
+
+/** Polecenia misji 1: mają pierwszeństwo przed wspólnymi; każde 0 min. */
+const KUBA_COMMANDS: CommandTable = {
+  scan: say(K_NOTHERE),
+  use: say(K_NOTHERE),
+  probe: say(K_NOTHERE),
+  route: say(K_NOTHERE),
+  mc: say(K_FLAT),
+  cd: say(K_FLAT),
+  info: say(K_FLAT),
+  edit: say('<span class="d">Kuba chce tylko playlisty. Niczego nie zmieniaj u Zenka.</span>'),
+  rm: say('<span class="d">Kuba chce tylko playlisty. Niczego nie usuwaj u Zenka.</span>'),
+  devices: say('<span class="d">Nie masz jeszcze urządzeń w terenie.</span>'),
+  abort: say('<span class="d">Nic nie trwa.</span>'),
+  status: (_a, s) => step(s, [{
+    html: onZenek(s)
+      ? `<span class="c">Połączono z ${KUBA_IP}</span> · serwer domowy Zenka · <span class="d">namierzanie: brak (prywatny serwer nikogo nie pilnuje)</span>`
+      : '<span class="d">Brak połączenia.</span>',
+  }]),
+  help: (_a, s) => step(s, [{ html: s.owned.includes('wyt') ? K_HELP_TERM.withCrack : K_HELP_TERM.plain }]),
+};
 
 const hasPlaylist = (s: GameState) => s.downloads.some((f) => f.fileId === `${KUBA_IP}:playlista.txt`);
 
@@ -62,6 +87,7 @@ export const kuba: MissionDef = {
     onConnectLocked: kubaConnectLocked,
     onCrack: kubaCrack,
   }],
+  commands: KUBA_COMMANDS,
   help: [
     {
       title: 'Podstawowe',
