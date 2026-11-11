@@ -3,7 +3,7 @@ import type { GameState } from '../types';
 import { step } from '../types';
 import { packageWaiting } from '../devices';
 import { focusMission, missionDef } from '../missions';
-import { endCrack } from '../server';
+import { endCrack, onServer } from '../server';
 
 const HELP_TEXT = `<span class="c">Dostępne polecenia</span>
   devices           twoje urządzenia w terenie
@@ -33,6 +33,13 @@ export function isLinkedToS1(s: GameState): boolean {
   return l.kind === 'S1' || (l.kind === 'host' && l.via === 'S1');
 }
 
+/** Druga linia `status` na serwerze (linia 898). */
+function srvLine(s: GameState): string {
+  const l = s.terminal.location;
+  if (!onServer(s) || l.kind !== 'host') return '';
+  return `\n<span class="c">Na serwerze ${l.ip}</span> · katalog ${l.path} · namierzanie ${Math.round(s.srv.trace)}%`;
+}
+
 export const BASIC_COMMANDS: CommandTable = {
   help: (_a, s) => step(s, [{ html: HELP_TEXT }]),
   whoami: (_a, s) => step(s, [{ html: 'ghost' }]),
@@ -43,7 +50,7 @@ export const BASIC_COMMANDS: CommandTable = {
     if (!isLinkedToS1(s)) return step(s, [{ html: '<span class="d">Brak połączenia.</span>' }]);
     const min = s.devices.find((d) => d.where === 'S1')?.minutes ?? 0;
     return step(s, [{
-      html: `<span class="c">PODSŁUCH-1 online</span> · łącze S1 (Net-Operator) · zapas pracy ${min} min · <span class="d">widoczny w sieci banku jako 10.42.0.250</span>`,
+      html: `<span class="c">PODSŁUCH-1 online</span> · łącze S1 (Net-Operator) · zapas pracy ${min} min · <span class="d">widoczny w sieci banku jako 10.42.0.250</span>${srvLine(s)}`,
     }]);
   },
   devices: (_a, s) => {

@@ -5,6 +5,8 @@ import { esc } from '../text';
 import { leaveS1 } from './field';
 import { focusMission, missionHost } from '../missions';
 import type { FileEvent, HostDef, HostFile } from '../missions';
+import { onServer, withSrv } from '../server';
+import { bankCat, bankLs } from './server';
 
 /** Host misji, na którym gracz jest teraz połączony (albo nic). */
 function currentHost(s: GameState): HostDef | undefined {
@@ -37,7 +39,19 @@ export function leaveHost(s: GameState): StepResult {
   if (loc.kind !== 'host') return step(s, [{ html: '<span class="d">Nie jesteś z niczym połączony.</span>' }]);
   const host = missionHost(s, loc.ip);
   if (loc.via === 'S1') {
-    return step({ ...s, terminal: { ...s.terminal, location: { kind: 'S1' } } });
+    const lines: Line[] = [];
+    const ui: StepResult['ui'] = [];
+    if (s.srv.dl) {
+      lines.push({ html: '<span class="r">Pobieranie przerwane.</span>' });
+      ui.push({ kind: 'stopTimer', timer: 'download' });
+    }
+    const n = withSrv(
+      { ...s, terminal: { ...s.terminal, location: { kind: 'S1' } } },
+      { dl: null, mc: { ...s.srv.mc, open: false }, editor: null },
+    );
+    // linia 958 bez „Powrót na serwer: crack …” (Terminal nie podpowiada)
+    lines.push({ html: `<span class="c">Rozłączono z ${loc.ip}.</span> <span class="d">Namierzanie opada. PODSŁUCH-1 nadal online.</span>` });
+    return afterEvent(step(n, lines, ui), host, { cmd: 'disconnect' });
   }
   const left: GameState = { ...s, terminal: { ...s.terminal, location: { kind: 'home' } } };
   const got = s.downloads.some((f) => f.host === loc.ip);
@@ -48,7 +62,8 @@ export function leaveHost(s: GameState): StepResult {
 }
 
 export const FILE_COMMANDS: CommandTable = {
-  ls: (_a, s) => {
+  ls: ([a], s) => {
+    if (onServer(s)) return bankLs(s, a);
     const host = currentHost(s);
     if (!host) {
       const names = s.downloads.map((f) => f.name);
@@ -64,6 +79,7 @@ export const FILE_COMMANDS: CommandTable = {
     return afterEvent(r, host, { cmd: 'ls' });
   },
   cat: ([a], s) => {
+    if (onServer(s)) return bankCat(s, a);
     const p = pickFile(a, s);
     if (!isPick(p)) return p;
     return step(s, [{ html: `<span class="d">── ${p.file.name} ──</span>\n${esc(p.file.body)}` }]);

@@ -7,6 +7,7 @@ import { DIRECT_COMMANDS } from './commands/direct';
 import { FILE_COMMANDS } from './commands/files';
 import { FIELD_COMMANDS } from './commands/field';
 import { RECON_COMMANDS } from './commands/recon';
+import { SERVER_COMMANDS } from './commands/server';
 
 export type Command = (args: string[], s: GameState) => StepResult;
 export type CommandTable = Record<string, Command>;
@@ -41,7 +42,7 @@ export function promptFor(s: GameState): string {
 }
 
 export const BASE_COMMANDS: CommandTable = {
-  ...BASIC_COMMANDS, ...DIRECT_COMMANDS, ...FILE_COMMANDS, ...FIELD_COMMANDS, ...RECON_COMMANDS,
+  ...BASIC_COMMANDS, ...DIRECT_COMMANDS, ...FILE_COMMANDS, ...FIELD_COMMANDS, ...RECON_COMMANDS, ...SERVER_COMMANDS,
 };
 
 const own = (t: CommandTable | undefined, k: string): Command | undefined =>

@@ -1,7 +1,8 @@
 // Serwer plików centrali Banku Wiślanego (plan 21): drzewo, auth.log, host. Dane 1:1 z mockups/misja.html.
 import type { Day } from '../../engine/types';
 import { step } from '../../engine/types';
-import type { HostDef } from '../../engine/missions';
+import type { FileEvent, HostDef } from '../../engine/missions';
+import { gain } from '../../engine/skills';
 import type { Tree, TreeFile, TreeNode } from '../../engine/fstree';
 import type { LogLine } from '../../engine/server';
 import { startCrack } from '../../engine/server';
@@ -74,7 +75,16 @@ export const W_HOST: HostDef = {
   cracked: () => false,
   onConnectLocked: (s) => step(s),
   onCrack: (s) => wOnCrack(s),
+  onFile: (s, ev) => wOnFile(s, ev),
 };
+
+/** Zejście z serwera: flaga misji; z plikiem W. w Pobranych +0,3 Linux (linia 957). */
+export function wOnFile(s: GameState, ev: FileEvent): StepResult {
+  if (ev.cmd !== 'disconnect') return step(s);
+  const n: GameState = { ...s, mission: { ...s.mission, w: { ...s.mission.w, disc: true } } };
+  if (!n.downloads.some((f) => f.mission === 'w')) return step(n);
+  return gain(n, 'Linux', 0.3, 'pobranie i czyste rozłączenie');
+}
 
 /** `crack 10.42.7.12`: dopiero po znalezieniu celu (linia 926 bez „Najpierw znajdź cel (scan, probe).”). */
 export function wOnCrack(s: GameState): StepResult {
