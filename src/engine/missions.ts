@@ -313,3 +313,23 @@ export function appBadges(s: GameState): (AppId | 'map')[] {
 export function termStep(s: GameState): string | null {
   return missionDef(focusMission(s))?.termStep?.(s) ?? null;
 }
+
+/** Płatne podpowiedzi aktywnego zlecenia: kupione teksty i kolejna do kupienia (null: brak lub zamknięte). */
+export function hintView(s: GameState): { shown: string[]; next: { n: number; price: number } | null } | null {
+  const def = missionDef(s.active);
+  if (!def?.hints) return null;
+  const shown = def.hints.slice(0, s.hintsUsed).map((h) => h.text);
+  const nextHint = def.hints[s.hintsUsed];
+  const open = def.hintsOpen?.(s) !== false;
+  return { shown, next: nextHint && open ? { n: s.hintsUsed + 1, price: nextHint.price } : null };
+}
+
+/** Kupno kolejnej podpowiedzi: tylko pieniądze, 0 min gry (makieta linia 1442). */
+export function buyHint(s: GameState): StepResult {
+  const next = hintView(s)?.next;
+  if (!next) return step(s);
+  if (s.money < next.price) {
+    return step(s, [], [{ kind: 'toast', text: `Brakuje ${next.price - s.money} ¤ na podpowiedź`, bad: true }]);
+  }
+  return step({ ...s, money: s.money - next.price, hintsUsed: s.hintsUsed + 1 });
+}
