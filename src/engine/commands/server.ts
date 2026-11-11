@@ -7,7 +7,7 @@ import { esc, fmt } from '../text';
 import { children, resolvePath } from '../fstree';
 import type { TreeFile } from '../fstree';
 import { charge, onServer, srvHost, startGet, withSrv } from '../server';
-import { catHtml } from '../mc';
+import { catHtml, openEditor, removeLog } from '../mc';
 
 const say = (s: GameState, html: string): StepResult => step(s, [{ html }]);
 const cwdOf = (s: GameState): string => (s.terminal.location.kind === 'host' ? s.terminal.location.path : '/');
@@ -96,13 +96,13 @@ export const SERVER_COMMANDS: CommandTable = {
     const p = srvFile(s, a);
     if (!isFile(p)) return p;
     if (p.file.tag !== 'log') return say(s, `<span class="r">edit: ${p.file.name} jest tylko do odczytu dla twojego konta.</span>`);
-    return step(s);   // edycja auth.log: plan 21, Task 5
+    return openEditor(s, p.file.name);
   },
   rm: ([a], s) => {
     const p = srvFile(s, a);
     if (!isFile(p)) return p;
     if (p.file.tag !== 'log') return say(s, `<span class="r">rm: brak uprawnień do ${p.file.name}.</span>`);
-    return step(s);   // usuwanie wierszy auth.log: plan 21, Task 5
+    return removeLog(s, p.file.name);
   },
   mc: (_a, s) => {
     // linia 953 bez „Najpierw włam się (crack).”
