@@ -18,6 +18,8 @@ export const W_BONUSES: BonusDef[] = [
   { label: W_BONUS_LABELS[0], money: 300, when: (s) => DEADLINE - s.t >= 30 },
   { label: W_BONUS_LABELS[1], money: 200, when: (s) => !s.srv.caught && !s.srv.alert },
   { label: W_BONUS_LABELS[2], money: 100, when: (s) => s.mission.w.disc && !s.mission.w.sentOnSrv },
+  // tylko własne wiersze z 10.42.0.250; cudzy wiersz albo rm auth.log ustawia logBad, każda nowa akcja dopisuje wiersz
+  { label: W_BONUS_LABELS[3], money: 300, when: (s) => s.srv.logClean && !s.srv.logBad && !s.srv.log.some((l) => l.me) },
 ];
 
 /** Przed nagrodą: zapamiętuje, skąd gracz wysłał plik, kończy sesję, a za zostawione S1 zdejmuje 10 min urządzenia
