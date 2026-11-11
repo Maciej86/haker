@@ -7,6 +7,7 @@ import { Pause } from '../../src/screens/overlays/Pause';
 import { NEXT_DAY_T } from '../../src/engine/clock';
 import type { GameState, SummaryRow } from '../../src/engine/types';
 import { game } from '../engine/fixtures';
+import { deserialize, serialize } from '../../src/engine/state';
 import { renderWithStore } from './helpers';
 
 beforeEach(() => { vi.useFakeTimers(); });
@@ -49,13 +50,15 @@ it('Koniec demo, potem Zagraj od nowa', () => {
 it('porażka: Spróbuj od nowa (ten sam dzień)', () => {
   const { dayCheckpoint: _, ...cp } = game({ money: 321 });
   const { store } = renderWithStore(<Summary />, done({ failed: true, summaryMeta: { log: ['> Zlecenie nieudane.'], xp: 0, money: 0, next: 'retry' }, dayCheckpoint: cp }));
-  expect(screen.getByText('0 XP')).toBeInTheDocument(); expect(screen.getByRole('button', { name: 'Zamknij' })).toBeInTheDocument();
+  expect(screen.getByText('0 XP')).toBeInTheDocument(); expect(screen.queryByRole('button', { name: 'Zamknij' })).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Spróbuj od nowa (ten sam dzień)' })); expect(store.get().money).toBe(321);
 });
-it('porażka: Zamknij chowa overlay', () => {
-  const { store } = renderWithStore(<Summary />, done({ failed: true, summaryMeta: { log: [], xp: 0, money: 0, next: 'retry' } }));
-  fireEvent.click(screen.getByRole('button', { name: 'Zamknij' }));
-  expect(store.get().overlay).toBeNull();
+it('porażka: jedyny przycisk to Spróbuj od nowa, także po wczytaniu zapisu', () => {
+  const failed = done({ failed: true, summaryMeta: { log: [], xp: 0, money: 0, next: 'retry' } });
+  const loaded = deserialize(serialize(failed))!;
+  expect(loaded).toMatchObject({ failed: true, overlay: 'summary' });
+  renderWithStore(<Summary />, loaded);
+  expect(screen.getAllByRole('button').map((b) => b.textContent)).toEqual(['Spróbuj od nowa (ten sam dzień)']);
 });
 it('Pause: klik wznawia', () => {
   const onResume = vi.fn(); render(<Pause onResume={onResume} />);

@@ -21,6 +21,11 @@ test('bez połączenia albo przy overlayu nic nie leci', () => {
   const o = { ...linked(s), overlay: 'summary' as const };
   expect(realtimeTick(o, 60_000).state.t).toBe(o.t);
 });
+test('po porażce (failed) nic nie leci, nawet bez overlayu', () => {
+  const s = { ...linked(afterKuba([atS1(60)])), failed: true };
+  const r = realtimeTick(s, 60_000).state;
+  expect([r.t, r.devices[0].minutes]).toEqual([s.t, 60]);
+});
 test('poza pulpitem nic nie leci', () => {
   const s = { ...linked(afterKuba([atS1(60)])), screen: 'trip' as const };
   expect(realtimeTick(s, 60_000).state.t).toBe(s.t);

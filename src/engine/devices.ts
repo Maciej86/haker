@@ -118,6 +118,7 @@ export const S1_SOURCE: RealtimeSource = {
   active: (s) =>
     s.screen === 'desktop'
     && s.overlay === null
+    && !s.failed
     && isLinkedToS1(s)
     && bugAtS1(s)
     && !realtimeSources(s).some((r) => r.pausesS1 && r.active(s)),

@@ -30,6 +30,7 @@ export function Summary() {
   const busy = useRef(false);
   if (overlay !== 'summary' || !meta) { busy.current = false; return null; }
 
+  // Porażka nie ma „Zamknij”: jedyne wyjście to powtórka dnia (bez niej oferty i oddanie byłyby zablokowane).
   // Jedno kliknięcie = jedna akcja, nawet gdy drugi klik przyjdzie przed odświeżeniem widoku.
   const once = (f: () => void) => () => {
     if (busy.current || store.get().overlay !== 'summary') return;
@@ -56,7 +57,6 @@ export function Summary() {
         <div className="acts">
           {meta.next === 'nextDay' ? <button className="btn" onClick={once(() => store.apply(nextDay(store.get())))}>Następny dzień ›</button> : null}
           {meta.next === 'end' ? <button className="btn" onClick={once(() => store.apply({ ...store.get(), overlay: 'end' }))}>Koniec demo ›</button> : null}
-          {retry ? <button className="btn" onClick={once(() => store.apply({ ...store.get(), overlay: null }))}>Zamknij</button> : null}
         </div>
       </div>
     </div>
