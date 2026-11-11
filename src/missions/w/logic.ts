@@ -8,6 +8,7 @@ import { gain } from '../../engine/skills';
 import { RECON_COMMANDS } from '../../engine/commands/recon';
 import type { CommandTable } from '../../engine/terminal';
 import type { NetSide, NetworkOverlay } from '../../engine/missions';
+import { buyHint, hintView } from '../../engine/missions';
 import type { TowerNode } from '../../world/tower';
 import {
   W_ACCEPTED_LINE, W_ALREADY_FOUND, W_DIRECT_LINE, W_HIT_LINES, W_HIT_TOAST, W_MISS_LINE, W_TARGET_IP,
@@ -75,7 +76,17 @@ const W_FOUND_CARD: NetSide = {
 
 /** Panel NetMap: karta celu po trafieniu i płatne podpowiedzi. */
 export function wNetSide(s: GameState): { top?: NetSide; hints?: NetSide } {
-  return { top: s.mission.w.found ? W_FOUND_CARD : undefined };
+  return { top: s.mission.w.found ? W_FOUND_CARD : undefined, hints: hintsSide(s) };
+}
+
+/** Kupione podpowiedzi i przycisk kolejnej (makieta 1037–1039). */
+function hintsSide(s: GameState): NetSide | undefined {
+  const v = hintView(s);
+  if (!v) return undefined;
+  return {
+    html: v.shown.map((t) => `<div class="hint">${t}</div>`).join(''),
+    buttons: v.next ? [{ label: `Podpowiedź ${v.next.n}/3 · ${v.next.price} ¤`, act: buyHint }] : [],
+  };
 }
 
 export const W_NETWORK: NetworkOverlay = {
