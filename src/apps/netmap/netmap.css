@@ -1,0 +1,54 @@
+/* misja.html linie 256–310 i 407 (okno ma rozmiar z registry.ts) */
+.netwrap{display:grid;grid-template-columns:1fr 300px;height:100%;min-height:0}
+.netmap{overflow:auto;padding:14px 16px;border-right:1px solid var(--edge)}
+.netcost{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-bottom:12px}
+.netcost b{color:var(--coin);font-weight:500}
+.tree{display:grid;grid-template-columns:96px 1fr;gap:0 14px}
+.s1box{align-self:center;border:1px solid var(--acc-dim);border-radius:6px;padding:10px 8px;text-align:center;background:var(--acc-bg);color:var(--acc);font-size:12px}
+.s1box small{display:block;color:var(--dim);font-size:10px}
+.branches{border-left:2px solid var(--edge);padding-left:14px;display:flex;flex-direction:column;gap:12px}
+.br{position:relative}
+.br::before{content:'';position:absolute;left:-16px;top:13px;width:14px;border-top:2px solid var(--edge)}
+.br h4{margin:0 0 6px;font-size:11px;font-weight:400;color:var(--dim);letter-spacing:.04em}
+.br h4 b{color:var(--text);font-weight:500}
+.nodes{display:flex;flex-wrap:wrap;gap:8px}
+.nd{width:122px;border:1px solid var(--edge);border-radius:5px;background:rgba(var(--panel-rgb),.9);padding:6px 8px;text-align:left;position:relative;color:var(--text);font:inherit;cursor:pointer}
+.nd:hover{border-color:var(--acc-dim)}
+.nd.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+.nd .top{display:flex;align-items:center;gap:6px}
+.nd .sh{color:var(--acc);font-size:15px;width:16px;text-align:center}
+.nd .ip{font-size:12px}
+.nd.x{opacity:.3}
+.nd.bad{border-color:var(--red-edge)} .nd.bad .sh{color:var(--red)}
+.nd.hit{border-color:var(--acc);background:rgba(var(--acc-rgb),.12)}
+.nd .who{display:block;font-size:10px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:14px}
+.nd.bad .who{color:var(--red)} .nd.hit .who{color:var(--acc)}
+.spark{display:flex;align-items:flex-end;gap:1px;height:16px;margin-top:4px}
+.spark i{flex:1;background:var(--acc-dim);min-height:1px}
+.spark i.now{background:var(--coin)}
+.netside{overflow-x:hidden;overflow-y:auto;padding:14px 14px;display:flex;flex-direction:column;gap:12px;background:rgba(var(--panel-rgb),.5)}
+.netside h3{margin:0 0 6px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:400}
+.det .row2{display:grid;grid-template-columns:96px 1fr;font-size:12px;padding:1px 0}
+.det .row2 span:first-child{color:var(--dim)}
+.chart{display:flex;align-items:flex-end;gap:2px;height:46px;margin:8px 0 2px;border-bottom:1px solid var(--edge)}
+.chart i{flex:1;background:var(--acc-dim);min-height:1px}
+.chart i.now{background:var(--coin)}
+.axis{display:flex;justify-content:space-between;font-size:10px;color:var(--dim)}
+.det .acts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.det .acts small{color:var(--coin);font-size:11px}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 10px;font-size:11px;color:var(--dim)}
+.legend span b{color:var(--acc);font-weight:400;display:inline-block;width:16px}
+.netside .hint{border:1px dashed var(--coin);border-radius:5px;padding:7px 9px;font-size:12px;color:var(--coin);margin-top:6px}
+.netside .hintbtn{border-color:var(--coin);color:var(--coin)}
+.filt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:-4px 0 12px;padding:6px 10px;border:1px solid var(--acc-dim);border-radius:5px;background:var(--acc-bg);font-size:12px}
+.filt code{color:var(--acc)}
+.filt button{background:none;border:1px solid var(--edge);border-radius:3px;color:var(--dim);font-size:11px;padding:1px 8px;margin-left:auto;cursor:pointer}
+.nd.off{opacity:.18}
+.nd.inf{box-shadow:0 0 0 1px var(--acc-dim) inset}
+.netmap .empty{color:var(--dim);padding:30px 10px;text-align:center}
+.mods{display:flex;flex-direction:column;gap:4px;font-size:12px}
+.mods span{display:flex;justify-content:space-between;gap:8px}
+.mods .on{color:var(--acc)} .mods .lk{color:var(--dim)}
+.netside .cmdhint{font-size:11px;color:var(--dim);margin-top:2px}
+.netside .cmdhint code{color:var(--acc)}
+.netdone{border:1px solid var(--acc);border-radius:6px;padding:10px 12px;background:rgba(var(--acc-rgb),.08);margin-bottom:10px}
