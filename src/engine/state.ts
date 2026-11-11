@@ -48,6 +48,7 @@ export function newGame(seed: number = Date.now() >>> 0): GameState {
     failed: false,
     summaryMeta: null,
     helpSeen: [],
+    hintsUsed: 0,
   };
   const s = { ...base, terminal: { lines: [] as Line[], history: [] as string[], location: { kind: 'home' as const } } } as GameState;
   s.terminal.lines = [

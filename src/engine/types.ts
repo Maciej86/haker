@@ -61,6 +61,7 @@ export type GameState = {
   failed: boolean;           // misja przegrana, overlay summary pokazuje „Spróbuj od nowa”
   summaryMeta: SummaryMeta | null;
   helpSeen: string[];
+  hintsUsed: number;         // kupione płatne podpowiedzi bieżącego zlecenia
 };
 
 export type UiEvent =

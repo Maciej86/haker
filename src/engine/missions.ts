@@ -84,6 +84,8 @@ export type MissionDef = {
   doneLog: string[];
   failLog?: string[];
   hints?: { price: number; text: string }[];
+  /** false: kolejnej podpowiedzi nie da się kupić (W.: po znalezieniu celu). */
+  hintsOpen?: (s: GameState) => boolean;
   onAccept?: (s: GameState) => StepResult;
   onBuy?: (s: GameState, itemId: string) => StepResult;
   /** Po naliczeniu kosztu i oznaczeniu jako sprawdzone; zastępuje domyślną linię polecenia probe. */
@@ -180,6 +182,7 @@ export function acceptOffer(s: GameState, id: MissionId): StepResult {
     ...cur,
     active: id,
     gains: [],
+    hintsUsed: 0,
     net: { ...initNetState(), reusedBug: !!def.network && bugAtS1(cur) },
     mail: {
       ...cur.mail,
