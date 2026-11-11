@@ -44,6 +44,12 @@ export function wOnServerState(seed = 1): GameState {
   return endCrack(s, 'ok').state;
 }
 
+/** „W. tuż przed 19:00”: na serwerze banku, czw 18:58. */
+export function wDeadlineState(seed = 1): GameState {
+  return { ...wOnServerState(seed), t: 18 * 60 + 58 };
+}
+
 registerDevJump({ id: 'w-start', label: 'start W.', make: () => wStartState() });
 registerDevJump({ id: 'w-after-trip', label: 'W. po wyjeździe', make: () => wAfterTripState() });
 registerDevJump({ id: 'w-on-server', label: 'W. na serwerze', make: () => wOnServerState() });
+registerDevJump({ id: 'w-deadline', label: 'W. tuż przed 19:00', make: () => wDeadlineState() });

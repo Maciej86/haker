@@ -122,3 +122,9 @@ export const W_LEFT_S1_ROW = 'Nie rozłączyłeś się z S1 po wykonaniu zadania
 
 /** Wiersz podsumowania po usunięciu cudzych wpisów z auth.log, linia 1327. */
 export const W_LOG_BAD_ROW = 'W logu brakuje cudzych wpisów. Bank coś zauważył.';
+
+/** Odpowiedź W. na plik wysłany po 19:00, linia 1304. */
+export const W_LATE_REPLY = 'Po terminie. Zarząd zebrał się o 19:00 i było po sprawie. Nie płacę.';
+
+/** List W., gdy 19:00 minęła bez pliku, linia 1415. */
+export const W_DEADLINE_MAIL = 'Minęła 19:00. Zarząd zebrał się bez moich danych. Nie płacę.';

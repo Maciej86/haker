@@ -6,7 +6,7 @@ import {
   W_OFFER_BODY, W_STAGES,
 } from './texts';
 import { W_HOST, wJudge } from './server';
-import { W_BONUSES, wOnFinish, wSummary } from './finish';
+import { W_BONUSES, wLate, wOnDeadline, wOnFinish, wSummary } from './finish';
 import { fileDelivery } from '../../engine/delivery';
 import { step } from '../../engine/types';
 import { interruptSrv, turnTile } from '../../engine/server';
@@ -76,14 +76,16 @@ export const w: MissionDef = {
   termLabel: 'dane z centrali Banku Wiślanego',
   onAccept: wOnAccept,
   interrupt: interruptSrv,
-  // linie 1290–1296; spóźnienie po 19:00: plan 22
+  // linie 1290–1296; spóźnienie po 19:00: linie 1303–1304
   delivery: fileDelivery('w', {
     title: 'Odpowiedz W.', text: 'W załączniku zestawienie.', emptyAttach: 'pusto: pobierz plik z serwera (get)', cost: 1, judge: wJudge, badReplyAfter: 2,
+    late: wLate,
   }),
   rewards: { money: 2500, xp: 80 },
   bonuses: W_BONUSES,
   summary: wSummary,
   onFinish: wOnFinish,
+  onDeadline: wOnDeadline,
   doneLog: ['> Plik dostarczony: zestawienie oddziałów.', '> W. potwierdził odbiór.', '> Zlecenie zakończone.'],
   failLog: ['> Plik dotarł po terminie.', '> Zlecenie nieudane.'],
 };

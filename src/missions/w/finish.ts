@@ -2,12 +2,13 @@
 // Fikcyjna gra: „serwer banku” i „logi” to dane łamigłówki w pamięci.
 import type { GameState, StepResult, SummaryRow } from '../../engine/types';
 import { andThen, step } from '../../engine/types';
+import { failMission } from '../../engine/missions';
 import type { BonusDef } from '../../engine/missions';
 import { gclk } from '../../engine/clock';
 import { bug } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
 import { endSession, onServer } from '../../engine/server';
-import { W_BONUS_LABELS, W_LEFT_S1_ROW, W_LOG_BAD_ROW } from './texts';
+import { W_BONUS_LABELS, W_DEADLINE_MAIL, W_LATE_REPLY, W_LEFT_S1_ROW, W_LOG_BAD_ROW } from './texts';
 
 const DEADLINE = 19 * 60;
 /** Kara za połączenie z S1 zostawione po wysłaniu (linia 1326). */
@@ -45,4 +46,17 @@ export function wSummary(s: GameState): SummaryRow[] {
   if (s.srv.logBad) rows.push({ label: W_LOG_BAD_ROW, value: '', tone: 'bad' });
   rows.push({ label: `Czas: ${gclk(s)} · PODSŁUCH-1 zostało ${bug(s)?.minutes ?? 0} min (zostaje u Ciebie)`, value: '' });
   return rows;
+}
+
+/** Plik wysłany po 19:00 (po doliczeniu minuty za wysłanie): odpowiedź o terminie zamiast oceny pliku (linie 1303–1304). */
+export function wLate(s: GameState): string | null {
+  return s.t > DEADLINE ? W_LATE_REPLY : null;
+}
+
+/** 19:00 minęła bez pliku: koniec sesji (gracz wraca do domu, podsłuch przestaje się zużywać), list W., porażka (linie 1414–1415). */
+export function wOnDeadline(s: GameState): StepResult {
+  return andThen(endSession(s), (n) => failMission({
+    ...n,
+    mail: { ...n.mail, threads: { ...n.mail.threads, w: [...(n.mail.threads.w ?? []), { from: 'W.', when: gclk(n), html: W_DEADLINE_MAIL, bad: true }] } },
+  }));
 }
