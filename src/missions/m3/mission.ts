@@ -1,5 +1,5 @@
 import type { MissionDef } from '../../engine/missions';
-import { m3AppBadges, m3OnAccept, m3StageIndex, m3StageSub, m3TermStep } from './logic';
+import { M3_NETWORK, m3AppBadges, m3OnAccept, m3OnProbe, m3StageIndex, m3StageSub, m3TermStep } from './logic';
 import {
   M3_ACCEPT_REPLY, M3_ANSWER, M3_ANSWER_TOAST, M3_NOTES, M3_NOTES_FOOTER, M3_NOTES_INTRO, M3_NOTES_TITLE, M3_OFFER_BODY, M3_STAGES, M3_TRIP,
 } from './texts';
@@ -31,7 +31,8 @@ export const m3: MissionDef = {
   termStep: m3TermStep,
   appBadges: m3AppBadges,
   trip: M3_TRIP,
-  network: {},
+  network: M3_NETWORK,
+  onProbe: m3OnProbe,
   apps: ['plan'],
   termLabel: 'kamery w Hotelu Luksus',
   onAccept: m3OnAccept,

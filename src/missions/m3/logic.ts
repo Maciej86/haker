@@ -4,8 +4,11 @@ import { fill } from '../../engine/text';
 import { bug, bugAtS1, reusedBugSub } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
 import { TRIP_FAILED_SUB, tripFailed } from '../../engine/trip';
-import { M3_ROUTE } from './cams';
-import { M3_ACCEPTED_LINE, M3_DIRECT_LINE } from './texts';
+import { gain } from '../../engine/skills';
+import type { NetworkOverlay } from '../../engine/missions';
+import type { TowerNode } from '../../world/tower';
+import { M3_CAMS, M3_ROUTE, isFloorCam } from './cams';
+import { M3_ACCEPTED_LINE, M3_DIRECT_LINE, M3_NET_HINT, M3_PROBE_CAM, M3_PROBE_OTHER } from './texts';
 
 /** Linie Terminala po przyjęciu (makieta 1803–1804) i okno „Plan piętra” od razu. */
 export function m3OnAccept(s: GameState): StepResult {
@@ -44,3 +47,18 @@ export function m3TermStep(s: GameState): string {
 export function m3AppBadges(s: GameState): (AppId | 'map')[] {
   return m3StageIndex(s) === 1 ? ['map'] : [];
 }
+
+/** Reakcja na probe (koszt i net.checked nalicza wspólne probe; makieta linia 1435). Bez „pudła”. */
+export function m3OnProbe(s: GameState, node: TowerNode): StepResult {
+  const vars = { ip: node.ip, kto: node.kto };
+  if (!isFloorCam(node.kto)) return step(s, [{ html: fill(M3_PROBE_OTHER, vars) }]);
+  const g = gain(s, 'Sieć', 0.3, 'kamera z 7. piętra znaleziona');
+  return step(g.state, [{ html: fill(M3_PROBE_CAM, vars) }], g.ui);
+}
+
+/** Sieć wieżowca u L.: kamery p. 7 dochodzą do skanu; trafienie = kamera z p. 7 (makieta 1013, 1038). */
+export const M3_NETWORK: NetworkOverlay = {
+  addNodes: M3_CAMS,
+  isTarget: (_s, n) => isFloorCam(n.kto),
+  side: () => ({ hints: { html: M3_NET_HINT } }),
+};
