@@ -124,3 +124,24 @@ export const M3_THERE_MAIL = 'Przeszedł o {hm}, jest w 712. Na nagraniach nikog
 export const M3_THERE_LINE = '<span class="c">{hm} · nasz człowiek przeszedł do 712. Nikt go nie widział.</span>';
 /** Linia 1741. */
 export const M3_THERE_TOAST = 'L.: jest w 712. Czekaj na wiadomość o wyjściu';
+
+// Duży zegar (makieta linie 1813, 1817–1824). To UI, nie Terminal: podpowiedzi „co teraz” wolno.
+export const M3_CLOCK_WIN = 'okno <b>{od}–{do}</b> · za <b>{za}</b>{żywo}';
+export const M3_CLOCK_LIVE_TAG = ' · na żywo';
+export const M3_CLOCK_RUNNING = 'okno trwa · <b>{do}</b> koniec';
+export const M3_CLOCK_BACK = 'człowiek w <b>712</b> · L. napisze 5 min przed jego wyjściem';
+export const M3_CLOCK_WARN = '<span style="color:var(--red)">⚠ wyłączone: {lista}</span>';
+export const M3_CLOCK_WARN_AT = '.{n} (at, wróci {hm})';
+export const M3_CLOCK_WARN_MAN = '.{n} włącz do {hm}';
+export const M3_CLOCK_BLOCK = 'Najpierw włącz kamery (<code>cam on</code>): po {max} min awarii ochrona sprawdza.';
+export const M3_CLOCK_JUMP = '⏩ Przewiń do {hm}';
+export const M3_CLOCK_WAIT_L = '⏩ Czekaj na wiadomość od L.';
+export const M3_CLOCK_READY = 'Zadania at są gotowe.';
+export const M3_CLOCK_MANUAL = 'Zostaną 4 min: <code>use S1</code> (2 min), potem <code>cam off</code> dla kamer z drogi, ale nie przed {hm}.';
+export const M3_CLOCK_DISCONNECT = 'Najpierw rozłączę cię z S1, żeby nie zużyć podsłuchu.';
+export const M3_CLOCK_QUIET = 'Kamery działają, ochrona nic nie widzi.';
+export const M3_CLOCK_LIVE = 'Czas płynie. {co}';
+export const M3_CLOCK_LIVE_AT = 'Zadania at wykonają się same.';
+export const M3_CLOCK_LIVE_WAIT = 'Kamery wyłącz od {hm}, nie wcześniej.';
+export const M3_CLOCK_LIVE_NOW = 'Teraz: <code>cam off</code> dla kamer z drogi.';
+export const M3_CLOCK_LIVE_CONNECT = 'Połącz się: <code>use S1</code>.';

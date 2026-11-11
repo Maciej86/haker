@@ -55,6 +55,9 @@ export type PlanDot = { x: number; y: number; seen: boolean };
 export type PlanCam = { ip: string; lbl: string; known: boolean; off: boolean };
 /** Plan piętra: `svg` to wnętrze `<svg viewBox="0 0 600 290">` z gry (renderowane jako HTML). */
 export type PlanView = { svg: string; cams: PlanCam[]; rows: { label: string; value: string; coin?: boolean }[]; footer: string };
+/** Duży zegar misji czasowej: notka pod przyciskiem i jej kolor. */
+export type ClockNote = { html: string; tone: 'dim' | 'text' | 'red' };
+export type ClockView = { time: string; html: string; live: boolean; jump: string | null; note: ClockNote | null };
 
 export type MissionDef = {
   id: MissionId;
@@ -120,6 +123,9 @@ export type MissionDef = {
   notesFooter?: string;
   /** Okno „Plan piętra”: widok planu w tej misji. */
   floorPlan?: (s: GameState, dot: PlanDot | null) => PlanView;
+  /** Duży zegar misji czasowej (null: bez zegara) i „⏩ Przewiń”. */
+  clock?: (s: GameState) => ClockView | null;
+  clockJump?: (s: GameState) => StepResult;
 };
 
 export function missionDef(id: MissionId): MissionDef;
@@ -131,6 +137,16 @@ export function missionDef(id: MissionId | null | undefined): MissionDef | undef
 /** Plan piętra aktywnego zlecenia albo null, gdy zlecenie go nie ma. */
 export function floorPlanView(s: GameState, dot?: PlanDot | null): PlanView | null {
   return missionDef(s.active)?.floorPlan?.(s, dot ?? null) ?? null;
+}
+
+/** Duży zegar aktywnego zlecenia albo null. */
+export function clockView(s: GameState): ClockView | null {
+  return missionDef(s.active)?.clock?.(s) ?? null;
+}
+
+/** „⏩ Przewiń” aktywnego zlecenia; bez zegara nic nie zmienia. */
+export function clockJump(s: GameState): StepResult {
+  return missionDef(s.active)?.clockJump?.(s) ?? step(s);
 }
 
 export function findHost(ip: string): HostDef | undefined {
