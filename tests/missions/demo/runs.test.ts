@@ -23,6 +23,11 @@ const both = (first: 'w' | 'm3', keepBug: boolean) => {
   expect(end.done).toEqual(['kuba', first, second]);
   expect(endView(end)).toMatchObject({ head: 'Poziom 2', xp: '280 XP' });
   expect(end.summary).toContainEqual({ label: 'Odblokowano: motyw Halo Systems (Start → Motyw)', value: '', tone: 'ok' });
+  // „Koniec demo ›” w podsumowaniu (jak przycisk w Summary.tsx) kończy grę overlayem `end`, który przetrwa odświeżenie.
+  expect([end.overlay, end.summaryMeta!.next]).toEqual(['summary', 'end']);
+  const fin = deserialize(serialize({ ...end, overlay: 'end' }))!;
+  expect(fin.overlay).toBe('end');
+  expect(endView(fin).done).toEqual(['✓ Playlista z imprezy (Kuba)', ...[first, second].map(id => id === 'w' ? '✓ Zestawienie oddziałów (W.)' : '✓ Spacer o 21:14 (L.)')]);
   return end;
 };
 test('Kuba → W. → L., podsłuch zostaje przy S1', () => { both('w', true); });

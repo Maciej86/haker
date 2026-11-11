@@ -6,6 +6,7 @@ import { canDeliver, replyBox } from '../../../src/engine/delivery';
 import { nextDay } from '../../../src/engine/clock';
 import { bug } from '../../../src/engine/devices';
 import { m3Check } from '../../../src/missions/m3/window';
+import { m3OpenCamsRow } from '../../../src/missions/m3/texts';
 import { atBack, atT, back, cleanBack, lastMail, m3, report, run, withM3 } from './helpers';
 
 const row = (s: GameState, end: string) => s.summary!.find(r => r.label.endsWith(end))!;
@@ -73,4 +74,18 @@ test('L. jako druga oferta: Koniec demo, motyw Halo Systems', () => {
   const r = report({ ...cleanBack(), done: ['kuba', 'w'] });
   expect(r.state.summaryMeta!.next).toBe('end');
   expect(r.state.summary).toContainEqual({ label: 'Odblokowano: motyw Halo Systems (Start → Motyw)', value: '', tone: 'ok' });
+});
+test('odmiana: 1 kamera, 2–4 kamery, 5+ kamer, 12–14 kamer, 22 kamery', () => {
+  expect([1, 2, 4, 5, 7, 12, 14, 21, 22, 25].map(m3OpenCamsRow)).toEqual([
+    '1 kamera dalej wyłączona. Ochrona to zauważy rano.',
+    '2 kamery dalej wyłączone. Ochrona to zauważy rano.',
+    '4 kamery dalej wyłączone. Ochrona to zauważy rano.',
+    '5 kamer dalej wyłączonych. Ochrona to zauważy rano.',
+    '7 kamer dalej wyłączonych. Ochrona to zauważy rano.',
+    '12 kamer dalej wyłączonych. Ochrona to zauważy rano.',
+    '14 kamer dalej wyłączonych. Ochrona to zauważy rano.',
+    '21 kamer dalej wyłączonych. Ochrona to zauważy rano.',
+    '22 kamery dalej wyłączone. Ochrona to zauważy rano.',
+    '25 kamer dalej wyłączonych. Ochrona to zauważy rano.',
+  ]);
 });

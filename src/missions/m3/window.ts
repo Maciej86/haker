@@ -281,7 +281,7 @@ export function m3Notice(s: GameState): StepResult {
   const n = m3MailL(withM({ ...s, sec: 0 }, { ...m, noticed: true }), fill(M3_NOTICE_MAIL, { hm }), notice);
   return step(
     n,
-    [{ html: fill(M3_NOTICE_LINE, { kiedy: gclk(s, notice), hm, od: hhmm(m.win.start - 1) }) }],
+    [{ html: fill(M3_NOTICE_LINE, { kiedy: gclk(s, notice), hm }) }],
     [{ kind: 'toast', text: fill(M3_NOTICE_TOAST, { hm }), bad: true }, { kind: 'open', app: 'plan' }, { kind: 'open', app: 'terminal' }],
   );
 }
@@ -292,7 +292,34 @@ export function m3Check(s: GameState): StepResult {
   let r: StepResult = step(s);
   if (!bugAtS1(s)) r = M3_CAM_HOOKS.lost(s, s.t);
   r = andThen(r, m3Overflow);
-  r = andThen(r, m3Notice);
-  r = andThen(r, m3Evaluate);
-  return andThen(r, m3Overflow);
+  r = m3Pass(r);
+  // Jeden krok przez ocenę drogi tam i minutę wiadomości (np. długi wait): wiadomość i ocena powrotu też teraz.
+  const n = r.state;
+  const m = n.mission.m3;
+  if (live(n) && m.leg === 2 && !m.noticed && m.notice !== null && n.t >= m.notice) r = afterWalk(r, m3Pass(step(n)));
+  return r;
+}
+
+const m3Pass = (r: StepResult): StepResult => andThen(andThen(andThen(r, m3Notice), m3Evaluate), m3Overflow);
+
+type WalkEv = Extract<UiEvent, { kind: 'walk' }>;
+type MailEv = Extract<UiEvent, { kind: 'mailArrives' }>;
+
+/** Dokleja `b` po pokazie z `a`: linie i maile `b` zostają ukryte do końca pierwszego pokazu, a zdarzenia `b`
+ * (toast, otwarcie okien, drugi pokaz) jadą w `walk.after`. Kolejność linii i maili w stanie: chronologiczna. */
+function afterWalk(a: StepResult, b: StepResult): StepResult {
+  const wi = a.ui.findIndex((e) => e.kind === 'walk');
+  if (wi < 0 || b.state === a.state) return { state: b.state, lines: [...a.lines, ...b.lines], ui: [...a.ui, ...b.ui] };
+  const w = a.ui[wi] as WalkEv;
+  const d = walkDuration(w);
+  const own = b.ui.filter((e): e is MailEv => e.kind === 'mailArrives');
+  const fresh = (b.state.mail.threads.m3 ?? []).slice(a.state.mail.threads.m3?.length ?? 0);
+  const mails: UiEvent[] = fresh.map((msg) => {
+    const e = own.find((x) => x.msg === msg);
+    return { kind: 'mailArrives', thread: 'm3', msg, delayMs: d + (e?.delayMs ?? 0), toast: e ? e.toast : null, exact: true };
+  });
+  const nested = b.ui.filter((e) => e.kind !== 'mailArrives');
+  const ui = a.ui.map((e, i): UiEvent => (i === wi ? { ...w, after: [...(w.after ?? []), ...nested] }
+    : e.kind === 'termHold' ? { ...e, after: [...e.after, ...b.lines] } : e));
+  return { state: b.state, lines: [...a.lines, ...b.lines], ui: [...ui, ...mails] };
 }

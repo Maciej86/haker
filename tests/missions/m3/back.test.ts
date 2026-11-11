@@ -37,7 +37,8 @@ test('powrót za późno: 1500 ¤, bez drugiej próby, kropka w korytarzu B', ()
   expect(m3(r.state)).toMatchObject({ ok: true, late: true, err: 1, win: { start: 1310, len: 3 } });
   expect(lastMail(r.state)).toMatchObject({ when: 'czw 21:53', bad: true,
     html: 'Kamery przy windzie i korytarz B działały, kiedy wychodził z pokoju. Zdążył wyjść, ale zostało nagranie. Zapłacę mniej. Odpisz, kiedy posprzątasz.' });
-  expect(txt(r)).toContain('<span class="d">Misja trwa, zapłata mniejsza. Posprzątaj i odpisz L.</span>');
+  expect(txt(r)).toContain('<span class="r">Kamery przy windzie i korytarz B działały, kiedy wychodził z pokoju.</span> <span class="d">Misja trwa, zapłata mniejsza.</span>');
+  expect(txt(r)).not.toContain('Posprzątaj');                                         // Terminal nie podpowiada
   expect(walkOf(r).after).toContainEqual({ kind: 'toast', text: 'L.: nagrany przy wyjściu, zapłata mniejsza', bad: true });
   expect(r.ui).toContainEqual(expect.objectContaining({ kind: 'mailArrives', thread: 'm3', exact: true }));
   expect(r.ui).toContainEqual(expect.objectContaining({ kind: 'walk', stopAt: 0.3, holdMs: 1400 }));

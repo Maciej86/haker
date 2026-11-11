@@ -149,8 +149,8 @@ export const M3_CLOCK_LIVE_CONNECT = 'Połącz się: <code>use S1</code>.';
 // Droga powrotna (makieta linie 1713–1716, 1742–1746, 1823).
 /** Linia 1714. Wstawka {hm}. */
 export const M3_NOTICE_MAIL = 'Wychodzi za 5 minut, o <b>{hm}</b>. Ta sama droga w drugą stronę: z 712 korytarzem B do windy.';
-/** Linia 1715. Wstawki {kiedy}, {hm}, {od}. */
-export const M3_NOTICE_LINE = '<span class="y">{kiedy} · L.: wychodzi o {hm}. Ta sama droga, z 712 do windy.</span> <span class="d">Kamery na drodze wyłącz od {od}, nie wcześniej.</span>';
+/** Linia 1715 bez porady „Kamery na drodze wyłącz od …, nie wcześniej.” (Terminal nie podpowiada; prowadzi zegar). Wstawki {kiedy}, {hm}. */
+export const M3_NOTICE_LINE = '<span class="y">{kiedy} · L.: wychodzi o {hm}. Ta sama droga, z 712 do windy.</span>';
 /** Linia 1716. Wstawka {hm}. */
 export const M3_NOTICE_TOAST = 'L.: wychodzi o {hm}!';
 /** Linia 1716: pasek misji w Terminalu. Wstawka {hm}. */
@@ -164,8 +164,8 @@ export const M3_BACK_OK_MAIL = 'Wyszedł o {hm} i jest już poza hotelem. Nikt g
 export const M3_BACK_BAD_TAIL = ' Zdążył wyjść, ale zostało nagranie. Zapłacę mniej. Odpisz, kiedy posprzątasz.';
 /** Linia 1745, wariant ok, bez porady „Włącz kamery (albo poczekaj na koniec zadań at), rozłącz się i odpisz L. w Poczcie.” (Terminal nie podpowiada). Wstawka {hm}. */
 export const M3_BACK_OK_LINE = '<span class="c">{hm} · wyszedł z 712 i zjechał windą. Nikt go nie widział.</span>';
-/** Linia 1745, wariant z błędem. Wstawka {txt}. */
-export const M3_BACK_BAD_LINE = '<span class="r">{txt}</span> <span class="d">Misja trwa, zapłata mniejsza. Posprzątaj i odpisz L.</span>';
+/** Linia 1745, wariant z błędem, bez porady „Posprzątaj i odpisz L.” (Terminal nie podpowiada). Wstawka {txt}. */
+export const M3_BACK_BAD_LINE = '<span class="r">{txt}</span> <span class="d">Misja trwa, zapłata mniejsza.</span>';
 /** Linia 1746. */
 export const M3_BACK_OK_TOAST = 'L.: wyszedł niezauważony';
 export const M3_BACK_BAD_TOAST = 'L.: nagrany przy wyjściu, zapłata mniejsza';
@@ -174,9 +174,11 @@ export const M3_BACK_BAD_TOAST = 'L.: nagrany przy wyjściu, zapłata mniejsza';
 /** Linie 1828–1829, w kolejności premii. */
 export const M3_BONUS_LABELS = ['Oba przejścia bez błędu (tam i z powrotem)', 'Żadna zbędna kamera nie zgasła', 'Rozłączony z S1 przed raportem'] as const;
 export const M3_LATE_LABEL = 'Nagroda za zlecenie (pomniejszona: druga próba)';
-/** Linia 1839. */
+/** Linia 1839, z poprawną odmianą liczebnika (makieta: „kamery” dla każdego n > 1). */
 export function m3OpenCamsRow(n: number): string {
-  return `${n} kamer${n > 1 ? 'y' : 'a'} dalej wyłączon${n > 1 ? 'e' : 'a'}. Ochrona to zauważy rano.`;
+  const few = n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14);
+  const [noun, adj] = n === 1 ? ['kamera', 'wyłączona'] : few ? ['kamery', 'wyłączone'] : ['kamer', 'wyłączonych'];
+  return `${n} ${noun} dalej ${adj}. Ochrona to zauważy rano.`;
 }
 /** Linia 1840. Wstawki {czas}, {min}. */
 export const M3_TIME_ROW = 'Czas: {czas} · PODSŁUCH-1 zostało {min} min (zostaje przy S1)';
