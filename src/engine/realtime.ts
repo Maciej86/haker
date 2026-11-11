@@ -9,6 +9,8 @@ export type RealtimeSource = {
   id: string;
   /** Gdy aktywne, wstrzymuje zużycie podsłuchu przy S1 (pobieranie, Wytrych z namierzaniem, minuty „na żywo”). */
   pausesS1?: boolean;
+  /** Gdy aktywne przy wczytaniu zapisu, pętla startuje w pauzie (minuty „na żywo” nie lecą bez gracza). */
+  holdOnLoad?: boolean;
   active(s: GameState): boolean;
   tick(s: GameState, ms: number): StepResult;
 };
@@ -41,13 +43,22 @@ export function realtimeSources(s: GameState): RealtimeSource[] {
   return [...builtin(), ...registered, ...(missionDef(s.active)?.realtime ?? [])];
 }
 
+/** Po odświeżeniu strony pętla ma stać: aktywne źródło z `holdOnLoad`. */
+export function holdsOnLoad(s: GameState): boolean {
+  return realtimeSources(s).some((r) => r.holdOnLoad && r.active(s));
+}
+
 export function realtimeTick(s: GameState, ms: number): StepResult {
   const sources = realtimeSources(s);
   let cur = s;
   const lines: Line[] = [];
   const ui: UiEvent[] = [];
+  let s1Ran = false;
   for (const src of sources) {
+    // 's1' i źródła z pausesS1 wykluczają się; gdy 's1' w tym tiku wprowadziło grę w takie źródło, ono rusza od następnego tiku.
+    if (src.pausesS1 && s1Ran) continue;
     if (!src.active(cur)) continue;
+    if (src.id === S1_SOURCE.id) s1Ran = true;
     const r = src.tick(cur, ms);
     cur = r.state;
     lines.push(...r.lines);
@@ -70,9 +81,9 @@ export type RealtimeLoop = {
 
 export function createRealtimeLoop(
   store: Store,
-  opts: { speed: number; isHidden: () => boolean },
+  opts: { speed: number; isHidden: () => boolean; startPaused?: boolean },
 ): RealtimeLoop {
-  let paused = false;
+  let paused = !!opts.startPaused;
   const subs: (() => void)[] = [];
   const setPaused = (p: boolean) => {
     if (paused === p) return;

@@ -5,7 +5,7 @@ import {
 } from './texts';
 import { m3PlanView } from './plan';
 import { M3_COMMANDS } from './window';
-import { M3_WATCH_SOURCE } from './live';
+import { M3_LIVE_SOURCE, M3_WATCH_SOURCE } from './live';
 
 export const m3: MissionDef = {
   id: "m3",
@@ -42,7 +42,7 @@ export const m3: MissionDef = {
   onAccept: m3OnAccept,
   help: [M3_HELP_CAMS],
   commands: M3_COMMANDS,
-  realtime: [M3_WATCH_SOURCE],
+  realtime: [M3_LIVE_SOURCE, M3_WATCH_SOURCE],
   delivery: { kind: "report" },
   rewards: { money: 2000, xp: 80 },
   bonuses: [],

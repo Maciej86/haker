@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import type { Store } from '../engine/store';
-import { createRealtimeLoop, realtimeSpeed } from '../engine/realtime';
+import { createRealtimeLoop, holdsOnLoad, realtimeSpeed } from '../engine/realtime';
 
 export function useRealtime(store: Store): { paused: boolean; resume: () => void } {
   const loop = useMemo(
     () => createRealtimeLoop(store, {
       speed: realtimeSpeed(typeof location === 'undefined' ? '' : location.search),
       isHidden: () => typeof document !== 'undefined' && document.hidden,
+      startPaused: holdsOnLoad(store.get()),
     }),
     [store],
   );
