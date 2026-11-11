@@ -76,6 +76,12 @@ export const M3_TRIP: TripDef = {
 /** Linia 1793 bez „Teraz kliknij „⏩ Przewiń do …” … albo wpisz disconnect i wait” (Terminal nie podpowiada). */
 export const M3_AT_READY = '<span class="y">Obie kamery z drogi mają zadania.</span>';
 /** Własny tekst: zadania at przepadły, bo podsłuch padł. */
+/** Dopisek Terminala, gdy PODSŁUCH-1 padnie w trakcie zlecenia (jak W_DEVICE_DEAD: co dalej mówi pasek kroku). */
+export const M3_DEVICE_DEAD = 'Misja trwa.';
+
+/** Dopisek po podpięciu nowego podsłuchu (jak W_BUG_REPLACED). */
+export const M3_BUG_REPLACED = 'Kamery z trasy już znasz. Zadania at, które przepadły, trzeba zaplanować od nowa.';
+
 export const M3_JOBS_LOST = '<span class="r">Zadania at przepadły: PODSŁUCH-1 wyczerpany.</span>';
 
 /** Ściąga, grupa „Kamery (zlecenie L.)”, linie 1088–1091. */

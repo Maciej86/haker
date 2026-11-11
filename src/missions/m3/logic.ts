@@ -2,9 +2,9 @@ import type { AppId, GameState, Line, StepResult } from '../../engine/types';
 import { step } from '../../engine/types';
 import { fill } from '../../engine/text';
 import { hhmm } from '../../engine/clock';
-import { bug, bugAtS1, reusedBugSub } from '../../engine/devices';
+import { bug, bugAtS1, bugTripOffer, reusedBugSub } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
-import { TRIP_FAILED_SUB, tripFailed } from '../../engine/trip';
+import { TRIP_FAILED_SUB, hasPackage, tripFailed } from '../../engine/trip';
 import { gain } from '../../engine/skills';
 import type { NetworkOverlay } from '../../engine/missions';
 import type { TowerNode } from '../../world/tower';
@@ -35,10 +35,24 @@ export function m3StageSub(s: GameState, i: number): string | null {
   return i === 1 ? (reusedBugSub(s) ?? (tripFailed(s) ? TRIP_FAILED_SUB : null)) : null;
 }
 
+/** Martwy PODSŁUCH-1 przy S1 (zapas 0). */
+const deadBug = (s: GameState): boolean => s.devices.some((d) => d.id === 'bug1' && d.where === 'S1' && d.minutes === 0);
+
+/** Pasek misji, gdy podsłuch przy S1 padł w etapach 1–5 (jak wBugStep). */
+export function m3BugStep(s: GameState): string | null {
+  const i = m3StageIndex(s);
+  if (i < 1 || i > 5) return null; // po udanym powrocie (6) da się odpisać L. bez S1
+  if (deadBug(s) && !hasPackage(s)) return 'kup nowy PODSŁUCH-1 w Darknecie';
+  if (bugTripOffer(s)) return 'podepnij nowy PODSŁUCH-1 przy S1';
+  return null;
+}
+
 /** Pasek misji w Terminalu (makieta 1806, 916, 870, 1436, 1833, 1736, 1741, 1746, 1841). */
 export function m3TermStep(s: GameState): string {
   const m = s.mission.m3;
   if (s.active === 'm3' && m.fail) return 'zlecenie przegrane';
+  const dead = m3BugStep(s);
+  if (dead) return dead;
   switch (m3StageIndex(s)) {
     case 0: return 'przeczytaj mail od L.';
     case 1: return 'otwórz Mapę i znajdź wieżowiec';
@@ -53,7 +67,7 @@ export function m3TermStep(s: GameState): string {
 
 /** „!” na Mapie przed wyjazdem (makieta 1802). */
 export function m3AppBadges(s: GameState): (AppId | 'map')[] {
-  return m3StageIndex(s) === 1 ? ['map'] : [];
+  return m3StageIndex(s) === 1 && !deadBug(s) ? ['map'] : [];
 }
 
 /** Reakcja na probe (koszt i net.checked nalicza wspólne probe; makieta linia 1435). Bez „pudła”. */

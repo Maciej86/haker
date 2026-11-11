@@ -1,7 +1,7 @@
 import type { MissionDef } from '../../engine/missions';
 import { M3_NETWORK, m3AppBadges, m3OnAccept, m3OnProbe, m3StageIndex, m3StageSub, m3TermStep } from './logic';
 import {
-  M3_ACCEPT_REPLY, M3_ANSWER, M3_HELP_CAMS, M3_ANSWER_TOAST, M3_NOTES, M3_NOTES_FOOTER, M3_NOTES_INTRO, M3_NOTES_TITLE, M3_OFFER_BODY, M3_STAGES, M3_TRIP,
+  M3_ACCEPT_REPLY, M3_ANSWER, M3_BUG_REPLACED, M3_DEVICE_DEAD, M3_HELP_CAMS, M3_ANSWER_TOAST, M3_NOTES, M3_NOTES_FOOTER, M3_NOTES_INTRO, M3_NOTES_TITLE, M3_OFFER_BODY, M3_STAGES, M3_TRIP,
 } from './texts';
 import { m3PlanView } from './plan';
 import { M3_COMMANDS } from './window';
@@ -37,6 +37,8 @@ export const m3: MissionDef = {
   appBadges: m3AppBadges,
   trip: M3_TRIP,
   network: M3_NETWORK,
+  deviceDeadText: M3_DEVICE_DEAD,
+  bugReplacedText: M3_BUG_REPLACED,
   onProbe: m3OnProbe,
   apps: ['plan', 'clock'],
   floorPlan: m3PlanView,
