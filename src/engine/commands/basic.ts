@@ -1,6 +1,8 @@
 import type { CommandTable } from '../terminal';
 import type { GameState } from '../types';
 import { step } from '../types';
+import { packageWaiting } from '../devices';
+import { focusMission, missionDef } from '../missions';
 
 const HELP_TEXT = `<span class="c">Dostępne polecenia</span>
   devices           twoje urządzenia w terenie
@@ -44,7 +46,8 @@ export const BASIC_COMMANDS: CommandTable = {
     }]);
   },
   devices: (_a, s) => {
-    if (s.devices.length === 0) return step(s, [{ html: NOT_YET }]);
+    const waiting = packageWaiting(s);
+    if (s.devices.length === 0 && !waiting) return step(s, [{ html: NOT_YET }]);
     const rows: string[] = [DEVICES_HEAD];
     for (const d of s.devices.filter((x) => x.where === 'S1')) {
       const st = d.minutes === 0
@@ -56,6 +59,10 @@ export const BASIC_COMMANDS: CommandTable = {
     }
     for (const d of s.devices.filter((x) => x.where === 'plecak')) {
       rows.push(`PODSŁUCH-1   <span class="y">w plecaku (nowy)</span>                       ${d.minutes} min   <span class="d">trzeba podpiąć przy S1</span>`);
+    }
+    if (waiting) {
+      const giver = missionDef(focusMission(s))?.giver.name ?? '';
+      rows.push(`PODSŁUCH-1   <span class="y">paczka od ${giver}</span>   zapas 60 min   <span class="d">(odbierz na przystanku obok wieżowca)</span>`);
     }
     return step(s, [{ html: rows.join('\n') }]);
   },

@@ -2,6 +2,7 @@ import type { CommandTable } from '../terminal';
 import type { GameState, Line, StepResult } from '../types';
 import { andThen, step } from '../types';
 import { esc } from '../text';
+import { leaveS1 } from './field';
 import { focusMission, missionHost } from '../missions';
 import type { FileEvent, HostDef, HostFile } from '../missions';
 
@@ -30,7 +31,7 @@ function pickFile(a: string | undefined, s: GameState): { host: HostDef; file: H
 
 const isPick = (x: { host: HostDef; file: HostFile } | StepResult): x is { host: HostDef; file: HostFile } => 'file' in x;
 
-/** Zejście z hosta o jeden poziom (plan 05 dokłada zejście z S1). */
+/** Zejście z hosta o jeden poziom; z S1 schodzi `leaveS1` (field.ts). */
 export function leaveHost(s: GameState): StepResult {
   const loc = s.terminal.location;
   if (loc.kind !== 'host') return step(s, [{ html: '<span class="d">Nie jesteś z niczym połączony.</span>' }]);
@@ -83,5 +84,5 @@ export const FILE_COMMANDS: CommandTable = {
     const r = step(next, [bar, done], [{ kind: 'termHold', ms: 1000, steps: 4, bar, after: [done], toast: `Pobrano ${file.name}` }]);
     return afterEvent(r, host, { cmd: 'get', file });
   },
-  disconnect: (_a, s) => leaveHost(s),
+  disconnect: (_a, s) => (s.terminal.location.kind === 'S1' ? leaveS1(s) : leaveHost(s)),
 };

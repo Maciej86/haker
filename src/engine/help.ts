@@ -1,6 +1,7 @@
 import type { GameState, StepResult } from './types';
 import { step } from './types';
 import { focusMission, missionDef } from './missions';
+import { isLinkedToS1 } from './commands/basic';
 
 export type HelpEntry = { cmd: string; desc: string; cost: string; insert?: string };
 export type HelpGroup = {
@@ -31,6 +32,19 @@ export const BASE_HELP: HelpGroup[] = [
       { cmd: 'devices', desc: 'lista twoich urządzeń, ich miejsca i zapas pracy', cost: '' },
       { cmd: 'use S1', desc: 'łączy z urządzeniem przy skrzynce S1', cost: '2 min gry · 1 min urządzenia' },
       { cmd: 'status', desc: 'stan połączenia z urządzeniem', cost: '' },
+    ],
+  },
+  {
+    title: 'Rozpoznanie sieci',
+    need: 'po połączeniu z urządzeniem',
+    unlocked: (s) => isLinkedToS1(s) || s.net.scanned,
+    entries: [
+      { cmd: 'scan', desc: 'skanuje sieć za skrzynką i otwiera NetMap', cost: '3 min gry · 2 min urządzenia' },
+      { cmd: 'scan --net 10.42.7', desc: 'pokazuje tylko jedną podsieć', cost: 'za darmo' },
+      { cmd: 'scan --type serwer', desc: 'tylko dany kształt: serwer, komputer, router, drukarka, kamera', cost: 'za darmo' },
+      { cmd: 'scan --off 18-24', desc: 'tylko urządzenia wyłączone w tych godzinach', cost: 'za darmo' },
+      { cmd: 'probe 10.42.7.12', desc: 'sprawdza, czym naprawdę jest urządzenie', cost: '6 min gry · 3 min urządzenia' },
+      { cmd: 'route bank', desc: 'trasa twojego ruchu do banku (wymaga konta klienta)', cost: '2 min gry' },
     ],
   },
 ];

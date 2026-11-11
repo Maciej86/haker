@@ -14,7 +14,8 @@ const thu = () => game({ day: 'czw', done: ['kuba'], mail: { ...game().mail, hid
 
 test('bez misji w centrum uwagi: wspólne grupy', () => {
   expect(helpGroups(thu()).map(g => [g.group.title, g.unlocked, g.isNew, g.key])).toEqual([
-    ['Podstawowe', true, false, 'base:Podstawowe'], ['Urządzenia w terenie', true, false, 'base:Urządzenia w terenie']]);
+    ['Podstawowe', true, false, 'base:Podstawowe'], ['Urządzenia w terenie', true, false, 'base:Urządzenia w terenie'],
+    ['Rozpoznanie sieci', false, false, 'base:Rozpoznanie sieci']]);
   expect(BASE_HELP[1].entries[1]).toEqual({ cmd: 'use S1', desc: 'łączy z urządzeniem przy skrzynce S1', cost: '2 min gry · 1 min urządzenia' });
 });
 test('misja z własną Ściągą zastępuje wspólną; grupa zablokowana, potem „nowe” i „!”', () => {
@@ -34,7 +35,7 @@ test('misja z własną Ściągą zastępuje wspólną; grupa zablokowana, potem 
 test('misja bez helpReplacesBase dokłada grupy po wspólnych', () => {
   restore = withMission('m3', { help: [{ title: 'Kamery (zlecenie L.)', need: 'w zleceniu L.', unlocked: s => s.active === 'm3', entries: [] }] });
   const s = { ...thu(), active: 'm3' as const };
-  expect(helpGroups(s).map(g => g.group.title)).toEqual(['Podstawowe', 'Urządzenia w terenie', 'Kamery (zlecenie L.)']);
+  expect(helpGroups(s).map(g => g.group.title)).toEqual(['Podstawowe', 'Urządzenia w terenie', 'Rozpoznanie sieci', 'Kamery (zlecenie L.)']);
 });
 test('helpInsert usuwa miejsca na argumenty', () => {
   expect(helpInsert({ cmd: 'connect &lt;ip&gt;', desc: '', cost: '' })).toBe('connect ');

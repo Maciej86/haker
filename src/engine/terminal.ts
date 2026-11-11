@@ -5,6 +5,8 @@ import { findHost, focusMission, missionDef } from './missions';
 import { BASIC_COMMANDS } from './commands/basic';
 import { DIRECT_COMMANDS } from './commands/direct';
 import { FILE_COMMANDS } from './commands/files';
+import { FIELD_COMMANDS } from './commands/field';
+import { RECON_COMMANDS } from './commands/recon';
 
 export type Command = (args: string[], s: GameState) => StepResult;
 export type CommandTable = Record<string, Command>;
@@ -38,7 +40,9 @@ export function promptFor(s: GameState): string {
   return `${findHost(loc.ip)?.promptName ?? loc.ip}:${loc.path} >`;
 }
 
-export const BASE_COMMANDS: CommandTable = { ...BASIC_COMMANDS, ...DIRECT_COMMANDS, ...FILE_COMMANDS };
+export const BASE_COMMANDS: CommandTable = {
+  ...BASIC_COMMANDS, ...DIRECT_COMMANDS, ...FILE_COMMANDS, ...FIELD_COMMANDS, ...RECON_COMMANDS,
+};
 
 const own = (t: CommandTable | undefined, k: string): Command | undefined =>
   t && Object.hasOwn(t, k) ? t[k] : undefined;

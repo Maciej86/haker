@@ -88,3 +88,8 @@ export function tripAgain(s: GameState): StepResult {
     html: `<span class="c">${gclk(n)} · wróciłeś. Nowy PODSŁUCH-1 podpięty w szafce przy S1.</span>${def?.bugReplacedText ? ` <span class="d">${def.bugReplacedText}</span>` : ''}`,
   }]);
 }
+
+/** Paczka zleceniodawcy czeka na przystanku (Task 5 uzupełni warunki). */
+export function packageWaiting(_s: GameState): boolean {
+  return false;
+}
