@@ -108,3 +108,17 @@ export const W_HELP_SERVER: HelpGroup = {
     { cmd: 'disconnect', desc: 'schodzi o jeden poziom: serwer → S1 → komputer', cost: '' },
   ],
 };
+
+/** Premie za styl, kolejność z linii 1314–1315. */
+export const W_BONUS_LABELS = [
+  'Zapas co najmniej 30 min przed terminem',
+  'Ani razu nie namierzony',
+  'Rozłączony z serwerem przed wysłaniem',
+  'Wyczyszczone logi serwera (bez śladów)',
+] as const;
+
+/** Wiersz kary w podsumowaniu, linia 1326. */
+export const W_LEFT_S1_ROW = 'Nie rozłączyłeś się z S1 po wykonaniu zadania. Czas pracy urządzenia zmniejszony o 10 minut.';
+
+/** Wiersz podsumowania po usunięciu cudzych wpisów z auth.log, linia 1327. */
+export const W_LOG_BAD_ROW = 'W logu brakuje cudzych wpisów. Bank coś zauważył.';

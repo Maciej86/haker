@@ -1,5 +1,8 @@
 // Wspólne pomocniki testów serwera banku (plan 21).
-import type { GameState } from '../../../src/engine/types';
+import type { GameState, StepResult } from '../../../src/engine/types';
+import { realtimeTick } from '../../../src/engine/realtime';
+import { deliver } from '../../../src/engine/delivery';
+import { editorAct } from '../../../src/engine/mc';
 import type { SrvState } from '../../../src/engine/server';
 import { wAfterTripState, wOnServerState } from '../../../src/missions/w/dev';
 import { run } from '../kuba/helpers';
@@ -26,3 +29,26 @@ export const cracking = (): GameState => runLine(found(), 'crack 10.42.7.12').st
 
 /** Na serwerze banku w '/', po udanym Wytrychu; `p` łata `srv`. */
 export const onBank = (p: Partial<SrvState> = {}): GameState => at(withSrv(wOnServerState(), p), '/');
+
+// Plan 22: pomocniki zakończenia zlecenia.
+export const V2 = 'zestawienie_oddzialow_2026_v2.xlsx';
+
+/** Właściwy plik w Pobranych, gracz nadal na serwerze (w /finanse/zestawienia/2026). */
+export const gotV2 = (s: GameState = onBank()): GameState =>
+  realtimeTick(runLine(at(s, '/finanse/zestawienia/2026'), `get ${V2}`).state, 10_000).state;
+
+/** Zejście z serwera i z S1 (dwa razy disconnect). */
+export const home = (s: GameState): GameState => run(s, 'disconnect', 'disconnect').state;
+
+/** Wysłanie V2 W. w Poczcie. */
+export const sendV2 = (s: GameState): StepResult => deliver(s, 'w', 'W załączniku zestawienie.', `${BANK_IP}:${V2}`);
+
+/** Edytor auth.log w /it/logi: usuwa własne wiersze, zapisuje i wychodzi; gracz zostaje na serwerze. */
+export function cleanLog(s: GameState): GameState {
+  let n = runLine(at(s, '/it/logi'), 'edit auth.log').state;
+  for (let i = n.srv.editor!.work.findIndex((l) => l.me); i >= 0; i = n.srv.editor!.work.findIndex((l) => l.me)) {
+    n = editorAct(n, { kind: 'del', index: i }).state;
+  }
+  n = editorAct(n, { kind: 'save' }).state;
+  return editorAct(n, { kind: 'quit' }).state;
+}

@@ -1,6 +1,6 @@
 // Sesja na serwerze z folderami (plan 21): namierzanie, zerwanie, auth.log.
 // Fikcyjna gra: „serwer”, „namierzanie” i „włamanie” to dane i reguły łamigłówki w pamięci.
-import type { GameState, StepResult } from './types';
+import type { GameState, StepResult, UiEvent } from './types';
 import { andThen, step } from './types';
 import { advance, gclk } from './clock';
 import { fmt } from './text';
@@ -265,4 +265,15 @@ export function stopSrvWork(s: GameState): StepResult {
       [{ kind: 'stopTimer', timer: 'download' }]);
   }
   return step(s);
+}
+
+/** Koniec sesji przy końcu zlecenia albo porażce: bez pobierania, Wytrycha, mc i edytora; gracz z łącza S1 wraca do domu.
+ * Nie dopisuje linii i nie zmienia czasu ani zapasu urządzenia. */
+export function endSession(s: GameState): StepResult {
+  const ui: UiEvent[] = [];
+  if (s.srv.dl) ui.push({ kind: 'stopTimer', timer: 'download' });
+  if (s.srv.crack) ui.push({ kind: 'stopTimer', timer: 'crackTrace' });
+  let n = closeSession(withSrv(s, { dl: null, crack: null, res: null }));
+  if (isLinkedToS1(n)) n = at(n, { kind: 'home' });
+  return step(n, [], ui);
 }
