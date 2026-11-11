@@ -15,8 +15,8 @@ test('ls na serwerze: 4 pliki, 0 min, Linux +0,2 raz', () => {
 });
 test('cat: treść, esc w nazwie, brak nazwy', () => {
   expect(txt(runLine(onZenek(), 'cat zamowienia_sobota.txt'))).toContain('Kuba – 20 pączków (impreza?) – gotówka');
-  expect(txt(runLine(onZenek(), 'cat <b>x'))).toBe('<span class="r">Nie ma pliku &lt;b&gt;x. Lista: ls</span>');
-  expect(txt(runLine(onZenek(), 'get'))).toBe('<span class="r">Podaj nazwę pliku. Lista: ls</span>');
+  expect(txt(runLine(onZenek(), 'cat <b>x'))).toBe('<span class="r">Nie ma pliku &lt;b&gt;x.</span>');
+  expect(txt(runLine(onZenek(), 'get'))).toBe('<span class="r">Podaj nazwę pliku.</span>');
 });
 test('cat poza serwerem', () => {
   expect(txt(runLine(kubaAccepted(), 'cat playlista.txt'))).toBe('<span class="r">Nie jesteś na serwerze.</span>');

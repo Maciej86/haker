@@ -23,9 +23,9 @@ function notOnServer(s: GameState): StepResult {
 function pickFile(a: string | undefined, s: GameState): { host: HostDef; file: HostFile } | StepResult {
   const host = currentHost(s);
   if (!host) return notOnServer(s);
-  if (!a) return step(s, [{ html: '<span class="r">Podaj nazwę pliku. Lista: ls</span>' }]);
+  if (!a) return step(s, [{ html: '<span class="r">Podaj nazwę pliku.</span>' }]);
   const file = host.files?.find((f) => f.name === a);
-  if (!file) return step(s, [{ html: `<span class="r">Nie ma pliku ${esc(a)}. Lista: ls</span>` }]);
+  if (!file) return step(s, [{ html: `<span class="r">Nie ma pliku ${esc(a)}.</span>` }]);
   return { host, file };
 }
 

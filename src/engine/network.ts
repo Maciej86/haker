@@ -22,7 +22,7 @@ export function initNetState(): NetState {
 }
 
 const red = (html: string): Line[] => [{ html: `<span class="r">${html}</span>` }];
-const NO_LINK = 'Brak połączenia. Najpierw: use S1';
+const NO_LINK = 'Brak połączenia.';
 
 /** Baza + nakładka misji; kolejność wg BRANCHES, w podsieci w kolejności dopisania. */
 export function netNodes(s: GameState): TowerNode[] {
@@ -102,7 +102,7 @@ export function scan(s: GameState, args: string[]): StepResult {
     n = g.state;
     return step(n, scanRows(n), [...g.ui, { kind: 'open', app: 'netmap' }]);
   }
-  if (p.filter) return step(s, red('Filtry działają na wyniku skanu. Najpierw wpisz samo: scan'));
+  if (p.filter) return step(s, red('Filtry działają na wyniku skanu.'));
   const n: GameState = { ...s, net: { ...s.net, scanned: true }, stats: { ...s.stats, scans: s.stats.scans + 1 } };
   const lines: Line[] = [
     { html: '<span class="d">Skanowanie sieci za skrzynką S1… (3 min gry, 2 min urządzenia)</span>' },
@@ -113,7 +113,7 @@ export function scan(s: GameState, args: string[]): StepResult {
 }
 
 export function probe(s: GameState, ip: string | undefined): StepResult {
-  if (!s.net.scanned) return step(s, red('Nie znasz jeszcze tej sieci. Najpierw: scan'));
+  if (!s.net.scanned) return step(s, red('Nie znasz jeszcze tej sieci.'));
   const node = netNodes(s).find((x) => x.ip === ip);
   if (!node) return step(s, red(`Nie ma urządzenia ${esc(ip ?? '')} w wyniku skanu.`));
   if (s.net.checked.includes(node.ip)) {

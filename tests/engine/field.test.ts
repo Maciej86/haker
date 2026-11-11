@@ -15,7 +15,7 @@ test('use S1: 2/1, znak zachęty, toast', () => {
 });
 test('use: błędy', () => {
   expect(txt(runLine(afterKuba([atS1(60)]), 'use'))).toContain('Użycie: use &lt;skrzynka&gt;, np. use S1');
-  expect(txt(runLine(afterKuba([atS1(60)]), 'use s2<'))).toContain('Przy skrzynce S2&lt; nie masz urządzenia. Sprawdź: devices');
+  expect(txt(runLine(afterKuba([atS1(60)]), 'use s2<'))).toContain('Przy skrzynce S2&lt; nie masz urządzenia.');
   expect(txt(runLine(afterKuba([atS1(0)]), 'use S1'))).toContain('PODSŁUCH-1 nie odpowiada: wyczerpany zapas pracy.');
   expect(txt(runLine(afterKuba([inPack()]), 'use S1'))).toContain('PODSŁUCH-1 jest w plecaku.');
   expect(txt(runLine(afterKuba(), 'use S1'))).toContain('PODSŁUCH-1 jest jeszcze w paczce na przystanku w Poznaniu.');
@@ -39,7 +39,7 @@ test('use: podsłuch z poprzedniej misji, jednorazowa linia', () => {
 test('disconnect o jeden poziom: S1 → komputer', () => {
   const s = runLine(afterKuba([atS1(60)]), 'use S1').state; const r = runLine(s, 'disconnect');
   expect(r.state.terminal.location).toEqual({ kind: 'home' });
-  expect(txt(r)).toContain('Urządzenie zostaje w szafce przy S1, zapas 59 min nie maleje. Powrót: use S1.');
+  expect(txt(r)).toContain('Urządzenie zostaje w szafce przy S1, zapas 59 min nie maleje.');
   expect(r.state.t).toBe(s.t);
 });
 test('serwer przez S1 → S1', () => {

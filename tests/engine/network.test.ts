@@ -7,7 +7,7 @@ const scanned = () => scan(ready(), []).state;
 
 test('scan bez połączenia', () => {
   const s = afterKuba([atS1(60)]); const r = scan(s, []);
-  expect(txt(r)).toContain('Brak połączenia. Najpierw: use S1'); expect(r.state.t).toBe(s.t);
+  expect(txt(r)).toContain('Brak połączenia.'); expect(r.state.t).toBe(s.t);
 });
 test('pierwszy scan: 3/2, wynik, NetMap, licznik', () => {
   const s = ready(); const r = scan(s, []);
@@ -33,7 +33,7 @@ test('błędy filtrów', () => {
   expect(parseFilter(['--type', 'Serwer'])).toEqual({ ok: false, err: 'Typy: serwer, komputer, router, drukarka, kamera' });
   expect(parseFilter(['--off', '24-18'])).toEqual({ ok: false, err: 'Użycie: --off 18-24 (godziny)' });
   expect(parseFilter(['--x<'])).toEqual({ ok: false, err: 'Nieznana opcja --x&lt;. Opcje: --net, --type, --off' });
-  expect(txt(scan(ready(), ['--net', '10.42.7']))).toContain('Filtry działają na wyniku skanu. Najpierw wpisz samo: scan');
+  expect(txt(scan(ready(), ['--net', '10.42.7']))).toContain('Filtry działają na wyniku skanu.');
 });
 test('kolejność opcji bez znaczenia', () => {
   const s = scanned();
@@ -50,11 +50,11 @@ test('probe: 6/3, sprawdzony, powtórka bez kosztu', () => {
   expect(again.state.t).toBe(r.state.t); expect(txt(again)).toContain('10.42.9.2 już sprawdzony: serwer projektów, Data-Tech.');
 });
 test('probe: bez skanu, nieznany, bez połączenia', () => {
-  expect(txt(probe(ready(), '10.42.9.2'))).toContain('Nie znasz jeszcze tej sieci. Najpierw: scan');
+  expect(txt(probe(ready(), '10.42.9.2'))).toContain('Nie znasz jeszcze tej sieci.');
   expect(txt(probe(scanned(), '<b>'))).toContain('Nie ma urządzenia &lt;b&gt; w wyniku skanu.');
   const off = { ...scanned(), terminal: { ...scanned().terminal, location: { kind: 'home' as const } } };
   expect(probe(off, '10.42.9.2').state.t).toBe(off.t);
-  expect(txt(probe(off, '10.42.9.2'))).toContain('Brak połączenia. Najpierw: use S1');
+  expect(txt(probe(off, '10.42.9.2'))).toContain('Brak połączenia.');
 });
 test('probe przy zapasie 2 min: wynik i zerwanie', () => {
   const s0 = scanned(); const s = { ...s0, devices: [{ ...s0.devices[0], minutes: 2 }] };
@@ -79,4 +79,12 @@ test('skreślanie i czyszczenie filtra bez kosztu', () => {
 test('initNetState i netNodes bez nakładki', () => {
   expect(initNetState()).toEqual({ scanned: false, filter: null, checked: [], crossed: [], routed: false, reusedBug: false, reuseAnnounced: false, s1Ms: 0 });
   expect(netNodes(afterKuba())).toHaveLength(21);
+});
+test('scan przy zapasie 2 min: wynik, potem zerwanie', () => {
+  const s = linked(afterKuba([atS1(2)])); const r = scan(s, []);
+  const t = txt(r);
+  expect(r.state.devices[0].minutes).toBe(0);
+  expect(r.state.terminal.location).toEqual({ kind: 'home' });
+  expect(r.state.net.scanned).toBe(true);
+  expect(t.indexOf('Urządzeń: 21')).toBeLessThan(t.indexOf('PODSŁUCH-1 wyczerpany'));
 });

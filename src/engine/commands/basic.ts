@@ -58,11 +58,11 @@ export const BASIC_COMMANDS: CommandTable = {
       rows.push(`PODSŁUCH-1   skrzynka S1 · Poznań-Centrum  ${st}${d.minutes} min   <span class="d">adres w sieci banku: 10.42.0.250</span>`);
     }
     for (const d of s.devices.filter((x) => x.where === 'plecak')) {
-      rows.push(`PODSŁUCH-1   <span class="y">w plecaku (nowy)</span>                       ${d.minutes} min   <span class="d">trzeba podpiąć przy S1</span>`);
+      rows.push(`PODSŁUCH-1   <span class="y">w plecaku (nowy)</span>                       ${d.minutes} min   <span class="d">niepodpięty</span>`);
     }
     if (waiting) {
       const giver = missionDef(focusMission(s))?.giver.name ?? '';
-      rows.push(`PODSŁUCH-1   <span class="y">paczka od ${giver}</span>   zapas 60 min   <span class="d">(odbierz na przystanku obok wieżowca)</span>`);
+      rows.push(`PODSŁUCH-1   <span class="y">paczka od ${giver}</span>   zapas 60 min   <span class="d">(czeka na przystanku obok wieżowca)</span>`);
     }
     return step(s, [{ html: rows.join('\n') }]);
   },

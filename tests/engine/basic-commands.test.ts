@@ -50,5 +50,5 @@ test('devices: brak, czeka, online, wyczerpany, w plecaku', () => {
   expect(out(at({ kind: 'S1' }, [{ id: 'bug1', where: 'S1', minutes: 0 }]), 'devices'))
     .toEqual([head + row('<span class="r">wyczerpany</span>       ', 0)]);
   expect(out(at({ kind: 'home' }, [{ id: 'bug1', where: 'plecak', minutes: 60 }]), 'devices')).toEqual([head +
-    'PODSŁUCH-1   <span class="y">w plecaku (nowy)</span>                       60 min   <span class="d">trzeba podpiąć przy S1</span>']);
+    'PODSŁUCH-1   <span class="y">w plecaku (nowy)</span>                       60 min   <span class="d">niepodpięty</span>']);
 });
