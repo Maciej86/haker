@@ -104,7 +104,7 @@ export function packageWaiting(s: GameState): boolean {
     && !s.net.reusedBug
     && !(s.trip.mission === s.active && s.trip.last === 'ok')
     && !hasPackage(s)
-    && !s.devices.some((d) => d.where === 'S1');
+    && !bugAtS1(s);
 }
 
 const S1_STEP_MS = 10_000;

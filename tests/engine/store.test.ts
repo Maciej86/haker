@@ -42,3 +42,15 @@ test('ukończenie misji zapisuje motyw w profilu', () => {
   store.apply(game({ done: ['kuba'] }));
   expect(loadProfile(st).themes).toContain('neon');
 });
+test('zmiana tylko net.s1Ms nie zapisuje, zmiana t zapisuje', () => {
+  const st = memStorage(); let writes = 0;
+  const set = st.setItem.bind(st); st.setItem = (k, v) => { if (k === 'neonos-save') writes++; set(k, v); };
+  const store = createStore(game(), { persist: st }); let calls = 0; store.subscribe(() => calls++);
+  store.apply({ ...store.get(), money: 7 }); expect(writes).toBe(1);
+  const s = store.get();
+  store.apply({ ...s, net: { ...s.net, s1Ms: 3_000 } });
+  store.apply({ ...store.get(), net: { ...store.get().net, s1Ms: 6_000 } });
+  expect(writes).toBe(1); expect(calls).toBe(3); expect(store.get().net.s1Ms).toBe(6_000);
+  store.apply({ ...store.get(), t: store.get().t + 1 });
+  expect(writes).toBe(2); expect(deserialize(st.getItem('neonos-save'))!.net.s1Ms).toBe(6_000);
+});

@@ -15,6 +15,17 @@ export type Store = {
 const isStep = (r: StepResult | GameState): r is StepResult =>
   'state' in r && 'lines' in r;
 
+/** Tik przy S1 co sekundę zmienia tylko licznik `net.s1Ms`: taki stan nie trafia do zapisu (zapis przy następnej zmianie). */
+function onlyS1MsChanged(a: GameState, b: GameState): boolean {
+  if (a === b) return true;
+  const keys = Object.keys(b) as (keyof GameState)[];
+  if (keys.length !== Object.keys(a).length) return false;
+  for (const k of keys) if (k !== 'net' && a[k] !== b[k]) return false;
+  if (a.net === b.net) return true;
+  const nk = Object.keys(b.net) as (keyof GameState['net'])[];
+  return nk.length === Object.keys(a.net).length && nk.every((k) => k === 's1Ms' || a.net[k] === b.net[k]);
+}
+
 export function createStore(init: GameState, opts: { persist?: Storage | null } = {}): Store {
   const persist = opts.persist ?? null;
   let state = init;
@@ -25,10 +36,15 @@ export function createStore(init: GameState, opts: { persist?: Storage | null } 
     if (i >= 0) arr.splice(i, 1);
   };
 
+  let lastSaved: GameState | null = null;
+
   function save(prev: GameState, next: GameState) {
     if (!persist) return;
     try {
-      if (next.screen !== 'trip') persist.setItem(SAVE_KEY, serialize(next));
+      if (next.screen !== 'trip' && !(lastSaved && onlyS1MsChanged(lastSaved, next))) {
+        persist.setItem(SAVE_KEY, serialize(next));
+        lastSaved = next;
+      }
     } catch { /* pełny lub niedostępny Storage */ }
     try {
       if (next.done.length > prev.done.length) {

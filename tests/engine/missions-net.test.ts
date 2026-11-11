@@ -63,3 +63,11 @@ test('następny dzień rozłącza z S1', () => {
   const s = runLine(acceptOffer(afterKuba([atS1(60)]), 'w').state, 'use S1').state;
   expect(nextDay(s).state.terminal.location).toEqual({ kind: 'home' });
 });
+test('martwy podsłuch przy S1 (zapas 0): paczka nadal czeka i devices ją pokazuje', () => {
+  const restore = withMission('w', { trip: SAMPLE_TRIP });
+  try {
+    const s = acceptOffer(afterKuba([atS1(0)]), 'w').state;
+    expect(packageWaiting(s)).toBe(true);
+    expect(txt(runLine(s, 'devices'))).toContain('<span class="y">paczka od W.</span>   zapas 60 min');
+  } finally { restore(); }
+});
