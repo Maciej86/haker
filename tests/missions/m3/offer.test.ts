@@ -12,7 +12,8 @@ import '../../../src/missions';
 const accepted = (p: Partial<GameState> = {}) => acceptOffer({ ...m3StartState(), ...p }, 'm3');
 
 test('initM3State', () => {
-  expect(initM3State()).toEqual({ win: { start: 1274, len: 3 }, log: [], err: 0 });
+  expect(initM3State()).toEqual({ win: { start: 1274, len: 3 }, log: [], err: 0, leg: 1, wins: [], late: false, ok: false,
+    evalAt: null, extra: false, notice: null, noticed: false, fail: false });
   expect(initM3State().win).not.toBe(M3_WINDOW);
 });
 test('oferta L.: 2000 ¤, bez terminu, 5 minut i 7 minut w treści', () => {
