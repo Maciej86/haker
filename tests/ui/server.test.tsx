@@ -29,6 +29,10 @@ it('przewody: klik obraca, panel pokazuje obroty, abort wpisuje polecenie', asyn
   expect(container.querySelectorAll('.wyt-wires button.cell')).toHaveLength(35);
   expect(screen.getByText('S1 ━')).toBeInTheDocument();
   expect(screen.getByText('━ ◆ .12')).toBeInTheDocument();
+  const task = screen.getByText('Zadanie').parentElement!;
+  expect(task).toHaveTextContent('Obracaj kafelki, aż sygnał z S1 dojdzie do serwera ◆ .12. Podświetlone przewody już niosą sygnał.');
+  expect(task.querySelector('.coin')).toBeNull();
+  expect(container.querySelector('.wyt-wires .crkside .coin, .wyt-wires .crkside .pin')).toBeNull();
   await user.click(screen.getAllByTitle('klik: obróć w prawo · prawy klik: w lewo')[0]);
   expect(store.get().srv.crack!.moves).toBe(1);
   expect(screen.getByText(/obroty: 1/)).toBeInTheDocument();

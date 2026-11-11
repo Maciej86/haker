@@ -45,6 +45,8 @@ export function deliveryFiles(s: GameState, id: MissionId): FileRef[] {
 export type FileDeliveryCfg = {
   title: string; text: string; emptyAttach: string; cost: number;
   judge: (s: GameState, file: FileRef) => { ok: boolean; reply: string };
+  /** Po ilu minutach gry przychodzi odpowiedź na zły plik (domyślnie 1, jak u Kuby; W. 2). */
+  badReplyAfter?: number;
 };
 
 /** Oddanie zlecenia plikiem z Pobranych: zły plik dostaje odpowiedź zleceniodawcy, dobry kończy misję. */
@@ -64,7 +66,7 @@ export function fileDelivery(id: MissionId, cfg: FileDeliveryCfg): DeliveryDef {
       const { ok, reply } = cfg.judge(s1, file);
       const answer: MailMsg = ok
         ? { from: giver.name, when: gclk(s1, s1.t + 2), html: reply }
-        : { from: giver.name, when: gclk(s1, s1.t + 1), html: reply, bad: true };
+        : { from: giver.name, when: gclk(s1, s1.t + (cfg.badReplyAfter ?? 1)), html: reply, bad: true };
       const st: GameState = {
         ...s1,
         mail: { ...s1.mail, threads: { ...s1.mail.threads, [id]: [...(s1.mail.threads[id] ?? []), mine, answer] } },

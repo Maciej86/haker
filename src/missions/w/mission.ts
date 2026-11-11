@@ -77,7 +77,7 @@ export const w: MissionDef = {
   interrupt: interruptSrv,
   // linie 1290–1296; spóźnienie po 19:00: plan 22
   delivery: fileDelivery('w', {
-    title: 'Odpowiedz W.', text: 'W załączniku zestawienie.', emptyAttach: 'pusto: pobierz plik z serwera (get)', cost: 1, judge: wJudge,
+    title: 'Odpowiedz W.', text: 'W załączniku zestawienie.', emptyAttach: 'pusto: pobierz plik z serwera (get)', cost: 1, judge: wJudge, badReplyAfter: 2,
   }),
   rewards: { money: 2500, xp: 80 },
   bonuses: [],

@@ -49,33 +49,33 @@ export function WiresPanel({ view }: Props) {
       </div>
       <div className="crkside">
         <div>
-          <h3>Zadanie</h3>Obracaj kafelki, aż sygnał z <b className="acc">S1</b> dojdzie do serwera <b className="coin">◆ .{oct}</b>. Podświetlone przewody już niosą sygnał.<br />
-          <span className="dim">klik: w prawo · prawy klik: w lewo</span>
+          <h3>Zadanie</h3>Obracaj kafelki, aż sygnał z <b className="t-acc">S1</b> dojdzie do serwera <b className="t-coin tgt">◆ .{oct}</b>. Podświetlone przewody już niosą sygnał.<br />
+          <span className="t-dim">klik: w prawo · prawy klik: w lewo</span>
         </div>
         <div>
           <h3>Namierzanie</h3><div className="bigtrace"><i style={{ width: `${w.trace}%` }} /></div>
-          <span className="dim">rośnie samo (~{w.rate.toFixed(1)}%/s na {w.net} Mb/s) i o 1% za każdy obrót
-            {w.alert && <><br /><span className="red">bank czujny po poprzedniej próbie: +25%</span></>}</span>
+          <span className="t-dim">rośnie samo (~{w.rate.toFixed(1)}%/s na {w.net} Mb/s) i o 1% za każdy obrót
+            {w.alert && <><br /><span className="t-red">bank czujny po poprzedniej próbie: +25%</span></>}</span>
         </div>
         <div>
           <h3>Ta próba</h3>obroty: {b?.moves ?? 0} · czas: {b?.sec ?? 0} s<br />
-          <span className="dim">co 10 s: 1 min gry i 1 min urządzenia</span>
+          <span className="t-dim">co 10 s: 1 min gry i 1 min urządzenia</span>
         </div>
         {st === 'ok' && (
           <div className="crkres">
-            <b className="acc">Dostęp uzyskany</b><br />Serwer plików stoi otworem. Namierzanie wstrzymane na {Math.round(w.trace)}%: każde polecenie na serwerze je podnosi.<br />
+            <b className="t-acc">Dostęp uzyskany</b><br />Serwer plików stoi otworem. Namierzanie wstrzymane na {Math.round(w.trace)}%: każde polecenie na serwerze je podnosi.<br />
             <button type="button" className="btn" onClick={() => type('mc')}>Otwórz pliki (mc) ›</button>
           </div>
         )}
         {st === 'caught' && (
           <div className="crkres bad">
-            <b className="red">Namierzono cię. Połączenie zerwane.</b><br />−15 min gry, −5 min urządzenia. Bank jest czujniejszy: następna próba namierza szybciej.<br />
+            <b className="t-red">Namierzono cię. Połączenie zerwane.</b><br />−15 min gry, −5 min urządzenia. Bank jest czujniejszy: następna próba namierza szybciej.<br />
             <button type="button" className="btn" onClick={() => type(`crack ${w.target}`)}>Spróbuj ponownie ›</button>
           </div>
         )}
         {st === 'abort' && (
           <div className="crkres bad">
-            <b className="coin">Przerwano</b><br />Namierzanie opada. Plansza przy kolejnej próbie będzie nowa.<br />
+            <b className="t-coin">Przerwano</b><br />Namierzanie opada. Plansza przy kolejnej próbie będzie nowa.<br />
             <button type="button" className="btn" onClick={() => type(`crack ${w.target}`)}>Spróbuj ponownie ›</button>
           </div>
         )}

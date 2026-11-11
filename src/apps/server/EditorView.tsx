@@ -36,7 +36,7 @@ export function EditorView() {
 
   return (
     <div className="mc" ref={root} tabIndex={-1} onKeyDown={onKey}>
-      <div className="ph ph-box">edycja: {head.file}{s.srv.editor.dirty && <span className="coin"> · niezapisane zmiany</span>}</div>
+      <div className="ph ph-box">edycja: {head.file}{s.srv.editor.dirty && <span className="ed-dirty"> · niezapisane zmiany</span>}</div>
       <div className="view">
         {work.length
           ? work.map((l, i) => (

@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import type { FileRef, GameState } from '../../../src/engine/types';
 import { runLine } from '../../../src/engine/terminal';
+import { gclk } from '../../../src/engine/clock';
 import { realtimeTick } from '../../../src/engine/realtime';
 import { deliver, replyBox } from '../../../src/engine/delivery';
 import { helpGroups } from '../../../src/engine/help';
@@ -21,6 +22,8 @@ test('zły plik: FINAL nie przeszedł przez zarząd', () => {
   expect(r.state.t).toBe(s.t + 1);
   expect(r.state.mail.threads.w.at(-1)).toMatchObject({ from: 'W.', bad: true, html: '„FINAL” nie znaczy zatwierdzone. Ta wersja nie przeszła przez zarząd.' });
   expect(r.state.done).not.toContain('w');
+  // misja.html 1310: zła odpowiedź W. 2 min po wysłaniu (Kuba: 1 min, linia 1503)
+  expect(r.state.mail.threads.w.at(-1)!.when).toBe(gclk(r.state, s.t + 1 + 2));
 });
 test('dobry plik: wersja przyjęta przez zarząd, koniec zlecenia', () => {
   const r = send(got('/finanse/zestawienia/2026/zestawienie_oddzialow_2026_v2.xlsx'), 'zestawienie_oddzialow_2026_v2.xlsx');
