@@ -6,7 +6,8 @@ import { gain } from '../../engine/skills';
 import type { Tree, TreeFile, TreeNode } from '../../engine/fstree';
 import type { LogLine } from '../../engine/server';
 import { startCrack } from '../../engine/server';
-import type { GameState, StepResult } from '../../engine/types';
+import type { FileRef, GameState, StepResult } from '../../engine/types';
+import { W_REPLY_OK, W_REPLY_ZIP, W_WRONG } from './texts';
 
 const F = (name: string, mb: number, date: string, author: string, approved: string, notes: string, tag: string, body: string): TreeFile =>
   ({ kind: 'file', name, mb, date, author, approved, notes, tag, body });
@@ -90,4 +91,13 @@ export function wOnFile(s: GameState, ev: FileEvent): StepResult {
 export function wOnCrack(s: GameState): StepResult {
   if (!s.mission.w.found) return step(s, [{ html: '<span class="r">Nie wiesz jeszcze, do czego się włamać.</span>' }]);
   return startCrack(s, W_HOST.ip);
+}
+
+/** Ocena pliku wysłanego W. po tagu z drzewa: właściwa wersja albo kopia serwera kończą zlecenie (linie 1305–1309). */
+export function wJudge(_s: GameState, file: FileRef): { ok: boolean; reply: string } {
+  const node = Object.values(W_TREE).find((n): n is TreeFile => n.kind === 'file' && n.name === file.name);
+  const tag = node?.tag ?? 'other';
+  if (tag === 'ok') return { ok: true, reply: W_REPLY_OK };
+  if (tag === 'zip') return { ok: true, reply: W_REPLY_ZIP };
+  return { ok: false, reply: W_WRONG[tag] ?? W_WRONG.other };
 }

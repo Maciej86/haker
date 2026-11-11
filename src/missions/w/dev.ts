@@ -5,6 +5,8 @@ import { nextDay } from '../../engine/clock';
 import { acceptOffer } from '../../engine/missions';
 import { registerDevJump } from '../../engine/dev';
 import { initTripState } from '../../engine/trip';
+import { runLine } from '../../engine/terminal';
+import { endCrack } from '../../engine/server';
 
 /** „start W.”: czw 13:50, 300 ¤ (100 − 100 za Wytrycha + 300 za Kubę), oferta W. nieprzeczytana. */
 export function wStartState(seed = 1): GameState {
@@ -35,5 +37,13 @@ export function wAfterTripState(seed = 1): GameState {
   };
 }
 
+/** „W. na serwerze”: po udanym Wytrychu, w / serwera banku (use S1, scan, probe, crack, wygrana). */
+export function wOnServerState(seed = 1): GameState {
+  let s = wAfterTripState(seed);
+  for (const c of ['use S1', 'scan', 'probe 10.42.7.12', 'crack 10.42.7.12']) s = runLine(s, c).state;
+  return endCrack(s, 'ok').state;
+}
+
 registerDevJump({ id: 'w-start', label: 'start W.', make: () => wStartState() });
 registerDevJump({ id: 'w-after-trip', label: 'W. po wyjeździe', make: () => wAfterTripState() });
+registerDevJump({ id: 'w-on-server', label: 'W. na serwerze', make: () => wOnServerState() });

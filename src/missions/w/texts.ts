@@ -76,3 +76,35 @@ export const W_HELP_CRACK: HelpGroup = {
     { cmd: 'abort', desc: 'przerywa włamanie, namierzanie opada', cost: '' },
   ],
 };
+
+/** Odpowiedzi W. na dobry plik i na kopię serwera (linia 1305). */
+export const W_REPLY_OK = 'Jest, wersja przyjęta przez zarząd. Dobra robota. Przelew poszedł.';
+export const W_REPLY_ZIP = 'Cała kopia serwera? Odważnie. Znalazłem, czego trzeba. Przelew poszedł.';
+
+/** Odpowiedzi W. na zły plik, po tagu pliku (linie 1306–1309). */
+export const W_WRONG: Record<string, string> = {
+  old: 'To zestawienie z zeszłego roku. Potrzebuję tegorocznego.',
+  draft: 'To wersja robocza, bez podpisu. Pisałem: przyjęta na zarządzie.',
+  final: '„FINAL” nie znaczy zatwierdzone. Ta wersja nie przeszła przez zarząd.',
+  copy: 'To kopia sprzed posiedzenia. Zarząd mógł coś zmienić. Potrzebuję tej przyjętej.',
+  sign: 'Wersja do podpisu, sprzed posiedzenia. Potrzebuję tej, którą zarząd przyjął.',
+  proto: 'Protokół, nie zestawienie. Ale dobrze, że już wiesz, czego szukać.',
+  other: 'To nie jest zestawienie oddziałów. Szukaj dalej.',
+};
+
+/** Grupa Ściągi „Na serwerze”, linie 1095–1103. */
+export const W_HELP_SERVER: HelpGroup = {
+  title: 'Na serwerze',
+  need: 'po włamaniu',
+  unlocked: (s: GameState) => s.srv.cracked,
+  entries: [
+    { cmd: 'mc', desc: 'menedżer plików: strzałki, Enter (folder: wejdź, plik: szczegóły), F3 podgląd, F4 edycja, F5 pobierz, F8 usuń, F10 wyjście', cost: 'każda akcja kosztuje jak polecenie poniżej' },
+    { cmd: 'ls', desc: 'lista plików w bieżącym katalogu', cost: 'namierzanie +1%' },
+    { cmd: 'cd finanse', desc: 'wejście do katalogu; cd .. wraca, cd / na początek', cost: 'namierzanie +2%' },
+    { cmd: 'info &lt;plik&gt;', desc: 'szczegóły pliku: autor, kto zatwierdził, uwagi', cost: 'namierzanie +1%' },
+    { cmd: 'cat &lt;plik&gt;', desc: 'podgląd treści pliku', cost: 'namierzanie +3%' },
+    { cmd: 'get &lt;plik&gt;', desc: 'pobiera plik do folderu Pobrane; trwa zależnie od łącza, namierzanie rośnie', cost: 'co 10 s: 1 min gry i 1 min urządzenia' },
+    { cmd: 'edit &lt;plik&gt;', desc: 'edycja pliku (np. logu); w edytorze usunięcie wiersza +1%, zapis +3%', cost: 'namierzanie +2%' },
+    { cmd: 'disconnect', desc: 'schodzi o jeden poziom: serwer → S1 → komputer', cost: '' },
+  ],
+};

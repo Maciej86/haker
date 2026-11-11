@@ -2,10 +2,11 @@ import type { MissionDef } from '../../engine/missions';
 import type { TripDef } from '../../engine/trip';
 import { W_COMMANDS, W_NETWORK, wOnAccept, wOnProbe, wStageIndex, wStageSub, wTermStep } from './logic';
 import {
-  W_ACCEPT_REPLY, W_ANSWER, W_ANSWER_TOAST, W_HELP_CRACK, W_HINTS, W_NOTES, W_NOTES_FOOTER, W_NOTES_INTRO,
+  W_ACCEPT_REPLY, W_ANSWER, W_ANSWER_TOAST, W_HELP_CRACK, W_HELP_SERVER, W_HINTS, W_NOTES, W_NOTES_FOOTER, W_NOTES_INTRO,
   W_OFFER_BODY, W_STAGES,
 } from './texts';
-import { W_HOST } from './server';
+import { W_HOST, wJudge } from './server';
+import { fileDelivery } from '../../engine/delivery';
 import { step } from '../../engine/types';
 import { interruptSrv, turnTile } from '../../engine/server';
 import { wiresView } from '../../engine/wires';
@@ -66,7 +67,7 @@ export const w: MissionDef = {
   },
   onProbe: wOnProbe,
   commands: W_COMMANDS,
-  help: [W_HELP_CRACK],
+  help: [W_HELP_CRACK, W_HELP_SERVER],
   hints: W_HINTS,
   hintsOpen: (s) => !s.mission.w.found,
   trip: W_TRIP,
@@ -74,7 +75,10 @@ export const w: MissionDef = {
   termLabel: 'dane z centrali Banku Wiślanego',
   onAccept: wOnAccept,
   interrupt: interruptSrv,
-  delivery: { kind: 'file' },
+  // linie 1290–1296; spóźnienie po 19:00: plan 22
+  delivery: fileDelivery('w', {
+    title: 'Odpowiedz W.', text: 'W załączniku zestawienie.', emptyAttach: 'pusto: pobierz plik z serwera (get)', cost: 1, judge: wJudge,
+  }),
   rewards: { money: 2500, xp: 80 },
   bonuses: [],
   summary: () => [],

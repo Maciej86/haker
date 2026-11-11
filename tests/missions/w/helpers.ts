@@ -1,10 +1,9 @@
 // Wspólne pomocniki testów serwera banku (plan 21).
 import type { GameState } from '../../../src/engine/types';
 import type { SrvState } from '../../../src/engine/server';
-import { wAfterTripState } from '../../../src/missions/w/dev';
+import { wAfterTripState, wOnServerState } from '../../../src/missions/w/dev';
 import { run } from '../kuba/helpers';
 import { runLine } from '../../../src/engine/terminal';
-import { endCrack } from '../../../src/engine/server';
 import '../../../src/missions';
 
 export { run, txt } from '../kuba/helpers';
@@ -26,4 +25,4 @@ export const found = (): GameState => run(wAfterTripState(), 'use S1', 'scan', '
 export const cracking = (): GameState => runLine(found(), 'crack 10.42.7.12').state;
 
 /** Na serwerze banku w '/', po udanym Wytrychu; `p` łata `srv`. */
-export const onBank = (p: Partial<SrvState> = {}): GameState => at(withSrv(endCrack(cracking(), 'ok').state, p), '/');
+export const onBank = (p: Partial<SrvState> = {}): GameState => at(withSrv(wOnServerState(), p), '/');
