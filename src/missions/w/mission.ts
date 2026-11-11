@@ -3,7 +3,7 @@ import type { TripDef } from '../../engine/trip';
 import { W_COMMANDS, W_NETWORK, wOnAccept, wOnProbe, wStageIndex, wStageSub, wTermStep } from './logic';
 import {
   W_ACCEPT_REPLY, W_ANSWER, W_ANSWER_TOAST, W_HELP_CRACK, W_HELP_SERVER, W_HINTS, W_NOTES, W_NOTES_FOOTER, W_NOTES_INTRO,
-  W_OFFER_BODY, W_STAGES,
+  W_OFFER_BODY, W_STAGES, W_DEVICE_DEAD, W_BUG_REPLACED,
 } from './texts';
 import { W_HOST, wJudge } from './server';
 import { W_BONUSES, wLate, wOnDeadline, wOnFinish, wSummary } from './finish';
@@ -86,6 +86,8 @@ export const w: MissionDef = {
   summary: wSummary,
   onFinish: wOnFinish,
   onDeadline: wOnDeadline,
+  deviceDeadText: W_DEVICE_DEAD,
+  bugReplacedText: W_BUG_REPLACED,
   doneLog: ['> Plik dostarczony: zestawienie oddziałów.', '> W. potwierdził odbiór.', '> Zlecenie zakończone.'],
   failLog: ['> Plik dotarł po terminie.', '> Zlecenie nieudane.'],
 };

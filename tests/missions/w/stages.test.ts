@@ -27,7 +27,9 @@ test('kolejne etapy i linijki', () => {
     [acc({ devices: bugS1() }), 3, 'połącz się z PODSŁUCH-1 (use S1)'],
     [acc({ devices: bugS1(), terminal: { ...acc().terminal, location: { kind: 'S1' } } }), 4, 'następny krok: znajdź cel w sieci za S1'],
     [acc({ devices: bugS1(), net: { ...acc().net, scanned: true } }), 4, 'znajdź cel: scan, NetMap, probe'],
-    [withW(acc({ devices: bugS1() }), { found: true }), 5, 'następny krok: włamanie do 10.42.7.12'],
+    [withW(acc({ devices: bugS1(), terminal: { ...acc().terminal, location: { kind: 'S1' } } }), { found: true }), 5, 'następny krok: włamanie do 10.42.7.12'],
+    // plan 22 [decyzja]: od etapu 5 bez połączenia z S1 (też po zwykłym rozłączeniu) linijka każe się połączyć
+    [withW(acc({ devices: bugS1() }), { found: true }), 5, 'połącz się z PODSŁUCH-1 (use S1)'],
   ];
   for (const [s, i, line] of cases) { expect(stageIndex(s)).toBe(i); expect(termStep(s)).toBe(line); expect(coachLine(s)).toBe(W_STAGES[i].coach); }
   expect(missionDef('w').stageIndex({ ...acc(), done: ['kuba', 'w'], active: null })).toBe(7);

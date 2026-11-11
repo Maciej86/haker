@@ -128,3 +128,9 @@ export const W_LATE_REPLY = 'Po terminie. Zarząd zebrał się o 19:00 i było p
 
 /** List W., gdy 19:00 minęła bez pliku, linia 1415. */
 export const W_DEADLINE_MAIL = 'Minęła 19:00. Zarząd zebrał się bez moich danych. Nie płacę.';
+
+/** Dopisek Terminala, gdy PODSŁUCH-1 padnie w trakcie zlecenia, linia 1408. */
+export const W_DEVICE_DEAD = 'Misja trwa. Nowy podsłuch kupisz w Darknecie (150 ¤), potem trzeba go podpiąć przy skrzynce S1.';
+
+/** Dopisek po podpięciu nowego podsłuchu, linia 1421 bez „Połącz się: use S1.” (Terminal nie podpowiada). */
+export const W_BUG_REPLACED = 'Cel już znasz, ale do serwera trzeba się włamać od nowa.';

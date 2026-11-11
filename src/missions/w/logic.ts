@@ -1,9 +1,9 @@
 import type { GameState, Line, StepResult } from '../../engine/types';
 import { step } from '../../engine/types';
 import { fill } from '../../engine/text';
-import { bug, bugAtS1, reusedBugSub } from '../../engine/devices';
+import { bug, bugAtS1, bugTripOffer, reusedBugSub } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
-import { TRIP_FAILED_SUB, tripFailed } from '../../engine/trip';
+import { TRIP_FAILED_SUB, hasPackage, tripFailed } from '../../engine/trip';
 import { gain } from '../../engine/skills';
 import { RECON_COMMANDS } from '../../engine/commands/recon';
 import { onServer } from '../../engine/server';
@@ -40,8 +40,22 @@ export function wStageSub(s: GameState, i: number): string | null {
   return i === 2 ? (reusedBugSub(s) ?? (tripFailed(s) ? TRIP_FAILED_SUB : null)) : null;
 }
 
+/** Pasek misji, gdy podsłuch padł w etapach 3–6, a pliku W. jeszcze nie ma (makieta 1409, 1419, 1422). */
+export function wBugStep(s: GameState): string | null {
+  const i = wStageIndex(s);
+  if (i < 3 || i > 6 || s.downloads.some((f) => f.mission === 'w')) return null;
+  if (s.devices.some((d) => d.id === 'bug1' && d.where === 'S1' && d.minutes === 0) && !hasPackage(s)) {
+    return 'kup nowy PODSŁUCH-1 w Darknecie';
+  }
+  if (bugTripOffer(s)) return 'podepnij nowy PODSŁUCH-1 przy S1';
+  if (i >= 5 && bugAtS1(s) && !isLinkedToS1(s)) return 'połącz się z PODSŁUCH-1 (use S1)';
+  return null;
+}
+
 /** Pasek misji w Terminalu (makieta 1866, 1806, 870, 916, 1438, 1874, 1183, 1191, 959, 962). */
 export function wTermStep(s: GameState): string {
+  const dead = wBugStep(s);
+  if (dead) return dead;
   switch (wStageIndex(s)) {
     case 0: return 'przeczytaj mail od W.';
     case 1:
