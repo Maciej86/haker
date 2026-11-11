@@ -7,6 +7,7 @@ import { initWState } from '../missions/w/state';
 import { initM3State } from '../missions/m3/state';
 import { initNetState } from './network';
 import { initTripState } from './trip';
+import { initSrvState } from './server';
 
 export const SAVE_KEY = 'neonos-save';
 export const INTERRUPTED_LINE: Line = { html: '<span class="r">połączenie przerwane</span>' };
@@ -44,6 +45,7 @@ export function newGame(seed: number = Date.now() >>> 0): GameState {
     stats: { scans: 0, buys: 0, first: false },
     net: initNetState(),
     trip: initTripState(),
+    srv: initSrvState(),
     summary: null,
     failed: false,
     summaryMeta: null,

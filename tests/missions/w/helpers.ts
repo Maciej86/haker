@@ -1,0 +1,21 @@
+// Wspólne pomocniki testów serwera banku (plan 21).
+import type { GameState } from '../../../src/engine/types';
+import type { SrvState } from '../../../src/engine/server';
+import { wAfterTripState } from '../../../src/missions/w/dev';
+import { run } from '../kuba/helpers';
+import '../../../src/missions';
+
+export { run, txt } from '../kuba/helpers';
+
+export const BANK_IP = '10.42.7.12';
+
+export const withSrv = (s: GameState, p: Partial<SrvState>): GameState => ({ ...s, srv: { ...s.srv, ...p } });
+
+/** Lokacja na serwerze banku pod `path` (bez sprawdzania włamania; do testów kosztów i zerwania). */
+export const at = (s: GameState, path: string): GameState => ({
+  ...s,
+  terminal: { ...s.terminal, location: { kind: 'host', ip: BANK_IP, path, via: 'S1' } },
+});
+
+/** Cel znaleziony: czw 16:16, zapas 54, lokacja S1. */
+export const found = (): GameState => run(wAfterTripState(), 'use S1', 'scan', 'probe 10.42.7.12').state;

@@ -3,6 +3,7 @@ import type { WState } from '../missions/w/state';
 import type { M3State } from '../missions/m3/state';
 import type { NetState } from './network';
 import type { TripState } from './trip';
+import type { SrvState } from './server';
 
 export type MissionId = 'kuba' | 'w' | 'm3';
 export type Day = 'pon' | 'wt' | 'śr' | 'czw' | 'pt' | 'sob' | 'nd';
@@ -57,6 +58,7 @@ export type GameState = {
   stats: { scans: number; buys: number; first: boolean };
   net: NetState;             // wspólny stan rozpoznania sieci za S1 (plan 05)
   trip: TripState;           // wspólny stan wyjazdu (plan 04)
+  srv: SrvState;             // sesja na serwerze z folderami (plan 21)
   summary: SummaryRow[] | null; // wiersze bieżącego overlayu summary
   failed: boolean;           // misja przegrana, overlay summary pokazuje „Spróbuj od nowa”
   summaryMeta: SummaryMeta | null;

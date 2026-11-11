@@ -13,12 +13,14 @@ import type { TowerNode } from '../../world/tower';
 import {
   W_ACCEPTED_LINE, W_ALREADY_FOUND, W_DIRECT_LINE, W_HIT_LINES, W_HIT_TOAST, W_MISS_LINE, W_TARGET_IP,
 } from './texts';
+import { wBankLog } from './server';
 
 /** Linie Terminala po przyjęciu zlecenia (makieta 1867–1868). */
 export function wOnAccept(s: GameState): StepResult {
   const lines: Line[] = [{ html: W_ACCEPTED_LINE }];
   if (s.net.reusedBug) lines.push({ html: fill(W_DIRECT_LINE, { zapas: String(bug(s)!.minutes) }) });
-  return step(s, lines);
+  const n: GameState = { ...s, srv: { ...s.srv, log: wBankLog(s.day), logSeq: 5, logClean: false } };
+  return step(n, lines);
 }
 
 /** Etap zlecenia (makieta linia 732, z poprawką na stan trwały: po skanie etap nie cofa się). */

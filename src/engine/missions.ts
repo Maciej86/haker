@@ -15,6 +15,8 @@ import type { TripDef } from './trip';
 import type { TowerNode } from '../world/tower';
 import { initNetState } from './network';
 import { bugAtS1 } from './devices';
+import type { Tree } from './fstree';
+import { initSrvState } from './server';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
 export type HostFile = { name: string; kb: number; body: string; gotNote?: string };
@@ -30,7 +32,8 @@ export type HostDef = {
   onCrack: (s: GameState) => StepResult;           // crack na tym hoście (koszt nalicza misja)
   files?: HostFile[];
   enterCmd?: string;      // jak wejść na serwer, np. 'connect 83.21.40.17'
-  flat?: boolean;         // domyślnie true; plan 21 obsłuży foldery przy flat === false
+  flat?: boolean;         // domyślnie true; host z `tree` ma flat === false
+  tree?: Tree;            // drzewo plików serwera z folderami (plan 21)
   onFile?: (s: GameState, ev: FileEvent) => StepResult;   // przyrosty i flagi misji po poleceniu plikowym
 };
 export type NetSide = {
@@ -184,6 +187,7 @@ export function acceptOffer(s: GameState, id: MissionId): StepResult {
     gains: [],
     hintsUsed: 0,
     net: { ...initNetState(), reusedBug: !!def.network && bugAtS1(cur) },
+    srv: initSrvState(),
     mail: {
       ...cur.mail,
       read: cur.mail.read.includes(id) ? cur.mail.read : [...cur.mail.read, id],

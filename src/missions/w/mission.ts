@@ -5,6 +5,7 @@ import {
   W_ACCEPT_REPLY, W_ANSWER, W_ANSWER_TOAST, W_HELP_CRACK, W_HINTS, W_NOTES, W_NOTES_FOOTER, W_NOTES_INTRO,
   W_OFFER_BODY, W_STAGES,
 } from './texts';
+import { W_HOST } from './server';
 
 /** Wyjazd do Poznania (wartości jak SAMPLE_TRIP planu 04; progress z wyjazd.tpl.html linia 411). */
 const W_TRIP: TripDef = {
@@ -51,6 +52,7 @@ export const w: MissionDef = {
   stageSub: wStageSub,
   termStep: wTermStep,
   network: W_NETWORK,
+  hosts: [W_HOST],
   onProbe: wOnProbe,
   commands: W_COMMANDS,
   help: [W_HELP_CRACK],
