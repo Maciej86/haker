@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import type { AppId, GameState } from '../engine/types';
 import { appBadge, notesView } from '../engine/desktop';
-import { focusMission, missionDef } from '../engine/missions';
+import { missionDef } from '../engine/missions';
 import { place, type Rect, type WinState } from '../ui/windows';
 import { HelpApp } from './help/HelpApp';
 import { ICONS, WIN_ICONS } from './icons';
@@ -15,6 +15,7 @@ import { Notes } from './notes/Notes';
 import { Downloads } from './downloads/Downloads';
 import { Wytrych } from './wytrych/Wytrych';
 import { NetMap, netmapTitle } from './netmap/NetMap';
+import { FloorPlanApp } from './plan/FloorPlan';
 import { wytrychView } from '../engine/wytrych';
 
 export type AppEntry = {
@@ -50,7 +51,7 @@ export const APPS: Record<AppId, AppEntry> = {
   achievements: entry('achievements', { title: 'Osiągnięcia', winTitle: () => 'Osiągnięcia', rect: R(380, 100, 520, 440), desktop: always, component: Achievements }),
   // [decyzja Claude'a] w makiecie nie ma tej ikony; pokazuje się po pierwszym pobraniu
   downloads: entry('downloads', { title: 'Pobrane', winTitle: () => 'Pobrane', rect: R(340, 170, 440, 320), desktop: (s) => s.downloads.length > 0, component: Downloads }),
-  plan: entry('plan', { title: 'Plan piętra', winTitle: () => 'Plan piętra · Hotel Luksus, p. 7', rect: (vw) => ({ x: 230, y: 70, w: Math.min(820, vw - 300), h: 440 }), desktop: never, placeNext: true }),
+  plan: entry('plan', { title: 'Plan piętra', winTitle: () => 'Plan piętra · Hotel Luksus, p. 7', rect: (vw) => ({ x: 230, y: 70, w: Math.min(820, vw - 300), h: 440 }), desktop: never, placeNext: true, component: FloorPlanApp }),
   clock: entry('clock', { title: 'Zegar', winTitle: () => 'Zegar', rect: R(0, 0, 320, 180), desktop: never }),
 };
 
@@ -62,7 +63,7 @@ export const DESKTOP_ORDER: (AppId | 'map')[] = ['terminal', 'mail', 'browser', 
 export const MAP_ICON = { title: 'Mapa', icon: ICONS.map };
 
 export function visibleIcons(s: GameState): (AppId | 'map')[] {
-  const extra = missionDef(focusMission(s))?.apps ?? [];
+  const extra = missionDef(s.active)?.apps ?? []; // aplikacje zlecenia dopiero po przyjęciu
   return DESKTOP_ORDER.filter((id) => id === 'map' || APPS[id].desktop(s) || extra.includes(id));
 }
 

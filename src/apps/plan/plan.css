@@ -1,0 +1,14 @@
+/* Plan piętra (misja.html linie 247–254, układ okna: linia 493) */
+.plan-body{padding:12px 14px;display:grid;grid-template-columns:1fr 230px;gap:14px;align-items:start}
+.plan-body #plan7{width:100%;height:auto;display:block}
+#plan7 .room{fill:none;stroke:var(--edge)}#plan7 .room.goal{stroke:var(--acc);fill:var(--acc-bg)}
+#plan7 .rn{fill:var(--dim);font-size:11px;text-anchor:middle;font-family:inherit}#plan7 .cn{fill:var(--dim);font-size:10px;text-anchor:middle;opacity:.7}
+#plan7 .corr{fill:rgba(var(--acc-rgb),.04);stroke:var(--edge)}#plan7 .lift{fill:none;stroke:var(--dim);stroke-dasharray:3 3}#plan7 .stairs{fill:none;stroke:var(--edge);stroke-dasharray:2 4}
+#plan7 .route{fill:none;stroke:var(--acc);stroke-width:2;stroke-dasharray:6 5;opacity:.7}
+#plan7 .cone{fill:color-mix(in srgb,var(--coin) 22%,transparent);stroke:color-mix(in srgb,var(--coin) 50%,transparent)}#plan7 .cone.off{fill:none;stroke:var(--edge);stroke-dasharray:3 4}
+#plan7 .cam{fill:var(--coin)}#plan7 .cam.off{fill:var(--dim)}#plan7 .cl{fill:var(--text);font-size:10px;text-anchor:middle}
+#plan7 .dot{fill:var(--acc);stroke:var(--text);stroke-width:1.5}#plan7 .dot.seen{fill:var(--red)}
+#plan-st .row2{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid var(--edge)}#plan-st .row2 span:first-child{color:var(--dim)}
+#plan-st .row2 .plan-coin{color:var(--coin)}
+#plan-st p{color:var(--dim);font-size:11.5px;margin:8px 0 0}
+.plan-empty{padding:14px;color:var(--dim)}
