@@ -7,6 +7,7 @@ import { hasPackage } from './trip';
 import { realtimeSources } from './realtime';
 import type { RealtimeSource } from './realtime';
 import { registerBuyHandler } from './buyHandlers';
+import { closeSession } from './server';
 
 export const BUG_MAX = 60;
 export const BUG_PRICE = 150;
@@ -33,7 +34,9 @@ export function useDevice(s: GameState, min: number): StepResult {
     devices: s.devices.map((d) => (d === dev ? { ...d, minutes } : d)),
   };
   if (minutes > 0) return step(n);
-  if (isLinkedToS1(n)) n = { ...n, terminal: { ...n.terminal, location: { kind: 'home' } } };
+  if (isLinkedToS1(n)) {
+    n = closeSession({ ...n, terminal: { ...n.terminal, location: { kind: 'home' } } });
+  }
   const def = missionDef(focusMission(s));
   const lines: Line[] = [
     { html: '<span class="r">PODSŁUCH-1 wyczerpany. Połączenie z siecią za S1 zerwane.</span>' },

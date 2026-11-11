@@ -5,7 +5,7 @@ import { esc } from '../text';
 import { leaveS1 } from './field';
 import { focusMission, missionHost } from '../missions';
 import type { FileEvent, HostDef, HostFile } from '../missions';
-import { onServer, withSrv } from '../server';
+import { closeSession, onServer, stopSrvWork } from '../server';
 import { bankCat, bankGet, bankLs } from './server';
 
 /** Host misji, na którym gracz jest teraz połączony (albo nic). */
@@ -39,19 +39,12 @@ export function leaveHost(s: GameState): StepResult {
   if (loc.kind !== 'host') return step(s, [{ html: '<span class="d">Nie jesteś z niczym połączony.</span>' }]);
   const host = missionHost(s, loc.ip);
   if (loc.via === 'S1') {
-    const lines: Line[] = [];
-    const ui: StepResult['ui'] = [];
-    if (s.srv.dl) {
-      lines.push({ html: '<span class="r">Pobieranie przerwane.</span>' });
-      ui.push({ kind: 'stopTimer', timer: 'download' });
-    }
-    const n = withSrv(
-      { ...s, terminal: { ...s.terminal, location: { kind: 'S1' } } },
-      { dl: null, mc: { ...s.srv.mc, open: false }, editor: null },
-    );
-    // linia 958 bez „Powrót na serwer: crack …” (Terminal nie podpowiada)
-    lines.push({ html: `<span class="c">Rozłączono z ${loc.ip}.</span> <span class="d">Namierzanie opada. PODSŁUCH-1 nadal online.</span>` });
-    return afterEvent(step(n, lines, ui), host, { cmd: 'disconnect' });
+    const r = andThen(stopSrvWork(s), (x) => {
+      const n = closeSession({ ...x, terminal: { ...x.terminal, location: { kind: 'S1' } } });
+      // linia 958 bez „Powrót na serwer: crack …” (Terminal nie podpowiada)
+      return step(n, [{ html: `<span class="c">Rozłączono z ${loc.ip}.</span> <span class="d">Namierzanie opada. PODSŁUCH-1 nadal online.</span>` }]);
+    });
+    return afterEvent(r, host, { cmd: 'disconnect' });
   }
   const left: GameState = { ...s, terminal: { ...s.terminal, location: { kind: 'home' } } };
   const got = s.downloads.some((f) => f.host === loc.ip);
@@ -101,5 +94,6 @@ export const FILE_COMMANDS: CommandTable = {
     const r = step(next, [bar, done], [{ kind: 'termHold', ms: 1000, steps: 4, bar, after: [done], toast: `Pobrano ${file.name}` }]);
     return afterEvent(r, host, { cmd: 'get', file });
   },
-  disconnect: (_a, s) => (s.terminal.location.kind === 'S1' ? leaveS1(s) : leaveHost(s)),
+  // zejście z S1 przerywa też Wytrycha w toku (bez połączenia nie ma włamania)
+  disconnect: (_a, s) => (s.terminal.location.kind === 'S1' ? andThen(stopSrvWork(s), leaveS1) : leaveHost(s)),
 };

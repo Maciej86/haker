@@ -44,6 +44,9 @@ export function initSrvState(): SrvState {
 
 export const withSrv = (s: GameState, p: Partial<SrvState>): GameState => ({ ...s, srv: { ...s.srv, ...p } });
 
+/** Zamyka widok mc (z podglądem) i edytor: zejście z serwera albo zerwanie łącza. */
+export const closeSession = (s: GameState): GameState => withSrv(s, { mc: { open: false, preview: null }, editor: null });
+
 /** Gracz jest na hoście z drzewem plików, połączony przez S1. */
 export function onServer(s: GameState): boolean {
   const l = s.terminal.location;
@@ -83,7 +86,7 @@ export function charge(s: GameState, v: number, cmd: string): { r: StepResult; c
 /** Namierzony na serwerze: zerwanie, powrót na S1, −15 min gry, −5 min urządzenia (linie 1254–1258). */
 export function caughtOnServer(s: GameState): StepResult {
   const ip = treeHost(s)?.ip ?? '';
-  let n = logMe(withSrv(s, { dl: null, crack: null, mc: { ...s.srv.mc, open: false }, editor: null }), 'nieudane logowanie');
+  let n = logMe(closeSession(withSrv(s, { dl: null, crack: null })), 'nieudane logowanie');
   n = withSrv(n, { caught: true, alert: true });
   n = { ...n, terminal: { ...n.terminal, location: { kind: 'S1' } } };
   const r = step(n, [{
@@ -169,7 +172,7 @@ export function endCrack(s: GameState, res: 'ok' | 'caught' | 'abort'): StepResu
 export const CRACK_SOURCE: RealtimeSource = {
   id: 'crack',
   pausesS1: true,
-  active: (s) => live(s) && s.srv.crack !== null,
+  active: (s) => live(s) && s.srv.crack !== null && isLinkedToS1(s),
   tick: (s, ms) => {
     const cr = s.srv.crack!;
     const r = s1Minutes(withSrv(s, { crack: { ...cr, ms: cr.ms + ms } }), ms);
@@ -231,7 +234,7 @@ export function dlProgress(s: GameState): number | null {
 export const DOWNLOAD_SOURCE: RealtimeSource = {
   id: 'download',
   pausesS1: true,
-  active: (s) => live(s) && s.srv.dl !== null && onServer(s),
+  active: (s) => live(s) && s.srv.dl !== null && onServer(s) && isLinkedToS1(s),
   tick: (s, ms) => {
     const dl = s.srv.dl!;
     const r = s1Minutes(withSrv(s, { dl: { ...dl, ms: dl.ms + ms } }), ms);
@@ -249,4 +252,14 @@ export function interruptSrv(s: GameState): GameState | null {
   if (s.srv.crack) return withSrv(s, { crack: null, res: 'abort' });
   if (s.srv.dl) return withSrv(s, { dl: null });
   return null;
+}
+
+/** Przerywa czynność na serwerze: Wytrycha (`endCrack` abort) albo pobieranie. Nic nie trwa → ten sam stan, bez linii. */
+export function stopSrvWork(s: GameState): StepResult {
+  if (s.srv.crack) return endCrack(s, 'abort');
+  if (s.srv.dl) {
+    return step(withSrv(s, { dl: null }), [{ html: '<span class="r">Pobieranie przerwane.</span>' }],
+      [{ kind: 'stopTimer', timer: 'download' }]);
+  }
+  return step(s);
 }

@@ -4,6 +4,7 @@ import { step } from '../types';
 import { advance } from '../clock';
 import { esc } from '../text';
 import { focusMission, missionDef, missionHost } from '../missions';
+import { isLinkedToS1 } from './basic';
 
 const directHost = (s: GameState, ip: string) => {
   const h = missionHost(s, ip);
@@ -41,7 +42,12 @@ export const DIRECT_COMMANDS: CommandTable = {
     const viaS1 = missionHost(s, ip);
     if (viaS1?.access === 'S1') return viaS1.onCrack(s);   // host za S1 (plan 21): misja woła startCrack
     const host = directHost(s, ip);
-    if (!host) return step(s, [{ html: `<span class="r">crack: brak odpowiedzi od ${esc(ip)}.</span>` }]);
+    if (!host) {
+      // za S1 makieta zna jeden cel: „Użycie: crack 10.42.7.12” (linia 927)
+      const s1Host = missionDef(focusMission(s))?.hosts?.find((h) => h.access === 'S1' && h.enterCmd);
+      if (s1Host && isLinkedToS1(s)) return step(s, [{ html: `<span class="r">Użycie: ${s1Host.enterCmd}</span>` }]);
+      return step(s, [{ html: `<span class="r">crack: brak odpowiedzi od ${esc(ip)}.</span>` }]);
+    }
     if (host.cracked(s)) {
       return step(s, [{ html: `<span class="d">Hasło już złamane.</span>` }]);
     }

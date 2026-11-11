@@ -55,12 +55,17 @@ test('zła ścieżka i HTML: bez kosztu', () => {
     ['info <b>x', 'Nie ma pliku „&lt;b&gt;x” w /.'], ['info', 'Podaj plik, np. info nazwa.xlsx']] as const) {
     const r = runLine(s, c); expect(txt(r)).toContain(out); expect(txt(r)).not.toContain('Sprawdź'); expect(tr(r.state)).toBe(tr(s));
   }
-  expect(runLine(s, 'cd ..').state.terminal.location).toMatchObject({ path: '/' });
+  const up = runLine(s, 'cd ..');
+  expect(up.state.terminal.location).toMatchObject({ path: '/' });
+  expect(tr(up.state) - tr(s)).toBeCloseTo(2);
+  expect(txt(runLine(s, 'cd /nie/<i>'))).toContain('cd: nie ma katalogu /nie/&lt;i&gt;');
 });
 test('polecenie przy 99%: zerwanie zamiast wykonania', () => {
   const r = runLine(onBank({ trace: 99 }), 'cd finanse');
   expect(r.state.terminal.location).toEqual({ kind: 'S1' });
   expect(r.state.srv.seen).not.toContain('/finanse');
+  expect(r.state.terminal.location).not.toMatchObject({ path: '/finanse' });
+  expect(r.state.srv.trace).toBe(100);
   expect(txt(runLine(at(onBank({ trace: 99 }), '/it'), 'cat README.txt'))).not.toContain('README.txt ──');
 });
 test('poza serwerem', () => {
