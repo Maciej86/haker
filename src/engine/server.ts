@@ -2,9 +2,11 @@
 // Fikcyjna gra: „serwer”, „namierzanie” i „włamanie” to dane i reguły łamigłówki w pamięci.
 import type { GameState, StepResult } from './types';
 import { andThen, step } from './types';
-import { gclk } from './clock';
+import { advance, gclk } from './clock';
+import { fmt } from './text';
 import { focusMission, missionDef, missionHost } from './missions';
 import type { HostDef } from './missions';
+import type { TreeFile } from './fstree';
 import { bug, bugAtS1, s1Minutes, spend } from './devices';
 import { isLinkedToS1 } from './commands/basic';
 import { gain } from './skills';
@@ -185,3 +187,66 @@ export const TRACE_FALL_SOURCE: RealtimeSource = {
   active: (s) => live(s) && s.srv.trace > 0 && !s.srv.crack && !s.srv.dl && !onServer(s),
   tick: (s, ms) => step(withSrv(s, { trace: Math.max(0, s.srv.trace - 40 * ms / 1000) })),
 };
+
+/** Pobieranie pliku z drzewa w czasie rzeczywistym (linie 944–948, 1275–1281). Bez kosztu namierzania na starcie. */
+export function startGet(s: GameState, path: string): StepResult {
+  const host = treeHost(s);
+  const f = host?.tree?.[path];
+  if (!host || !f || f.kind !== 'file') return step(s);
+  if (s.srv.dl) return step(s, [{ html: '<span class="d">Trwa już pobieranie.</span>' }]);
+  if (s.downloads.some((d) => d.fileId === `${host.ip}:${f.name}`)) {
+    return step(s, [{ html: '<span class="d">Ten plik już masz w Pobranych.</span>' }]);
+  }
+  // linia 947 bez „Edytuj go na miejscu: edit …” (Terminal nie podpowiada)
+  if (f.tag === 'log') return step(s, [{ html: '<span class="d">Log zmienia się co chwilę.</span>' }]);
+  const secs = Math.max(2, Math.round(f.mb * 8 / s.hw.net));
+  const n = withSrv(s, { dl: { path, ms: 0, secs }, lastCmd: { cmd: 'get ' + f.name, v: null } });
+  const lines = [{ html: `<span class="d">Pobieranie ${f.name} (${fmt(f.mb)} MB) · ok. ${secs} s · namierzanie rośnie</span>` }];
+  if (secs * traceRate(s) + s.srv.trace > 100) {
+    // linia 1278: zostaje stan świata, bez „Przerwij: disconnect.” (Terminal nie podpowiada)
+    lines.push({ html: '<span class="y">Uwaga: przy tym łączu namierzanie dojdzie do 100%, zanim plik się pobierze.</span>' });
+  }
+  return step(n, lines, [{ kind: 'startTimer', timer: 'download' }]);
+}
+
+/** Koniec pobierania: +1 min gry, plik w Pobranych, wiersz w auth.log (linie 1286–1287). */
+function finishGet(s: GameState): StepResult {
+  const host = treeHost(s)!;
+  const f = host.tree![s.srv.dl!.path] as TreeFile;
+  const ref = { name: f.name, size: `${fmt(f.mb)} MB`, mission: focusMission(s)!, host: host.ip, fileId: `${host.ip}:${f.name}` };
+  let n: GameState = { ...advance(s, 1), downloads: [...s.downloads, ref] };
+  n = withSrv(logMe(n, 'pobranie: ' + f.name), { dl: null, lastCmd: { cmd: `get ${f.name} · pobrano`, v: null } });
+  return step(n, [{
+    html: `<span class="c">Pobrano: ${f.name}</span> <span class="d">→ Pobrane. Namierzanie stoi na ${Math.round(n.srv.trace)}%.</span>`,
+  }], [{ kind: 'toast', text: `Pobrano ${f.name}` }, { kind: 'stopTimer', timer: 'download' }]);
+}
+
+/** Postęp pobierania w procentach (UI), albo null. */
+export function dlProgress(s: GameState): number | null {
+  const d = s.srv.dl;
+  return d ? Math.min(100, Math.round(d.ms / (d.secs * 1000) * 100)) : null;
+}
+
+/** Pobieranie w toku: namierzanie rośnie, minuty gry i urządzenia liczy samo (s1 stoi). */
+export const DOWNLOAD_SOURCE: RealtimeSource = {
+  id: 'download',
+  pausesS1: true,
+  active: (s) => live(s) && s.srv.dl !== null && onServer(s),
+  tick: (s, ms) => {
+    const dl = s.srv.dl!;
+    const r = s1Minutes(withSrv(s, { dl: { ...dl, ms: dl.ms + ms } }), ms);
+    if (!bugAtS1(r.state)) return { ...r, state: withSrv(r.state, { dl: null }) };
+    return andThen(r, (x) => {
+      const n = withSrv(x, { trace: Math.min(100, x.srv.trace + traceRate(x) * ms / 1000) });
+      if (n.srv.trace >= 100) return andThen(step(n, [{ html: '<span class="r">Pobieranie przerwane.</span>' }]), caughtOnServer);
+      return n.srv.dl!.ms >= n.srv.dl!.secs * 1000 ? finishGet(n) : step(n);
+    });
+  },
+};
+
+/** Odświeżenie strony w trakcie Wytrycha albo pobierania: czynność przerwana, połączenie zostaje. */
+export function interruptSrv(s: GameState): GameState | null {
+  if (s.srv.crack) return withSrv(s, { crack: null, res: 'abort' });
+  if (s.srv.dl) return withSrv(s, { dl: null });
+  return null;
+}

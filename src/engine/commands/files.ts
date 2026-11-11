@@ -6,7 +6,7 @@ import { leaveS1 } from './field';
 import { focusMission, missionHost } from '../missions';
 import type { FileEvent, HostDef, HostFile } from '../missions';
 import { onServer, withSrv } from '../server';
-import { bankCat, bankLs } from './server';
+import { bankCat, bankGet, bankLs } from './server';
 
 /** Host misji, na którym gracz jest teraz połączony (albo nic). */
 function currentHost(s: GameState): HostDef | undefined {
@@ -85,6 +85,7 @@ export const FILE_COMMANDS: CommandTable = {
     return step(s, [{ html: `<span class="d">── ${p.file.name} ──</span>\n${esc(p.file.body)}` }]);
   },
   get: ([a], s) => {
+    if (onServer(s)) return bankGet(s, a);
     const p = pickFile(a, s);
     if (!isPick(p)) return p;
     const { host, file } = p;

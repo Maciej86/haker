@@ -7,7 +7,7 @@ import {
 } from './texts';
 import { W_HOST } from './server';
 import { step } from '../../engine/types';
-import { turnTile } from '../../engine/server';
+import { interruptSrv, turnTile } from '../../engine/server';
 import { wiresView } from '../../engine/wires';
 
 const W_WYT_TITLE = 'Wytrych 1.0 · włamanie do 10.42.7.12';
@@ -73,6 +73,7 @@ export const w: MissionDef = {
   appBadges: (s) => (s.active === 'w' && wStageIndex(s) <= 2 ? ['map'] : []),
   termLabel: 'dane z centrali Banku Wiślanego',
   onAccept: wOnAccept,
+  interrupt: interruptSrv,
   delivery: { kind: 'file' },
   rewards: { money: 2500, xp: 80 },
   bonuses: [],

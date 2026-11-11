@@ -3,7 +3,7 @@ import { step } from './types';
 import { missionDef, failMission } from './missions';
 import type { Store } from './store';
 import { S1_SOURCE } from './devices';
-import { CRACK_SOURCE, TRACE_FALL_SOURCE } from './server';
+import { CRACK_SOURCE, DOWNLOAD_SOURCE, TRACE_FALL_SOURCE } from './server';
 
 export type RealtimeSource = {
   id: string;
@@ -23,7 +23,7 @@ const deadlineSource: RealtimeSource = {
 };
 
 // Funkcja, nie stała: devices.ts i realtime.ts importują się nawzajem, S1_SOURCE czytamy dopiero przy ticku.
-const builtin = (): RealtimeSource[] => [deadlineSource, S1_SOURCE, CRACK_SOURCE, TRACE_FALL_SOURCE];
+const builtin = (): RealtimeSource[] => [deadlineSource, S1_SOURCE, CRACK_SOURCE, DOWNLOAD_SOURCE, TRACE_FALL_SOURCE];
 let registered: RealtimeSource[] = [];
 
 export function registerRealtime(src: RealtimeSource): void {

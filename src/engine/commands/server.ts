@@ -6,7 +6,7 @@ import { step } from '../types';
 import { esc, fmt } from '../text';
 import { children, resolvePath } from '../fstree';
 import type { TreeFile } from '../fstree';
-import { charge, onServer, srvHost, withSrv } from '../server';
+import { charge, onServer, srvHost, startGet, withSrv } from '../server';
 import { catHtml } from '../mc';
 
 const say = (s: GameState, html: string): StepResult => step(s, [{ html }]);
@@ -55,6 +55,12 @@ export function bankCat(s: GameState, a: string | undefined): StepResult {
     mc: x.srv.mc.open ? { ...x.srv.mc, preview: p.path } : x.srv.mc,
   });
   return step(n, [{ html: catHtml(n, p.path) }], r.ui);
+}
+
+/** `get <plik>` na serwerze: pobieranie w czasie rzeczywistym. */
+export function bankGet(s: GameState, a: string | undefined): StepResult {
+  const p = srvFile(s, a);
+  return isFile(p) ? startGet(s, p.path) : p;
 }
 
 /** Karta pliku (linie 1262–1266). */
