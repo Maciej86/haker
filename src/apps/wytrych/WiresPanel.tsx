@@ -2,6 +2,7 @@ import { useRef, type MouseEvent } from 'react';
 import { typeInTerminal } from '../../engine/help';
 import { wytrychAct, type WytrychView } from '../../engine/wytrych';
 import { useStore } from '../../ui/useGame';
+import { ROT, powered } from '../../engine/wires';
 
 type Props = { view: Extract<WytrychView, { mode: 'wires' }> };
 type Last = { board: number[][]; lit: string[]; inRow: number; outRow: number; moves: number; sec: number };
@@ -29,7 +30,20 @@ export function WiresPanel({ view }: Props) {
   const lit = new Set(b?.lit ?? []);
   const oct = w.target.split('.').pop() ?? '';
   const type = (cmd: string) => store.apply(typeInTerminal(store.get(), cmd));
-  const turn = (r: number, c: number, dir: 1 | 3) => store.apply(wytrychAct(store.get(), { kind: 'turn', r, c, dir }));
+  const turn = (r: number, c: number, dir: 1 | 3) => {
+    // Zwycięski obrót kończy próbę w tym samym kroku (crack: null): zapamiętaj planszę już po obrocie.
+    const p = last.current;
+    if (w.on && p?.board[r]?.[c] !== undefined) {
+      const nb = p.board.map((row, i) => row.map((m, j) => {
+        if (i !== r || j !== c) return m;
+        let x = m;
+        for (let k = 0; k < dir; k++) x = ROT(x);
+        return x;
+      }));
+      last.current = { ...p, board: nb, lit: powered(nb, p.inRow, p.outRow).set, moves: p.moves + 1 };
+    }
+    store.apply(wytrychAct(store.get(), { kind: 'turn', r, c, dir }));
+  };
   const onCtx = (e: MouseEvent, r: number, c: number) => { e.preventDefault(); turn(r, c, 3); };
   const st = w.on ? null : w.res;
 
