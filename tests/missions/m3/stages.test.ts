@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import type { GameState } from '../../../src/engine/types';
-import { acceptOffer, appBadges, coachLine, missionDef, stageIndex, stageView, termStep } from '../../../src/engine/missions';
+import { acceptOffer, appBadges, coachLine, missionDef, stageIndex, stageView, termStep, focusMission } from '../../../src/engine/missions';
 import { M3_STAGES } from '../../../src/missions/m3/texts';
 import { m3StartState } from '../../../src/missions/m3/dev';
 import '../../../src/missions';
@@ -46,4 +46,12 @@ test('wyjazd L.: termin 21:14, paczka od L.; „!” na Mapie tylko przed wyjazd
   expect(missionDef('m3').trip!.progress).toHaveLength(5);
   expect(appBadges(acc())).toContain('map');
   expect(appBadges(acc({ devices: bugS1() }))).not.toContain('map');
+});
+test('po W. z podsłuchem przy S1, oferta L. nieprzyjęta: etap 0', () => {
+  const s: GameState = { ...m3StartState(), done: ['kuba', 'w'], devices: bugS1(40) };
+  expect(focusMission(s)).toBe('m3');
+  expect(stageIndex(s)).toBe(0);
+  const v = stageView(s);
+  expect(v[0].state).toBe('now');
+  expect(v[1].state).not.toBe('done');
 });

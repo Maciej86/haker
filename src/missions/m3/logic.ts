@@ -20,10 +20,10 @@ export function m3OnAccept(s: GameState): StepResult {
 /** Etap zlecenia (makieta linia 726, z poprawką na stan trwały: po skanie etap nie cofa się). */
 export function m3StageIndex(s: GameState): number {
   if (s.done.includes('m3')) return 7;
+  if (s.active !== 'm3') return 0; // przed przyjęciem: podsłuch po W. przy S1 nie przesuwa etapu
   if (M3_ROUTE.every((ip) => s.net.checked.includes(ip))) return 4;
   if (isLinkedToS1(s) || s.net.scanned) return 3;
-  if (bugAtS1(s)) return 2;
-  return s.active === 'm3' ? 1 : 0;
+  return bugAtS1(s) ? 2 : 1;
 }
 
 /** Podpis etapu wyjazdu: pominięty (podsłuch już wisiał) albo nieudany. */
