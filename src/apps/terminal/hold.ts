@@ -4,7 +4,7 @@ import { pushToast } from '../../ui/Toast';
 
 // Wstrzymanie Terminala na czas pobierania (UiEvent 'termHold'). Timer żyje poza komponentem,
 // więc zamknięcie/otwarcie okna w trakcie niczego nie dubluje. Linie „po” są już w stanie gry; tu je tylko ukrywamy.
-export type Hold = { bar: Line; after: Set<Line>; pct: number };
+export type Hold = { bar?: Line; after: Set<Line>; pct: number };
 
 let hold: Hold | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
@@ -18,7 +18,7 @@ function stop(): void {
   hold = null;
 }
 
-export function startTermHold(e: { ms: number; steps: number; bar: Line; after: Line[]; toast?: string }): void {
+export function startTermHold(e: { ms: number; steps: number; bar?: Line; after: Line[]; toast?: string }): void {
   stop();
   const steps = Math.max(1, e.steps);
   let n = 0;

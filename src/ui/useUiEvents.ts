@@ -23,9 +23,9 @@ export function useUiEvents(): void {
     } else if (e.kind === 'termHold') {
       startTermHold(e);
     } else if (e.kind === 'mailArrives') {
-      const speed = realtimeSpeed(typeof location === 'undefined' ? '' : location.search);
+      const speed = e.exact ? 1 : realtimeSpeed(typeof location === 'undefined' ? '' : location.search);
       hideMail(e.thread, e.msg.html, e.delayMs / speed, () => {
-        const t = missionDef(e.thread).offer.giverAnswer.toast;
+        const t = e.toast !== undefined ? e.toast : missionDef(e.thread).offer.giverAnswer.toast;
         if (t) pushToast(t);
       });
     }

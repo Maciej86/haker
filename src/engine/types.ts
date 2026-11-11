@@ -73,15 +73,18 @@ export type UiEvent =
   | { kind: 'typeInTerminal'; cmd: string }                  // przycisk w programie wpisuje polecenie
   | { kind: 'startTimer'; timer: TimerKind }                 // pobieranie, Wytrych z namierzaniem
   | { kind: 'stopTimer'; timer: TimerKind }
-  | { kind: 'mailArrives'; thread: MissionId; msg: MailMsg; delayMs: number } // odpowiedź zleceniodawcy „po chwili”
+  /** Odpowiedź zleceniodawcy „po chwili”. `toast`: null bez toastu, brak pola = toast z `giverAnswer`;
+   * `exact`: opóźnienie bez przyspieszenia ?dev=1 (wynik okna razem z końcem przejścia kropki). */
+  | { kind: 'mailArrives'; thread: MissionId; msg: MailMsg; delayMs: number; toast?: string | null; exact?: boolean }
   /** Krótkie wstrzymanie Terminala (makieta: `get`): pole wyłączone, pasek `bar` rośnie w `steps` krokach przez `ms`.
    * Linie `after` są już w stanie (zapis spójny po odświeżeniu) — Terminal tylko ukrywa je do końca wstrzymania,
    * potem pokazuje toast. To nie `startTimer 'download'` (to pobieranie z banku, z procentami). */
-  | { kind: 'termHold'; ms: number; steps: number; bar: Line; after: Line[]; toast?: string }
+  | { kind: 'termHold'; ms: number; steps: number; bar?: Line; after: Line[]; toast?: string } // bez `bar`: tylko ukrycie linii
   /** Kropka idzie trasą po planie piętra (misja czasowa): do `stopAt` (0..1) przez `ms`, potem stoi `holdMs`. */
   | ({ kind: 'walk' } & WalkSpec);
 
-export type WalkSpec = { path: [number, number][]; stopAt: number; ms: number; holdMs: number };
+/** `after`: zdarzenia UI (toast, przyrost umiejętności) wysyłane, gdy przejście się skończy. */
+export type WalkSpec = { path: [number, number][]; stopAt: number; ms: number; holdMs: number; after?: UiEvent[] };
 
 export type TimerKind = 'download' | 'crackTrace';
 export type StepResult = { state: GameState; lines: Line[]; ui: UiEvent[] };

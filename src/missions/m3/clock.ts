@@ -93,7 +93,9 @@ export function m3ClockView(s: GameState): ClockView | null {
 export function m3Jump(s: GameState): StepResult {
   if (!m3ClockView(s)?.jump) return step(s);
   const m = s.mission.m3;
-  const tgt = m.leg === 2 && !m.noticed && m.notice !== null ? m.notice : jumpTarget(m);
+  const back = m.leg === 2 && !m.noticed;
+  const tgt = back ? m.notice : jumpTarget(m);
+  if (tgt === null || tgt <= s.t) return step(s); // etap 2 bez minuty wiadomości albo po niej: bez celu z etapu 1
   let r = step(s);
   for (let i = 0; i < 2 && isLinkedToS1(r.state); i++) r = andThen(r, (x) => runLine(x, 'disconnect'));
   r = andThen(r, (x) => runLine(x, 'wait ' + hhmm(tgt)));

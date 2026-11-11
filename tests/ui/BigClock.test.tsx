@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import '../../src/missions';
 import '../../src/apps/clock/register';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { useWindows } from '../../src/ui/windows';
 import { afterEach, expect, test } from 'vitest';
 import { BigClock, ClockApp } from '../../src/apps/clock/BigClock';
 import { APPS, visibleIcons } from '../../src/apps/registry';
@@ -37,4 +38,14 @@ test('aplikacja Zegar: w oknie, a poza zleceniem z oknem czasowym tekst', () => 
   expect(screen.getByRole('timer').id).toBe('');
   cleanup(); renderWithStore(<ClockApp />, m3StartState());
   expect(screen.getByText('Zegar pojawi się w zleceniu z oknem czasowym.')).toBeInTheDocument();
+});
+test('przy otwartym oknie Zegara nie ma drugiego zegara na pulpicie', () => {
+  let win: ReturnType<typeof useWindows> | null = null;
+  const Okna = () => { win = useWindows(); return null; };
+  renderWithStore(<><Okna /><BigClock /></>, atT(home(cams()), 1200));
+  expect(screen.getByRole('timer')).toBeInTheDocument();
+  act(() => win!.open('clock'));
+  expect(screen.queryByRole('timer')).toBeNull();
+  act(() => win!.close('clock'));
+  expect(screen.getByRole('timer')).toBeInTheDocument();
 });

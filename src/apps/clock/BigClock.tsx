@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { clockJump, clockView, type ClockView } from '../../engine/missions';
 import { useGame, useStore } from '../../ui/useGame';
+import { useWindows } from '../../ui/windows';
 import './clock.css';
 
 const NOTE_CLASS = { dim: undefined, text: 'bc-note-text', red: 'bc-note-red' } as const;
@@ -30,10 +31,11 @@ function useClock(): [ClockView | null, () => void] {
   return [view, () => store.apply(clockJump(store.get()))];
 }
 
-/** Slot pulpitu: zegar nad oknami, tylko w zleceniu z oknem czasowym. */
+/** Slot pulpitu: zegar nad oknami, tylko w zleceniu z oknem czasowym i gdy okno Zegara jest zamknięte. */
 export function BigClock() {
   const [view, onJump] = useClock();
-  return view ? <ClockPanel view={view} onJump={onJump} fixed /> : null;
+  const inWindow = useWindows().isOpen('clock');
+  return view && !inWindow ? <ClockPanel view={view} onJump={onJump} fixed /> : null;
 }
 
 /** Aplikacja „Zegar”: ten sam zegar w oknie. */

@@ -1,6 +1,6 @@
 import '../../../src/missions';
 import { expect, test } from 'vitest';
-import type { GameState } from '../../../src/engine/types';
+import type { GameState, StepResult, UiEvent } from '../../../src/engine/types';
 import { runLine } from '../../../src/engine/terminal';
 import { retryDay, termStep } from '../../../src/engine/missions';
 import { realtimeTick } from '../../../src/engine/realtime';
@@ -11,6 +11,8 @@ import { atBothAt, atT, cams, home, m3, run, txt, withM3 } from './helpers';
 
 const offBoth = (s: GameState) => run(s, 'cam off 10.42.5.31', 'cam off 10.42.5.33').state;
 const lastMail = (s: GameState) => s.mail.threads.m3.at(-1)!;
+
+const walkOf = (r: StepResult) => r.ui.find((e) => e.kind === 'walk') as Extract<UiEvent, { kind: 'walk' }>;
 
 test('nazwy kamer i trasa kropki', () => {
   expect(['10.42.5.31', '10.42.5.33'].map(camName)).toEqual(['przy windzie', 'korytarz B']);
@@ -35,7 +37,8 @@ test('dobrze przez at: etap 5, Skrypty +0,5, nowe okno powrotu', () => {
   expect(txt(r)).not.toContain('Przewiń');
   expect(r.ui).toContainEqual({ kind: 'open', app: 'plan' });
   expect(r.ui).toContainEqual(expect.objectContaining({ kind: 'walk', stopAt: 1, ms: 5200, holdMs: 600 }));
-  expect(r.ui).toContainEqual({ kind: 'toast', text: 'L.: jest w 712. Czekaj na wiadomość o wyjściu' });
+  expect(walkOf(r).after).toContainEqual({ kind: 'toast', text: 'L.: jest w 712. Czekaj na wiadomość o wyjściu' }); // toast po przejściu kropki
+  expect(r.ui).not.toContainEqual({ kind: 'toast', text: 'L.: jest w 712. Czekaj na wiadomość o wyjściu' });
   expect(r.state.mail.read).not.toContain('m3');
 });
 test('dobrze ręcznie: Skrypty +0,2', () => {
@@ -50,7 +53,8 @@ test('za wcześnie: restart kamer, 21:44 na 2 min, bez obniżki', () => {
   expect(lastMail(r.state)).toMatchObject({ when: 'czw 21:14', bad: true });
   expect(lastMail(r.state).html).toBe('Ochrona zauważyła, że kamery przy windzie i korytarz B nie działają, zanim ruszył, i poszła sprawdzić. Zrestartowali kamery. Druga i ostatnia próba o <b>21:44</b>, a ochrona jest czujniejsza: okno tylko <b>2 minuty</b>.');
   expect(txt(r)).toContain('<span class="y">Nowe okno: 21:44, 2 min.</span>');
-  expect(r.ui).toContainEqual({ kind: 'toast', text: 'L.: za wcześnie. Nowe okno 21:44', bad: true });
+  expect(walkOf(r).after).toContainEqual({ kind: 'toast', text: 'L.: za wcześnie. Nowe okno 21:44', bad: true }); // toast po przejściu kropki
+  expect(r.ui).not.toContainEqual({ kind: 'toast', text: 'L.: za wcześnie. Nowe okno 21:44', bad: true });
   expect(termStep(r.state)).toBe('nowe okno: 21:44, 2 min');
 });
 test('za późno: 1500 ¤ (late), 21:44 na 3 min, kropka staje przy .31', () => {
@@ -58,7 +62,8 @@ test('za późno: 1500 ¤ (late), 21:44 na 3 min, kropka staje przy .31', () => 
   expect(m3(r.state)).toMatchObject({ err: 1, late: true, win: { start: 1304, len: 3 } });
   expect(lastMail(r.state).html).toBe('Kamery przy windzie i korytarz B działały, kiedy wyszedł z windy. Wycofał się. Zapłacę mniej. Druga i ostatnia próba o <b>21:44</b> (3 minuty).');
   expect(r.ui).toContainEqual(expect.objectContaining({ kind: 'walk', stopAt: 0.18, holdMs: 1400 }));
-  expect(r.ui).toContainEqual({ kind: 'toast', text: 'L.: za późno. Nowe okno 21:44', bad: true });
+  expect(walkOf(r).after).toContainEqual({ kind: 'toast', text: 'L.: za późno. Nowe okno 21:44', bad: true }); // toast po przejściu kropki
+  expect(r.ui).not.toContainEqual({ kind: 'toast', text: 'L.: za późno. Nowe okno 21:44', bad: true });
   const one = m3Check(atT(run(cams(), 'at 21:14 cam off 10.42.5.31 3m').state, 1275));
   expect(one.ui).toContainEqual(expect.objectContaining({ kind: 'walk', stopAt: 0.62 }));
   expect(lastMail(one.state).html).toContain('Kamera korytarz B działała, kiedy wyszedł z windy.');

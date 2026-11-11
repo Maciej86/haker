@@ -1,8 +1,8 @@
 // Magazyn kropki na planie piętra: klatki co 40 ms z Date.now() (setTimeout zamiast requestAnimationFrame,
-// żeby testy szły na vi.useFakeTimers()). Nowy start przerywa poprzedni.
+// żeby testy szły na vi.useFakeTimers()). Nowy start przerywa poprzedni (bez `onDone`), `clear` też.
 import type { PlanDot } from '../../engine/missions';
 import type { WalkSpec } from '../../engine/types';
-import { walkFrame } from '../../engine/walk';
+import { walkDuration, walkFrame } from '../../engine/walk';
 
 let dot: PlanDot | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;
@@ -21,14 +21,24 @@ export const walk = {
     subs.add(fn);
     return () => { subs.delete(fn); };
   },
-  start(w: WalkSpec): void {
+  /** `onDone` po ostatniej klatce: wynik okna widać dopiero po przejściu (misja.html linia 1723). */
+  start(w: WalkSpec, onDone?: () => void): void {
     if (timer !== null) clearTimeout(timer);
     const t0 = Date.now();
     const frame = () => {
-      const f = walkFrame(w, Date.now() - t0);
+      const elapsed = Date.now() - t0;
+      const f = walkFrame(w, elapsed);
       set(f.dot);
-      timer = f.done ? null : setTimeout(frame, 40);
+      // ostatnia klatka dokładnie na końcu pokazu: razem z liniami (termHold) i mailem
+      timer = f.done ? null : setTimeout(frame, Math.max(1, Math.min(40, walkDuration(w) - elapsed)));
+      if (f.done) onDone?.();
     };
     frame();
+  },
+  /** Nowa gra: przerywa pokaz bez `onDone`. */
+  clear(): void {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+    set(null);
   },
 };

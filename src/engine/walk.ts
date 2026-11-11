@@ -2,9 +2,14 @@
 import type { WalkSpec } from './types';
 import type { PlanDot } from './missions';
 
+/** Czas całego pokazu: dojście do `stopAt` i postój. */
+export function walkDuration(w: WalkSpec): number {
+  return w.ms * w.stopAt + w.holdMs;
+}
+
 /** Klatka po `elapsed` ms: kropka idzie łamaną do `stopAt` (0..1) przez `ms`, stoi `holdMs`, potem znika. */
 export function walkFrame(w: WalkSpec, elapsed: number): { dot: PlanDot | null; done: boolean } {
-  if (elapsed >= w.ms * w.stopAt + w.holdMs) return { dot: null, done: true };
+  if (elapsed >= walkDuration(w)) return { dot: null, done: true };
   const pts = w.path;
   const lens: number[] = [];
   let tot = 0;

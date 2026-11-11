@@ -1,13 +1,17 @@
 import { useEffect, useSyncExternalStore } from 'react';
+import { step } from '../../engine/types';
 import { useStore } from '../../ui/useGame';
 import { FloorPlanApp } from './FloorPlan';
 import { walk } from './walk';
 
-/** Slot pulpitu: łapie zdarzenie `walk` także wtedy, gdy okno planu jest jeszcze zamknięte. */
+/** Slot pulpitu: łapie zdarzenie `walk` także wtedy, gdy okno planu jest jeszcze zamknięte.
+ * Po przejściu wysyła zdarzenia `after` (toast, przyrost) zwykłą drogą Store, bez zmiany stanu. */
 export function PlanWalkListener() {
   const store = useStore();
   useEffect(() => store.onUi((e) => {
-    if (e.kind === 'walk') walk.start({ path: e.path, stopAt: e.stopAt, ms: e.ms, holdMs: e.holdMs });
+    if (e.kind !== 'walk') return;
+    const after = e.after ?? [];
+    walk.start(e, after.length ? () => store.apply(step(store.get(), [], after)) : undefined);
   }), [store]);
   return null;
 }

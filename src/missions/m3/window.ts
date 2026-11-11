@@ -2,6 +2,7 @@
 import type { GameState, Line, StepResult, UiEvent, WalkSpec } from '../../engine/types';
 import { andThen, step } from '../../engine/types';
 import { gclk, hhmm } from '../../engine/clock';
+import { walkDuration } from '../../engine/walk';
 import { fill } from '../../engine/text';
 import { gain } from '../../engine/skills';
 import { failMission } from '../../engine/missions';
@@ -189,6 +190,19 @@ export function m3Overflow(s: GameState): StepResult {
   );
 }
 
+/** Pokaz przed wynikiem (linia 1723): stan zmienia się od razu, ale gracz widzi wynik po przejściu kropki.
+ * Linie Terminala chowa `termHold` bez paska, mail od L. `mailArrives`, a toast i przyrost jadą w `walk.after`. */
+function reveal(s: GameState, r: StepResult, spec: WalkSpec): StepResult {
+  const d = walkDuration(spec);
+  const isLate = (e: UiEvent) => e.kind === 'toast' || e.kind === 'gain';
+  const before = s.mail.threads.m3?.length ?? 0;
+  const mails = r.state.mail.threads.m3 ?? [];
+  const ui: UiEvent[] = [{ kind: 'open', app: 'plan' }, { kind: 'walk', ...spec, after: r.ui.filter(isLate) }];
+  if (r.lines.length) ui.push({ kind: 'termHold', ms: d, steps: 1, after: r.lines });
+  if (mails.length > before) ui.push({ kind: 'mailArrives', thread: 'm3', msg: mails[mails.length - 1], delayMs: d, toast: null, exact: true });
+  return { ...r, ui: [...ui, ...r.ui.filter((e) => !isLate(e))] };
+}
+
 /** Ocena okna minutę po starcie (linie 1717–1741): droga do 712. Plan 32 dokłada drogę powrotną. */
 export function m3Evaluate(s: GameState): StepResult {
   const m = s.mission.m3;
@@ -197,7 +211,7 @@ export function m3Evaluate(s: GameState): StepResult {
   const j = judgeWindow(m);
   const end = w.start + w.len;
   const hm = hhmm(w.start);
-  const show: UiEvent[] = [{ kind: 'open', app: 'plan' }, { kind: 'walk', ...m3Walk(j.res === 'late' ? j.miss[0] : null, false) }];
+  const spec = m3Walk(j.res === 'late' ? j.miss[0] : null, false);
   let m2: M3State = { ...m, evalAt: w.start, extra: m.extra || j.extra };
 
   if (j.res === 'ok') {
@@ -207,11 +221,11 @@ export function m3Evaluate(s: GameState): StepResult {
       notice: end + M3_NOTICE_AFTER, win: { start: end + M3_NOTICE_AFTER + M3_BACK_LEAD, len: 3 },
     };
     const g = gain(withM(s, m2), 'Skrypty', exact ? 0.5 : 0.2, exact ? 'zadanie at dokładnie na okno' : 'kamery wyłączone na czas');
-    return step(
+    return reveal(s, step(
       m3MailL(g.state, fill(M3_THERE_MAIL, { hm }), end),
       [{ html: fill(M3_THERE_LINE, { hm }) }],
-      [...show, ...g.ui, { kind: 'toast', text: M3_THERE_TOAST }],
-    );
+      [...g.ui, { kind: 'toast', text: M3_THERE_TOAST }],
+    ), spec);
   }
 
   let txt: string;
@@ -223,18 +237,17 @@ export function m3Evaluate(s: GameState): StepResult {
   }
   m2 = { ...m2, err: m.err + 1 };
   if (m2.err >= 2) {
-    const r = m3Fail(withM(s, m2), txt + M3_WINDOW_FAIL, w.start, fill(M3_FAIL_LINE, { txt }));
-    return { ...r, ui: [...show, ...r.ui] };
+    return reveal(s, m3Fail(withM(s, m2), txt + M3_WINDOW_FAIL, w.start, fill(M3_FAIL_LINE, { txt })), spec);
   }
   const early = j.res === 'early';
   m2 = { ...m2, late: m2.late || !early, win: { start: M3_RETRY_START, len: early ? 2 : 3 } };
   const mail = txt + (early ? '' : M3_RETRY_LATE) + (early ? M3_RETRY_EARLY : M3_RETRY_3);
   const lines: Line[] = [{ html: fill(M3_RETRY_LINE, { txt, len: String(m2.win.len) }) }];
-  return step(
+  return reveal(s, step(
     m3MailL(withM(s, m2), mail, w.start, true),
     lines,
-    [...show, { kind: 'toast', text: early ? M3_RETRY_TOAST_EARLY : M3_RETRY_TOAST_LATE, bad: true }],
-  );
+    [{ kind: 'toast', text: early ? M3_RETRY_TOAST_EARLY : M3_RETRY_TOAST_LATE, bad: true }],
+  ), spec);
 }
 
 /** Straż zlecenia po każdym poleceniu i tiku: zadania at po padnięciu podsłuchu, 7 minut, ocena, 7 minut. */
