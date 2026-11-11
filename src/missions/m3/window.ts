@@ -1,7 +1,16 @@
 // Okno czasowe zlecenia L.: oś czasu kamer (minuty dnia). Czyste funkcje, bez mutacji wejścia.
+import type { GameState, StepResult } from '../../engine/types';
+import { step } from '../../engine/types';
+import type { CamHooks } from '../../engine/commands/cams';
+import { camCommands } from '../../engine/commands/cams';
+import type { CommandTable } from '../../engine/terminal';
+import { notFound } from '../../engine/terminal';
 import type { CamLog, M3State, M3Window } from './state';
-import { offAt } from './state';
+import { CAM_MAX, camIsOff, offAt } from './state';
 import { M3_ROUTE } from './cams';
+import { M3_AT_READY, M3_JOBS_LOST } from './texts';
+
+const withM = (s: GameState, m: M3State): GameState => ({ ...s, mission: { ...s.mission, m3: m } });
 
 const activeAt = (c: CamLog, ip: string, t: number): boolean =>
   c.ip === ip && c.off <= t && (c.on === null || c.on > t);
@@ -41,3 +50,24 @@ export function dropJobsFrom(m: M3State, from: number): { m: M3State; dropped: n
   const dropped = m.log.length - log.length;
   return { m: dropped ? { ...m, log } : m, dropped };
 }
+
+/** Hooki poleceń cam/at/wait dla zlecenia L. */
+export const M3_CAM_HOOKS: CamHooks = {
+  max: CAM_MAX,
+  isOff: (s, ip) => camIsOff(s.mission.m3, ip, s.t),
+  off: (s, ip) => { const m = camOffAt(s.mission.m3, ip, s.t, 'man'); return m ? withM(s, m) : s; },
+  on: (s, ip) => { const m = camOnAt(s.mission.m3, ip, s.t); return m ? withM(s, m) : s; },
+  addJob: (s, j) => withM(s, { ...s.mission.m3, log: [...s.mission.m3.log, { ip: j.ip, off: j.off, on: j.off + j.min, src: 'at' }] }),
+  jobs: (s) => s.mission.m3.log.filter((c) => c.src === 'at').map((c) => ({ ip: c.ip, off: c.off, min: (c.on ?? c.off) - c.off })),
+  afterAt: (s) => (M3_ROUTE.every((ip) => s.mission.m3.log.some((c) => c.ip === ip && c.src === 'at')) ? [{ html: M3_AT_READY }] : []),
+  lost: (s, from) => {
+    const r = dropJobsFrom(s.mission.m3, from);
+    return r.dropped > 0 ? step(withM(s, r.m), [{ html: M3_JOBS_LOST }]) : step(s);
+  },
+  after: (s): StepResult => step(s),
+};
+
+/** cam/at/wait tylko w przyjętym zleceniu L.; przed przyjęciem (gdy L. jest jedyną ofertą) zwykłe „nie znaleziono”. */
+export const M3_COMMANDS: CommandTable = Object.fromEntries(
+  Object.entries(camCommands(M3_CAM_HOOKS)).map(([k, f]) => [k, (a: string[], s: GameState) => (s.active === 'm3' ? f(a, s) : notFound(s, k))]),
+);

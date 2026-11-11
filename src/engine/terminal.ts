@@ -45,6 +45,11 @@ export const BASE_COMMANDS: CommandTable = {
   ...BASIC_COMMANDS, ...DIRECT_COMMANDS, ...FILE_COMMANDS, ...FIELD_COMMANDS, ...RECON_COMMANDS, ...SERVER_COMMANDS,
 };
 
+/** Odpowiedź na nieznane polecenie. */
+export function notFound(s: GameState, cmd: string): StepResult {
+  return step(s, [{ html: `${esc(cmd)}: nie znaleziono polecenia. Wpisz help.` }]);
+}
+
 const own = (t: CommandTable | undefined, k: string): Command | undefined =>
   t && Object.hasOwn(t, k) ? t[k] : undefined;
 
@@ -66,8 +71,6 @@ export function runLine(s: GameState, line: string): StepResult {
   };
   const m = focusMission(s);
   const command = own(m ? missionDef(m).commands : undefined, parsed.cmd) ?? own(BASE_COMMANDS, parsed.cmd);
-  if (!command) {
-    return step(state, [{ html: `${esc(parsed.cmd)}: nie znaleziono polecenia. Wpisz help.` }]);
-  }
+  if (!command) return notFound(state, parsed.cmd);
   return command(parsed.args, state);
 }

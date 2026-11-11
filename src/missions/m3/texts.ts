@@ -1,5 +1,6 @@
 // Teksty zlecenia L. „Spacer o 21:14”, 1:1 z mockups/misja.html (linie podane przy stałych).
 import type { NoteCard, StageDef, TripDef } from '../../engine/missions';
+import type { HelpGroup } from '../../engine/help';
 
 /** Linia 770. */
 export const M3_OFFER_BODY: string[] = [
@@ -70,4 +71,21 @@ export const M3_TRIP: TripDef = {
     { title: 'Oddanie zlecenia', sub: 'krótki raport dla L. po powrocie z 712' },
   ],
   tripStage: 1,
+};
+
+/** Linia 1793 bez „Teraz kliknij „⏩ Przewiń do …” … albo wpisz disconnect i wait” (Terminal nie podpowiada). */
+export const M3_AT_READY = '<span class="y">Obie kamery z drogi mają zadania.</span>';
+/** Własny tekst: zadania at przepadły, bo podsłuch padł. */
+export const M3_JOBS_LOST = '<span class="r">Zadania at przepadły: PODSŁUCH-1 wyczerpany.</span>';
+
+/** Ściąga, grupa „Kamery (zlecenie L.)”, linie 1088–1091. */
+export const M3_HELP_CAMS: HelpGroup = {
+  title: 'Kamery (zlecenie L.)',
+  unlocked: (s) => s.active === 'm3',
+  need: 'w zleceniu L.',
+  entries: [
+    { cmd: 'cam off 10.42.5.31', desc: 'wyłącza kamerę od razu; cam on włącza z powrotem', cost: 'wymaga połączenia z S1' },
+    { cmd: 'at 21:14 cam off 10.42.5.31 3m', desc: 'zadanie na PODSŁUCHU-1: wyłączy kamerę o tej godzinie na podany czas; działa też po rozłączeniu; samo at = lista', cost: '1 min gry' },
+    { cmd: 'wait 21:10', desc: 'czekasz do podanej godziny; połączony podsłuch zużywa wtedy zapas', cost: '' },
+  ],
 };

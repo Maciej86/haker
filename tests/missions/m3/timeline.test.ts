@@ -1,3 +1,4 @@
+import '../../../src/missions';
 import { expect, test } from 'vitest';
 import { CAM_MAX, M3_BACK_LEAD, M3_NOTICE_AFTER, M3_RETRY_START, camIsOff, initM3State } from '../../../src/missions/m3/state';
 import { atCovers, atReady, camOffAt, camOnAt, dropJobsFrom, manualOff } from '../../../src/missions/m3/window';
