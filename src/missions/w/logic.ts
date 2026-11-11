@@ -4,7 +4,14 @@ import { fill } from '../../engine/text';
 import { bug, bugAtS1, reusedBugSub } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
 import { TRIP_FAILED_SUB, tripFailed } from '../../engine/trip';
-import { W_ACCEPTED_LINE, W_DIRECT_LINE } from './texts';
+import { gain } from '../../engine/skills';
+import { RECON_COMMANDS } from '../../engine/commands/recon';
+import type { CommandTable } from '../../engine/terminal';
+import type { NetSide, NetworkOverlay } from '../../engine/missions';
+import type { TowerNode } from '../../world/tower';
+import {
+  W_ACCEPTED_LINE, W_ALREADY_FOUND, W_DIRECT_LINE, W_HIT_LINES, W_HIT_TOAST, W_MISS_LINE, W_TARGET_IP,
+} from './texts';
 
 /** Linie Terminala po przyjęciu zlecenia (makieta 1867–1868). */
 export function wOnAccept(s: GameState): StepResult {
@@ -40,3 +47,39 @@ export function wTermStep(s: GameState): string {
     default: return 'zlecenie zakończone';
   }
 }
+
+/** Reakcja na probe (koszt i net.checked nalicza wspólne probe): pudło albo trafienie celu (makieta 1437–1439). */
+export function wOnProbe(s: GameState, node: TowerNode): StepResult {
+  const vars = { ip: node.ip, kto: node.kto };
+  if (node.ip !== W_TARGET_IP) {
+    return step(s, [{ html: fill(W_MISS_LINE, vars) }], [
+      { kind: 'toast', text: `Pudło: ${node.kto}. −6 min gry, −3 min urządzenia`, bad: true },
+    ]);
+  }
+  const first = s.net.checked.length === 1;
+  const found: GameState = { ...s, mission: { ...s.mission, w: { ...s.mission.w, found: true } } };
+  const g = gain(found, 'Sieć', first ? 0.5 : 0.3, first ? 'cel trafiony za pierwszym razem' : 'znalezienie celu');
+  return step(g.state, W_HIT_LINES.map((l) => ({ html: fill(l, vars) })), [...g.ui, { kind: 'toast', text: W_HIT_TOAST }]);
+}
+
+/** Odmowa przed kosztem: po znalezieniu celu probe nic nie sprawdza. */
+export const W_COMMANDS: CommandTable = {
+  probe: (args, s) => (s.mission.w.found ? step(s, [{ html: W_ALREADY_FOUND }]) : RECON_COMMANDS.probe(args, s)),
+};
+
+/** Karta „Cel znaleziony” (makieta 1043). */
+const W_FOUND_CARD: NetSide = {
+  html: '<b style="color:var(--acc)">Cel znaleziony</b><br><span style="font-size:12px">10.42.7.12 · serwer plików centrali.<br>Serwer plików jest chroniony hasłem.</span>',
+  buttons: [{ label: 'Włam się w Terminalu ›', hint: 'wpisze <code>crack 10.42.7.12</code>', cmd: 'crack 10.42.7.12' }],
+};
+
+/** Panel NetMap: karta celu po trafieniu i płatne podpowiedzi. */
+export function wNetSide(s: GameState): { top?: NetSide; hints?: NetSide } {
+  return { top: s.mission.w.found ? W_FOUND_CARD : undefined };
+}
+
+export const W_NETWORK: NetworkOverlay = {
+  isTarget: (_s, n) => n.ip === W_TARGET_IP,
+  targetFound: (s) => s.mission.w.found,
+  side: wNetSide,
+};

@@ -59,7 +59,8 @@ it('zaznaczenie, skreślenie i Sprawdź w Terminalu', async () => {
 it('sprawdzony: trafienie hit, chybienie bad, bez przycisków', async () => {
   const user = userEvent.setup();
   let s = runLine(start(), 'scan').state;
-  s = runLine(runLine(s, 'probe 10.42.7.12').state, 'probe 10.42.2.3').state;
+  // pudło przed trafieniem: po znalezieniu celu W. odmawia kolejnego probe
+  s = runLine(runLine(s, 'probe 10.42.2.3').state, 'probe 10.42.7.12').state;
   const { container } = renderWithStore(<NetMap />, s);
   expect(nd(container, '10.42.7.12')).toHaveClass('hit');
   expect(nd(container, '10.42.7.12').querySelector('.who')!.textContent).toMatch(/^✓ /);

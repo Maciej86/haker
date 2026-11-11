@@ -1,9 +1,9 @@
 import type { MissionDef } from '../../engine/missions';
 import type { TripDef } from '../../engine/trip';
-import { wOnAccept, wStageIndex, wStageSub, wTermStep } from './logic';
+import { W_COMMANDS, W_NETWORK, wOnAccept, wOnProbe, wStageIndex, wStageSub, wTermStep } from './logic';
 import {
   W_ACCEPT_REPLY, W_ANSWER, W_ANSWER_TOAST, W_HELP_CRACK, W_HINTS, W_NOTES, W_NOTES_FOOTER, W_NOTES_INTRO,
-  W_OFFER_BODY, W_STAGES, W_TARGET_IP,
+  W_OFFER_BODY, W_STAGES,
 } from './texts';
 
 /** Wyjazd do Poznania (wartości jak SAMPLE_TRIP planu 04; progress z wyjazd.tpl.html linia 411). */
@@ -50,7 +50,9 @@ export const w: MissionDef = {
   stageIndex: wStageIndex,
   stageSub: wStageSub,
   termStep: wTermStep,
-  network: { isTarget: (_s, n) => n.ip === W_TARGET_IP },
+  network: W_NETWORK,
+  onProbe: wOnProbe,
+  commands: W_COMMANDS,
   help: [W_HELP_CRACK],
   hints: W_HINTS,
   hintsOpen: (s) => !s.mission.w.found,
