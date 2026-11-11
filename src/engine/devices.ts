@@ -7,7 +7,7 @@ import { hasPackage } from './trip';
 import { realtimeSources } from './realtime';
 import type { RealtimeSource } from './realtime';
 import { registerBuyHandler } from './buyHandlers';
-import { closeSession } from './server';
+import { closeSession, endSession } from './server';
 
 export const BUG_MAX = 60;
 export const BUG_PRICE = 150;
@@ -55,9 +55,14 @@ export function spend(s: GameState, gameMin: number, deviceMin: number): StepRes
   return andThen(step(advance(s, gameMin)), (x) => useDevice(x, deviceMin));
 }
 
-/** Martwy podsłuch przy S1 i nowy w plecaku: można jechać drugi raz. */
+/** Podsłuch przy S1 (martwy albo z resztką zapasu) i nowy w plecaku: można jechać i go podmienić. */
 export function bugTripOffer(s: GameState): boolean {
-  return s.devices.some((d) => d.id === 'bug1' && d.where === 'S1' && d.minutes === 0) && hasPackage(s);
+  return s.devices.some((d) => d.id === 'bug1' && d.where === 'S1') && hasPackage(s);
+}
+
+/** Zapas podsłuchu wiszącego przy S1 (0 przy martwym), null bez podsłuchu przy S1. */
+export function bugAtS1Minutes(s: GameState): number | null {
+  return s.devices.find((d) => d.id === 'bug1' && d.where === 'S1')?.minutes ?? null;
 }
 
 /** Zakup (pieniądze odejmuje sklep): nowy podsłuch do plecaka. */
@@ -72,13 +77,17 @@ export function buyBug(s: GameState): StepResult {
   }], [{ kind: 'open', app: 'terminal' }]);
 }
 
-/** Skrót drugiego wyjazdu: nowy podsłuch z plecaka zastępuje martwy przy S1. */
-export function tripAgain(s: GameState): StepResult {
-  if (!bugTripOffer(s)) return step(s);
-  if (s.money < TRIP_AGAIN.cost) {
-    return step(s, [], [{ kind: 'toast', text: `Brakuje ${TRIP_AGAIN.cost - s.money} ¤ na dojazd.`, bad: true }]);
+/** Skrót drugiego wyjazdu: nowy podsłuch z plecaka zastępuje ten przy S1 (martwy albo z resztką zapasu). */
+export function tripAgain(before: GameState): StepResult {
+  if (!bugTripOffer(before)) return step(before);
+  if (before.money < TRIP_AGAIN.cost) {
+    return step(before, [], [{ kind: 'toast', text: `Brakuje ${TRIP_AGAIN.cost - before.money} ¤ na dojazd.`, bad: true }]);
   }
-  const carried = s.devices.find((d) => d.id === 'bug1' && d.where === 'plecak')!;
+  const carried = before.devices.find((d) => d.id === 'bug1' && d.where === 'plecak')!;
+  const old = bugAtS1Minutes(before) ?? 0;
+  // Wymiana żywego podsłuchu: najpierw koniec sesji (pobieranie, Wytrych, łącze S1), jak przy zerwaniu.
+  const end = endSession(before);
+  const s = end.state;
   const adv = advance(s, TRIP_AGAIN.minutes);
   const n: GameState = {
     ...adv,
@@ -90,9 +99,10 @@ export function tripAgain(s: GameState): StepResult {
     terminal: { ...s.terminal, location: { kind: 'home' } },
   };
   const def = missionDef(focusMission(s));
+  const swap = old > 0 ? ` <span class="d">Stary miał jeszcze ${old} min.</span>` : '';
   return step(n, [{
-    html: `<span class="c">${gclk(n)} · wróciłeś. Nowy PODSŁUCH-1 podpięty w szafce przy S1.</span>${def?.bugReplacedText ? ` <span class="d">${def.bugReplacedText}</span>` : ''}`,
-  }]);
+    html: `<span class="c">${gclk(n)} · wróciłeś. Nowy PODSŁUCH-1 podpięty w szafce przy S1.</span>${swap}${def?.bugReplacedText ? ` <span class="d">${def.bugReplacedText}</span>` : ''}`,
+  }], end.ui);
 }
 
 /** Dopisek etapu wyjazdu, gdy misja ruszyła z żywym podsłuchem przy S1. */

@@ -122,7 +122,7 @@ test('blokady wyjazdu', () => {
   expect(tripBlock(base({ active: null }), T)).toBe('Najpierw przyjmij zlecenie w Poczcie.');
   expect(tripBlock(base({ active: 'kuba' }), T)).toBe('Do Zenka nie musisz jechać: znasz IP jego serwera.');
   expect(tripBlock(base(), { ...T, isTarget: false })).toBe('Tu nie ma nic, co pomoże w zleceniu. Wyjazd zabrałby czas i pieniądze.');
-  expect(tripBlock(base({ devices: [{ id: 'bug1', where: 'S1', minutes: 30 }] }), T)).toBe('Twój PODSŁUCH-1 już wisi przy S1. Połącz się: use S1');
+  expect(tripBlock(base({ devices: [{ id: 'bug1', where: 'S1', minutes: 30 }] }), T)).toBe('Twój PODSŁUCH-1 już wisi przy S1 (zapas 30 min). Połącz się: use S1. Na wymianę kup nowy w Darknecie.');
   expect(tripBlock(base({ devices: [{ id: 'bug1', where: 'S1', minutes: 0 }] }), T)).toBe('Twój PODSŁUCH-1 przy S1 jest wyczerpany. Nowy kupisz w Darknecie.');
 });
 test('planTrip przy blokadzie: toast, ekran bez zmian', () => {

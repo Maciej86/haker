@@ -9,9 +9,11 @@ import { isLinkedToS1 } from '../../engine/commands/basic';
 import { CAM_MAX, offAt, type M3State } from './state';
 import { atReady, manualOff } from './window';
 import { m3Live } from './live';
-import { m3StageIndex } from './logic';
+import { deadBug, m3BugTooLate, m3NextWindow, m3StageIndex } from './logic';
+import { TRIP_AGAIN } from '../../engine/devices';
+import { dur } from '../../engine/clock';
 import {
-  M3_BACK_LIVE, M3_BACK_LIVE_CONNECT, M3_CLOCK_BACK, M3_CLOCK_BLOCK, M3_CLOCK_DISCONNECT, M3_CLOCK_JUMP, M3_CLOCK_LIVE, M3_CLOCK_LIVE_AT, M3_CLOCK_LIVE_CONNECT,
+  M3_BACK_LIVE, M3_BACK_LIVE_CONNECT, M3_CLOCK_BUG_DEAD, M3_CLOCK_BUG_LATE, M3_CLOCK_BACK, M3_CLOCK_BLOCK, M3_CLOCK_DISCONNECT, M3_CLOCK_JUMP, M3_CLOCK_LIVE, M3_CLOCK_LIVE_AT, M3_CLOCK_LIVE_CONNECT,
   M3_CLOCK_LIVE_NOW, M3_CLOCK_LIVE_TAG, M3_CLOCK_LIVE_WAIT, M3_CLOCK_MANUAL, M3_CLOCK_QUIET, M3_CLOCK_READY, M3_CLOCK_RUNNING,
   M3_CLOCK_WAIT_L, M3_CLOCK_WARN, M3_CLOCK_WARN_AT, M3_CLOCK_WARN_MAN, M3_CLOCK_WIN,
 } from './texts';
@@ -44,8 +46,17 @@ function jumpTarget(m: M3State): number {
   return atReady(m) ? m.win.start - 1 : m.win.start - 4;
 }
 
-/** Widok dużego zegara (linie 1814–1824) albo null poza oknem czasowym zlecenia. */
+/** Widok dużego zegara (linie 1814–1824) albo null poza oknem czasowym zlecenia.
+ * Martwy podsłuch: czerwona uwaga; bez „Przewiń”, dopóki nowy zdąży przed oknem (przewinięcie zjadłoby czas na wyjazd). */
 export function m3ClockView(s: GameState): ClockView | null {
+  const v = clockView(s);
+  if (!v || !deadBug(s)) return v;
+  const jazda = dur(TRIP_AGAIN.minutes);
+  if (m3BugTooLate(s)) return { ...v, note: { tone: 'red', html: fill(M3_CLOCK_BUG_LATE, { hm: hhmm(m3NextWindow(s)), jazda }) } };
+  return { ...v, jump: null, note: { tone: 'red', html: fill(M3_CLOCK_BUG_DEAD, { jazda }) } };
+}
+
+function clockView(s: GameState): ClockView | null {
   const m = s.mission.m3;
   if (s.active !== 'm3' || s.failed || m.fail || m.ok || m3StageIndex(s) < 2) return null;
   const time = `${hhmm(s.t)}:${String(s.sec).padStart(2, '0')}`;

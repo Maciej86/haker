@@ -16,6 +16,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn{background:transparent;border:1px solid var(--acc);color:var(--acc);border-radius:4px;padding:6px 16px;white-space:nowrap}
 .btn:hover{background:rgba(var(--acc-rgb),.12)}
 .btn[disabled]{border-color:var(--edge);color:var(--dim);cursor:default;background:none}
+.btn.wide{display:block;width:100%;white-space:normal;text-align:left}
 .btn.red{border-color:var(--red);color:var(--red)} .btn.red:hover{background:rgba(255,93,115,.1)}
 @keyframes open{from{opacity:0;transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

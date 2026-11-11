@@ -80,7 +80,15 @@ export const M3_AT_READY = '<span class="y">Obie kamery z drogi mają zadania.</
 export const M3_DEVICE_DEAD = 'Misja trwa.';
 
 /** Dopisek po podpięciu nowego podsłuchu (jak W_BUG_REPLACED). */
-export const M3_BUG_REPLACED = 'Kamery z trasy już znasz. Zadania at, które przepadły, trzeba zaplanować od nowa.';
+export const M3_BUG_REPLACED = 'Kamery z trasy już znasz. Sprawdź zadania at w „Planie piętra”: te, które przepadły, zaplanuj od nowa.';
+
+/** Pasek misji: martwy podsłuch, a nowy nie zdąży przed oknem. Wstawka {hm}. */
+export const M3_BUG_LATE_STEP = 'za późno na nowy PODSŁUCH-1 przed {hm}';
+
+/** Duży zegar przy martwym podsłuchu: zdążysz z nowym. */
+export const M3_CLOCK_BUG_DEAD = 'PODSŁUCH-1 wyczerpany. Kup nowy w Darknecie i podepnij go przy S1 (ok. {jazda}), zanim przewiniesz.';
+/** Duży zegar przy martwym podsłuchu: nowy nie zdąży przed oknem. */
+export const M3_CLOCK_BUG_LATE = 'PODSŁUCH-1 wyczerpany. Nowy nie zdąży przed oknem {hm}: sam dojazd to ok. {jazda}.';
 
 export const M3_JOBS_LOST = '<span class="r">Zadania at przepadły: PODSŁUCH-1 wyczerpany.</span>';
 

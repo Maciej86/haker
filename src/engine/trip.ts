@@ -224,8 +224,9 @@ export function tripBlock(s: GameState, target: TripTarget): string | null {
   if (!target.isTarget) return 'Tu nie ma nic, co pomoże w zleceniu. Wyjazd zabrałby czas i pieniądze.';
   const bug = s.devices.find((d) => d.id === 'bug1' && d.where === 'S1');
   if (bug) {
+    if (hasPackage(s)) return 'Nowy PODSŁUCH-1 masz w plecaku: podmienisz go przyciskiem w karcie „Postęp zlecenia”.';
     return bug.minutes > 0
-      ? 'Twój PODSŁUCH-1 już wisi przy S1. Połącz się: use S1'
+      ? `Twój PODSŁUCH-1 już wisi przy S1 (zapas ${bug.minutes} min). Połącz się: use S1. Na wymianę kup nowy w Darknecie.`
       : 'Twój PODSŁUCH-1 przy S1 jest wyczerpany. Nowy kupisz w Darknecie.';
   }
   return null;

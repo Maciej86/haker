@@ -1,5 +1,5 @@
 import { stageView } from '../../engine/missions';
-import { bugTripOffer, tripAgain, TRIP_AGAIN } from '../../engine/devices';
+import { bugAtS1Minutes, bugTripOffer, tripAgain, TRIP_AGAIN } from '../../engine/devices';
 import { dur } from '../../engine/clock';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
@@ -12,6 +12,7 @@ export function StageCard() {
   const store = useStore();
   const [coach] = usePref('neonos-coach', 'on');
   const rows = stageView(s);
+  const drive = dur(TRIP_AGAIN.minutes).replace(/ /g, '\u00a0'); // „1 h 50 min” bez łamania
   return (
     <Card title="Postęp zlecenia">
       <div id="stages">
@@ -30,8 +31,10 @@ export function StageCard() {
       </div>
       {bugTripOffer(s) ? (
         // [decyzja] misja.html linia 1418 miała ten przycisk w Terminalu; linie Terminala nie mają akcji.
-        <Button style={{ marginTop: 8 }} onClick={() => store.apply(tripAgain(store.get()))}>
-          {`Jedź i podepnij · samochód ok. ${dur(TRIP_AGAIN.minutes)}, ${TRIP_AGAIN.cost} ¤`}
+        <Button className="wide" style={{ marginTop: 8 }} onClick={() => store.apply(tripAgain(store.get()))}>
+          {(bugAtS1Minutes(s) ?? 0) > 0
+            ? `Jedź i podmień (stary: ${bugAtS1Minutes(s)} min) · samochód ok. ${drive}, ${TRIP_AGAIN.cost}\u00a0¤`
+            : `Jedź i podepnij · samochód ok. ${drive}, ${TRIP_AGAIN.cost}\u00a0¤`}
         </Button>
       ) : null}
     </Card>

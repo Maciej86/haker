@@ -2,14 +2,15 @@ import type { AppId, GameState, Line, StepResult } from '../../engine/types';
 import { step } from '../../engine/types';
 import { fill } from '../../engine/text';
 import { hhmm } from '../../engine/clock';
-import { bug, bugAtS1, bugTripOffer, reusedBugSub } from '../../engine/devices';
+import { bug, bugAtS1, bugTripOffer, reusedBugSub, TRIP_AGAIN } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
 import { TRIP_FAILED_SUB, hasPackage, tripFailed } from '../../engine/trip';
 import { gain } from '../../engine/skills';
 import type { NetworkOverlay } from '../../engine/missions';
 import type { TowerNode } from '../../world/tower';
 import { M3_CAMS, M3_ROUTE, isFloorCam } from './cams';
-import { M3_BACK_STEP, M3_ACCEPTED_LINE, M3_DIRECT_LINE, M3_NET_HINT, M3_PROBE_CAM, M3_PROBE_OTHER } from './texts';
+import { M3_BACK_LEAD } from './state';
+import { M3_BUG_LATE_STEP, M3_BACK_STEP, M3_ACCEPTED_LINE, M3_DIRECT_LINE, M3_NET_HINT, M3_PROBE_CAM, M3_PROBE_OTHER } from './texts';
 
 /** Linie Terminala po przyjęciu (makieta 1803–1804) i okno „Plan piętra” od razu. */
 export function m3OnAccept(s: GameState): StepResult {
@@ -36,12 +37,27 @@ export function m3StageSub(s: GameState, i: number): string | null {
 }
 
 /** Martwy PODSŁUCH-1 przy S1 (zapas 0). */
-const deadBug = (s: GameState): boolean => s.devices.some((d) => d.id === 'bug1' && d.where === 'S1' && d.minutes === 0);
+export const deadBug = (s: GameState): boolean => s.devices.some((d) => d.id === 'bug1' && d.where === 'S1' && d.minutes === 0);
+
+/** Najbliższe okno, w które trzeba trafić z zadaniami: powrót (wiadomość L. + 5 min) albo bieżące okno drogi tam. */
+export function m3NextWindow(s: GameState): number {
+  const m = s.mission.m3;
+  return m.leg === 2 && m.notice !== null ? m.notice + M3_BACK_LEAD : m.win.start;
+}
+
+/** Zapas na `use S1` i zadania at po powrocie z nowym podsłuchem. */
+const SETUP_MIN = 3;
+
+/** Martwy podsłuch, a dojazd z nowym (110 min) i podpięcie nie zmieszczą się przed najbliższym oknem. */
+export function m3BugTooLate(s: GameState): boolean {
+  return deadBug(s) && s.t + TRIP_AGAIN.minutes + SETUP_MIN > m3NextWindow(s);
+}
 
 /** Pasek misji, gdy podsłuch przy S1 padł w etapach 1–5 (jak wBugStep). */
 export function m3BugStep(s: GameState): string | null {
   const i = m3StageIndex(s);
   if (i < 1 || i > 5) return null; // po udanym powrocie (6) da się odpisać L. bez S1
+  if (m3BugTooLate(s)) return fill(M3_BUG_LATE_STEP, { hm: hhmm(m3NextWindow(s)) });
   if (deadBug(s) && !hasPackage(s)) return 'kup nowy PODSŁUCH-1 w Darknecie';
   if (bugTripOffer(s)) return 'podepnij nowy PODSŁUCH-1 przy S1';
   return null;

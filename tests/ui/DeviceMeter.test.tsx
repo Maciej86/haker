@@ -29,8 +29,12 @@ it('klasa low przy 0 < zapas < 15, off przy 0', () => {
   renderWithStore(<TopBar />, linked(afterKuba([atS1(0)])));
   expect(meter()!.className).toBe('hb off');
 });
+it('karta Postęp zlecenia: podmiana żywego podsłuchu z nowym w plecaku', () => {
+  renderWithStore(<StageCard />, acceptOffer(afterKuba([atS1(30), inPack()]), 'w').state);
+  expect(screen.getByRole('button', { name: /^Jedź i podmień \(stary: 30 min\)/ })).toBeTruthy();
+});
 it('karta Postęp zlecenia: drugi wyjazd przy martwym podsłuchu i nowym w plecaku', async () => {
-  const label = 'Jedź i podepnij · samochód ok. 1 h 50 min, 58 ¤';
+  const label = 'Jedź i podepnij · samochód ok. 1\u00a0h\u00a050\u00a0min, 58\u00a0¤';
   renderWithStore(<StageCard />, acceptOffer(afterKuba([atS1(0)]), 'w').state);
   expect(screen.queryByRole('button', { name: label })).toBeNull();
   cleanup();
