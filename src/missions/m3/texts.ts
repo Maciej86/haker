@@ -89,3 +89,38 @@ export const M3_HELP_CAMS: HelpGroup = {
     { cmd: 'wait 21:10', desc: 'czekasz do podanej godziny; połączony podsłuch zużywa wtedy zapas', cost: '' },
   ],
 };
+
+// Ocena okna (makieta linie 1706–1711, 1724–1741). Wstawki: {kamery} „kamery”/„kamera”, {nazwy} „przy windzie i korytarz B”.
+/** Linia 1707. Wstawki {kamery}, {nazwy}, {działały}, {max}, {je}. */
+export const M3_OVERFLOW = 'Ochrona zrobiła obchód: {kamery} {nazwy} nie {działały} dłużej niż {max} minut. Zrestartowali {je}.';
+/** Linia 1709: dopisek maila przy drugim błędzie. */
+export const M3_OVERFLOW_FAIL = ' To już drugi błąd. Zlecenie odwołane, nie płacę.';
+/** Linia 1710: dopisek maila. */
+export const M3_OVERFLOW_MAIL = ' Nic nie znaleźli, ale będą czujniejsi. Zapłacę mniej. Następny błąd i odwołuję zlecenie.';
+/** Linia 1711. Wstawki {tc}, {txt}. */
+export const M3_OVERFLOW_LINE = '<span class="r">{tc} · {txt}</span> <span class="d">To błąd: zapłata mniejsza, kolejny błąd = przegrana.</span>';
+export const M3_OVERFLOW_TOAST = 'Ochrona sprawdziła kamerę: błąd';
+/** Linie 1709, 1731. Wstawka {txt}. */
+export const M3_FAIL_LINE = '<span class="r">{txt}</span> <span class="r">Zlecenie przegrane.</span>';
+/** Linia 1728. Wstawki {kamery}, {nazwy}, {nie_działają}. */
+export const M3_EARLY = 'Ochrona zauważyła, że {kamery} {nazwy} {nie_działają}, zanim ruszył, i poszła sprawdzić. Zrestartowali kamery.';
+/** Linia 1729. Wstawki {Kamery}, {nazwy}, {działały}, {kiedy}. */
+export const M3_LATE = '{Kamery} {nazwy} {działały}, kiedy {kiedy}.';
+export const M3_LATE_THERE = 'wyszedł z windy';
+export const M3_LATE_BACK = 'wychodził z pokoju';
+/** Linia 1731: dopisek maila przy drugim błędzie. */
+export const M3_WINDOW_FAIL = ' To już drugi raz. Zlecenie odwołane, nie płacę.';
+/** Linia 1734: dopiski maila o drugiej próbie. */
+export const M3_RETRY_LATE = ' Wycofał się. Zapłacę mniej.';
+export const M3_RETRY_EARLY = ' Druga i ostatnia próba o <b>21:44</b>, a ochrona jest czujniejsza: okno tylko <b>2 minuty</b>.';
+export const M3_RETRY_3 = ' Druga i ostatnia próba o <b>21:44</b> (3 minuty).';
+/** Linia 1735. Wstawki {txt}, {len}. */
+export const M3_RETRY_LINE = '<span class="r">{txt}</span> <span class="y">Nowe okno: 21:44, {len} min.</span>';
+export const M3_RETRY_TOAST_EARLY = 'L.: za wcześnie. Nowe okno 21:44';
+export const M3_RETRY_TOAST_LATE = 'L.: za późno. Nowe okno 21:44';
+/** Linia 1739. Wstawka {hm}. */
+export const M3_THERE_MAIL = 'Przeszedł o {hm}, jest w 712. Na nagraniach nikogo nie ma. Włącz kamery z powrotem, zanim minie 7 minut awarii. Napiszę 5 minut przed tym, jak wyjdzie z pokoju.';
+/** Linia 1740 bez porad („Włącz kamery (cam on)… Na zegarze u góry: „⏩ Czekaj…”.”). Wstawka {hm}. */
+export const M3_THERE_LINE = '<span class="c">{hm} · nasz człowiek przeszedł do 712. Nikt go nie widział.</span>';
+/** Linia 1741. */
+export const M3_THERE_TOAST = 'L.: jest w 712. Czekaj na wiadomość o wyjściu';
