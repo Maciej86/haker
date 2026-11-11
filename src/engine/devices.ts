@@ -89,7 +89,17 @@ export function tripAgain(s: GameState): StepResult {
   }]);
 }
 
-/** Paczka zleceniodawcy czeka na przystanku (Task 5 uzupełni warunki). */
-export function packageWaiting(_s: GameState): boolean {
-  return false;
+/** Dopisek etapu wyjazdu, gdy misja ruszyła z żywym podsłuchem przy S1. */
+export function reusedBugSub(s: GameState): string | null {
+  return s.net.reusedBug ? 'pominięte: PODSŁUCH-1 już wisiał przy S1' : null;
+}
+
+/** Paczka zleceniodawcy jeszcze na przystanku: misja z wyjazdem, przed udanym wyjazdem, bez sprzętu. */
+export function packageWaiting(s: GameState): boolean {
+  const def = missionDef(s.active);
+  return !!def?.trip
+    && !s.net.reusedBug
+    && !(s.trip.mission === s.active && s.trip.last === 'ok')
+    && !hasPackage(s)
+    && !s.devices.some((d) => d.where === 'S1');
 }

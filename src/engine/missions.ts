@@ -13,6 +13,8 @@ import { newGame } from './state';
 import type { DeliveryDef } from './delivery';
 import type { TripDef } from './trip';
 import type { TowerNode } from '../world/tower';
+import { initNetState } from './network';
+import { bugAtS1 } from './devices';
 
 export type NoteCard = { id: string; src: string; html: string; insert?: string; when?: (s: GameState) => boolean };
 export type HostFile = { name: string; kb: number; body: string; gotNote?: string };
@@ -178,6 +180,7 @@ export function acceptOffer(s: GameState, id: MissionId): StepResult {
     ...cur,
     active: id,
     gains: [],
+    net: { ...initNetState(), reusedBug: !!def.network && bugAtS1(cur) },
     mail: {
       ...cur.mail,
       read: cur.mail.read.includes(id) ? cur.mail.read : [...cur.mail.read, id],

@@ -37,6 +37,7 @@ export const m3: MissionDef = {
     { title: "Raport dla L.", sub: "posprzątaj, rozłącz się, odpisz", coach: "Włącz kamery (<code>cam on</code>) albo poczekaj na koniec zadań at, potem <code>disconnect</code> i odpisz L. w Poczcie." },
   ],
   stageIndex: () => 0,
+  network: {},
   help: [],
   delivery: { kind: "report" },
   rewards: { money: 2000, xp: 80 },

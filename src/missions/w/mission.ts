@@ -38,6 +38,7 @@ export const w: MissionDef = {
     { title: "Oddanie zlecenia", sub: "plik mailem przed terminem, 19:00", coach: "Terminal: <code>mc</code> otwiera pliki serwera. Szukaj po szczegółach (Enter na pliku), pobierz <code>F5</code>. Na koniec <code>disconnect</code> (serwer, potem S1) i wyślij plik W. w Poczcie." },
   ],
   stageIndex: () => 0,
+  network: { isTarget: (_s, n) => n.ip === '10.42.7.12' },
   help: [],
   delivery: { kind: "file" },
   rewards: { money: 2500, xp: 80 },
