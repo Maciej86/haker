@@ -4,6 +4,8 @@ import { advance, gclk } from './clock';
 import { focusMission, missionDef } from './missions';
 import { isLinkedToS1 } from './commands/basic';
 import { hasPackage } from './trip';
+import { realtimeSources } from './realtime';
+import type { RealtimeSource } from './realtime';
 
 export const BUG_MAX = 60;
 export const BUG_PRICE = 150;
@@ -103,3 +105,26 @@ export function packageWaiting(s: GameState): boolean {
     && !hasPackage(s)
     && !s.devices.some((d) => d.where === 'S1');
 }
+
+const S1_STEP_MS = 10_000;
+
+/** Połączenie z S1: co 10 s czasu rzeczywistego 1 min gry i 1 min urządzenia (misja.html linia 1413). */
+export const S1_SOURCE: RealtimeSource = {
+  id: 's1',
+  active: (s) =>
+    s.screen === 'desktop'
+    && s.overlay === null
+    && isLinkedToS1(s)
+    && bugAtS1(s)
+    && !realtimeSources(s).some((r) => r.pausesS1 && r.active(s)),
+  tick: (s, ms) => {
+    let acc = s.net.s1Ms + ms;
+    let r: StepResult = step(s);
+    while (acc >= S1_STEP_MS && isLinkedToS1(r.state) && bugAtS1(r.state)) {
+      acc -= S1_STEP_MS;
+      r = andThen(r, (x) => spend(x, 1, 1));
+    }
+    const s1Ms = isLinkedToS1(r.state) && bugAtS1(r.state) ? acc : 0;
+    return { ...r, state: { ...r.state, net: { ...r.state.net, s1Ms } } };
+  },
+};
