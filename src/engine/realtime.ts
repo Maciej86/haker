@@ -90,15 +90,17 @@ export function createRealtimeLoop(
     paused = p;
     for (const fn of [...subs]) fn();
   };
+  // Ukryta karta pauzuje tylko wtedy, gdy coś biegnie na żywo; bez tego pauza byłaby samym szumem.
+  const running = () => { const s = store.get(); return realtimeSources(s).some((r) => r.active(s)); };
   return {
     tick(ms) {
       if (paused) return;
-      if (opts.isHidden()) { setPaused(true); return; }
+      if (opts.isHidden()) { if (running()) setPaused(true); return; }
       const before = store.get();
       const r = realtimeTick(before, ms * opts.speed);
       if (r.state !== before || r.lines.length > 0 || r.ui.length > 0) store.apply(r);
     },
-    setHidden(h) { if (h) setPaused(true); },
+    setHidden(h) { if (h && running()) setPaused(true); },
     paused: () => paused,
     resume: () => setPaused(false),
     subscribe(fn) {

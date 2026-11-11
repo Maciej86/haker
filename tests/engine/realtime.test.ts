@@ -38,6 +38,24 @@ test('pętla: pauza przy ukrytej karcie, resume, przyspieszenie', () => {
   hidden = false; loop.tick(1000); expect(store.get().t).toBe(1231);   // dalej pauza do kliknięcia
   loop.resume(); loop.tick(1000); expect(store.get().t).toBe(1232);
 });
+test('pętla: ukryta karta bez aktywnego źródła nie pauzuje', () => {
+  let on = false;
+  registerRealtime({ id: 'x', active: () => on, tick: (s) => step(advance(s, 1)) });
+  const store = createStore(game());
+  const loop = createRealtimeLoop(store, { speed: 1, isHidden: () => true });
+  loop.setHidden(true); expect(loop.paused()).toBe(false);
+  loop.tick(1000); expect(loop.paused()).toBe(false); expect(store.get().t).toBe(1230);
+  on = true; loop.tick(1000); expect(loop.paused()).toBe(true); expect(store.get().t).toBe(1230);
+});
+test('pętla: setHidden przy aktywnym źródle pauzuje', () => {
+  registerRealtime({ id: 'x', active: () => true, tick: (s) => step(s) });
+  const loop = createRealtimeLoop(createStore(game()), { speed: 1, isHidden: () => false });
+  loop.setHidden(true); expect(loop.paused()).toBe(true);
+});
+test('pętla: holdOnLoad startuje w pauzie', () => {
+  const loop = createRealtimeLoop(createStore(game()), { speed: 1, isHidden: () => false, startPaused: true });
+  expect(loop.paused()).toBe(true);
+});
 test('pętla nie zapisuje, gdy nic się nie dzieje', () => {
   const st = memStorage(); const store = createStore(game(), { persist: st });
   createRealtimeLoop(store, { speed: 1, isHidden: () => false }).tick(1000);
