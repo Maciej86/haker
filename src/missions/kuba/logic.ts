@@ -42,9 +42,7 @@ const setKuba = (s: GameState, patch: Partial<GameState['mission']['kuba']>): Ga
 
 /** `connect` bez znanego hasła (minuta już naliczona). */
 export function kubaConnectLocked(s: GameState): StepResult {
-  const tail = s.owned.includes('wyt')
-    ? ` <span class="y">Złam hasło: crack ${KUBA_IP}</span>`
-    : ' <span class="y">Nie masz narzędzia do łamania haseł. Wytrych kupisz w Darknecie.</span>';
+  const tail = s.owned.includes('wyt') ? '' : ' <span class="y">Nie masz narzędzia do łamania haseł.</span>';
   return step(setKuba(s, { conn: true }), [{
     html: `<span class="d">Łączenie z ${KUBA_IP}…</span>\n<span class="c">zenek-muzyka</span> · serwer domowy · Linux\nlogin: zenek\nhasło: <span class="r">✕ nie znasz hasła. Połączenie zamknięte.</span>\n<span class="d">Podpowiedź do hasła na serwerze: „zagadka z piekarni”.</span>${tail}`,
   }]);

@@ -13,13 +13,10 @@ const directHost = (s: GameState, ip: string) => {
 
 export const DIRECT_COMMANDS: CommandTable = {
   connect: ([ip], s) => {
-    if (!ip) {
-      const hint = missionDef(focusMission(s))?.hosts?.[0]?.usageHint ?? '';
-      return step(s, [{ html: `Użycie: connect &lt;ip&gt;.${hint}` }]);
-    }
+    if (!ip) return step(s, [{ html: 'Użycie: connect &lt;ip&gt;.' }]);
     const host = directHost(s, ip);
     if (!host) {
-      return step(s, [{ html: `<span class="r">connect: brak odpowiedzi od ${esc(ip)}.</span> <span class="d">Sprawdź adres w Notatkach.</span>` }]);
+      return step(s, [{ html: `<span class="r">connect: brak odpowiedzi od ${esc(ip)}.</span>` }]);
     }
     const loc = s.terminal.location;
     if (loc.kind === 'host' && loc.ip === ip) return step(s, [{ html: '<span class="d">Już połączono.</span>' }]);
@@ -36,7 +33,7 @@ export const DIRECT_COMMANDS: CommandTable = {
   },
   crack: ([ip], s) => {
     if (!s.owned.includes('wyt')) {
-      return step(s, [{ html: 'crack: nie znaleziono polecenia. <span class="d">Nie masz jeszcze Wytrycha. Kupisz go w Darknecie.</span>' }]);
+      return step(s, [{ html: 'crack: nie znaleziono polecenia. <span class="d">Nie masz jeszcze Wytrycha.</span>' }]);
     }
     if (!ip) return step(s, [{ html: 'Użycie: crack &lt;ip&gt;' }]);
     const viaS1 = missionHost(s, ip);

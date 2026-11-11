@@ -84,7 +84,6 @@ export const kuba: MissionDef = {
     name: 'zenek-muzyka',
     promptName: 'zenek',
     access: 'direct',
-    usageHint: ' Adres serwera Zenka masz w Notatkach.',
     cracked: (s) => s.mission.kuba.cracked,
     onConnectLocked: kubaConnectLocked,
     onCrack: kubaCrack,

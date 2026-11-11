@@ -26,7 +26,6 @@ export type HostDef = {
   name: string;
   promptName?: string;
   access: 'direct' | 'S1';
-  usageHint?: string;                              // dopisek do „Użycie: connect <ip>.”
   cracked: (s: GameState) => boolean;
   onConnectLocked: (s: GameState) => StepResult;   // connect bez znanego hasła (1 min już naliczona)
   onCrack: (s: GameState) => StepResult;           // crack na tym hoście (koszt nalicza misja)

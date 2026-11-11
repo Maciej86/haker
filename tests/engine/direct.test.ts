@@ -6,12 +6,13 @@ import { kubaAccepted, withKuba, txt } from '../missions/kuba/helpers';
 const wyt = (s: GameState): GameState => ({ ...s, owned: [...s.owned, 'wyt'] });
 
 test('connect bez argumentu', () => {
-  expect(txt(runLine(kubaAccepted(), 'connect'))).toBe('Użycie: connect &lt;ip&gt;. Adres serwera Zenka masz w Notatkach.');
+  expect(txt(runLine(kubaAccepted(), 'connect'))).toBe('Użycie: connect &lt;ip&gt;.');
 });
 test('connect na zły adres: 0 min, esc', () => {
   const s = kubaAccepted(); const r = runLine(s, 'connect <b>1.2.3.4');
   expect(r.state.t).toBe(s.t);
   expect(txt(r)).toContain('connect: brak odpowiedzi od &lt;b&gt;1.2.3.4.');
+  expect(txt(r)).not.toContain('Notatkach');
 });
 test('connect bez hasła: 1 min, conn, etap 2', () => {
   const s = kubaAccepted(); const r = runLine(s, 'connect 83.21.40.17');
@@ -19,16 +20,20 @@ test('connect bez hasła: 1 min, conn, etap 2', () => {
   expect(r.state.mission.kuba.conn).toBe(true);
   expect(r.state.terminal.location).toEqual({ kind: 'home' });
   expect(txt(r)).toContain('hasło: <span class="r">✕ nie znasz hasła. Połączenie zamknięte.</span>');
-  expect(txt(r)).toContain('Wytrych kupisz w Darknecie.');
+  expect(txt(r)).toContain('Nie masz narzędzia do łamania haseł.');
+  expect(txt(r)).not.toContain('Darknecie');
   expect(stageIndex(r.state)).toBe(2);
 });
-test('connect z Wytrychem: podpowiedź crack, etap 3', () => {
+test('connect z Wytrychem: bez porady crack, etap 3', () => {
   const r = runLine(wyt(kubaAccepted()), 'connect 83.21.40.17');
-  expect(txt(r)).toContain('<span class="y">Złam hasło: crack 83.21.40.17</span>');
+  expect(txt(r)).toContain('Podpowiedź do hasła na serwerze: „zagadka z piekarni”.');
+  expect(txt(r)).not.toContain('Złam hasło');
   expect(stageIndex(r.state)).toBe(3);
 });
 test('crack bez Wytrycha', () => {
-  expect(txt(runLine(kubaAccepted(), 'crack 83.21.40.17'))).toContain('crack: nie znaleziono polecenia.');
+  const t = txt(runLine(kubaAccepted(), 'crack 83.21.40.17'));
+  expect(t).toContain('crack: nie znaleziono polecenia.'); expect(t).toContain('Nie masz jeszcze Wytrycha.');
+  expect(t).not.toContain('Darknecie');
 });
 test('crack bez connect: 1 min, otwiera Wytrych, etap 3', () => {
   const s = wyt(kubaAccepted()); const r = runLine(s, 'crack 83.21.40.17');
