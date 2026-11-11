@@ -1,7 +1,7 @@
 import type { MissionDef } from '../../engine/missions';
-import { m3OnAccept } from './logic';
+import { m3AppBadges, m3OnAccept, m3StageIndex, m3StageSub, m3TermStep } from './logic';
 import {
-  M3_ACCEPT_REPLY, M3_ANSWER, M3_ANSWER_TOAST, M3_NOTES, M3_NOTES_FOOTER, M3_NOTES_INTRO, M3_NOTES_TITLE, M3_OFFER_BODY, M3_STAGES,
+  M3_ACCEPT_REPLY, M3_ANSWER, M3_ANSWER_TOAST, M3_NOTES, M3_NOTES_FOOTER, M3_NOTES_INTRO, M3_NOTES_TITLE, M3_OFFER_BODY, M3_STAGES, M3_TRIP,
 } from './texts';
 
 export const m3: MissionDef = {
@@ -26,7 +26,11 @@ export const m3: MissionDef = {
   notesIntro: M3_NOTES_INTRO,
   notesFooter: M3_NOTES_FOOTER,
   stages: M3_STAGES,
-  stageIndex: () => 0,
+  stageIndex: m3StageIndex,
+  stageSub: m3StageSub,
+  termStep: m3TermStep,
+  appBadges: m3AppBadges,
+  trip: M3_TRIP,
   network: {},
   apps: ['plan'],
   termLabel: 'kamery w Hotelu Luksus',

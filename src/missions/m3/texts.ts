@@ -1,5 +1,5 @@
 // Teksty zlecenia L. „Spacer o 21:14”, 1:1 z mockups/misja.html (linie podane przy stałych).
-import type { NoteCard, StageDef } from '../../engine/missions';
+import type { NoteCard, StageDef, TripDef } from '../../engine/missions';
 
 /** Linia 770. */
 export const M3_OFFER_BODY: string[] = [
@@ -53,3 +53,21 @@ export const M3_NET_HINT = '<div class="hint" style="opacity:.8">Zlecenie L.: sz
 
 /** Linia 1767, wnętrze <p>. */
 export const M3_PLAN_FOOTER = 'Żółte pole = kamera widzi. Adres kamery poznasz przez <code>probe</code>. Trasa: winda → korytarz B → 712.';
+
+/** Wyjazd do Poznania po paczkę od L. (wartości ustalone w planie 30; mapLabel: mapa-polski.tpl.html linia 234). */
+export const M3_TRIP: TripDef = {
+  city: 'Poznań',
+  mapLabel: 'Hotel Luksus, 7. piętro, wieżowiec w centrum Poznania',
+  mapText: 'Kamery w Hotelu Luksus, wieżowiec w centrum Poznania. Budynek trzeba znaleźć samemu.',
+  packageFrom: 'L.',
+  deadline: 21 * 60 + 14,
+  progressSub: 'kamery w Hotelu Luksus',
+  progress: [
+    { title: 'Rozpoznanie', sub: 'mail od L., plan 7. piętra' },
+    { title: 'Podłożenie podsłuchu przy skrzynce', sub: 'wyjazd do Poznania' },
+    { title: 'Połączenie z podsłuchem', sub: 'komputer w domu, Terminal → use S1' },
+    { title: 'Zadanie właściwe', sub: 'zależy od zlecenia; tu: kamery na drodze z windy do pokoju 712 wyłączone o 21:14' },
+    { title: 'Oddanie zlecenia', sub: 'krótki raport dla L. po powrocie z 712' },
+  ],
+  tripStage: 1,
+};
