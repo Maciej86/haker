@@ -69,9 +69,12 @@ export function traceRate(s: GameState): number {
   return 0.7 * (s.srv.alert ? 1.25 : 1) * 2 / Math.log2(s.hw.net + 2);
 }
 
+/** Adres PODSŁUCHU-1 w sieci za S1, jak go widzi serwer (linie 1273, 1388). */
+export const SRV_ME_IP = '10.42.0.250';
+
 /** Wiersz gracza w auth.log z adresu PODSŁUCHU-1 (linia 1273). */
 export function logMe(s: GameState, what: string): GameState {
-  const line: LogLine = { id: s.srv.logSeq, t: `${gclk(s).padEnd(9)}  ???           10.42.0.250  ${what}`, me: true };
+  const line: LogLine = { id: s.srv.logSeq, t: `${gclk(s).padEnd(9)}  ???           ${SRV_ME_IP}  ${what}`, me: true };
   return withSrv(s, { log: [...s.srv.log, line], logSeq: s.srv.logSeq + 1, logClean: false });
 }
 

@@ -12,7 +12,7 @@ import { TraceMeter } from '../../src/apps/server/TraceMeter';
 import { endCrack, withSrv } from '../../src/engine/server';
 import { runLine } from '../../src/engine/terminal';
 import { realtimeTick } from '../../src/engine/realtime';
-import { cracking, onBank } from '../missions/w/helpers';
+import { at, cracking, onBank } from '../missions/w/helpers';
 import { Probe, renderWithStore } from './helpers';
 
 const user = userEvent.setup();
@@ -82,4 +82,77 @@ it('licznik: ukryty bez sesji, gorący przy Wytrychu > 70%, dopisek pobierania',
 it('licznik: brak bez namierzania i poza serwerem', () => {
   renderWithStore(<Bar />, withSrv(runLine(onBank(), 'disconnect').state, { trace: 0 }));
   expect(document.querySelector('#trc')).toBeNull();
+});
+
+// ── część 2: mc i edytor logu w oknie Terminala ──
+it('mc: Enter wchodzi do katalogu za +2%, F10 zamyka', async () => {
+  const { store } = renderWithStore(<Terminal />, runLine(onBank(), 'mc').state);
+  expect(screen.getByText('~/Pobrane (ten komputer)')).toBeInTheDocument();
+  expect(screen.queryByLabelText('Polecenie')).toBeNull();
+  await user.keyboard('{Enter}');                            // w / pierwszy wiersz to archiwum (bez ..)
+  expect(store.get().terminal.location).toMatchObject({ path: '/archiwum' });
+  expect(store.get().srv.trace).toBeCloseTo(2);
+  expect(screen.getByText(/polecenie:/)).toHaveTextContent('cd archiwum namierzanie +2%');
+  await user.keyboard('{F10}');
+  expect(store.get().srv.mc.open).toBe(false);
+  expect(screen.getByLabelText('Polecenie')).toBeInTheDocument();
+});
+it('mc: strzałki za darmo, ← wraca i zaznacza katalog, Enter na pliku to info, F3 podgląd', async () => {
+  const { store, container } = renderWithStore(<Terminal />, runLine(at(onBank(), '/zarzad'), 'mc').state);
+  const sel = () => container.querySelector('.mc .row.sel')!.textContent;
+  expect(sel()).toContain('/..');
+  await user.keyboard('{ArrowDown}');
+  expect(sel()).toContain('/protokoly'); expect(store.get().srv.trace).toBeCloseTo(0);
+  await user.keyboard('{ArrowRight}');
+  expect(store.get().terminal.location).toMatchObject({ path: '/zarzad/protokoly' });
+  await user.keyboard('{ArrowDown}{ArrowDown}{Enter}');
+  expect(store.get().srv.known).toContain('protokol_2026-10-20.pdf');
+  expect(container.querySelector('.mc .info')!.innerHTML).toContain('autor <i>sekretariat</i>');
+  await user.keyboard('{F3}');
+  expect(screen.getByText('podgląd: /zarzad/protokoly/protokol_2026-10-20.pdf')).toBeInTheDocument();
+  expect(container.querySelector('.mc .view')!.textContent).toContain('Uchwała 14/2026');
+  await user.keyboard('{Escape}');
+  expect(store.get().srv.mc).toEqual({ open: true, preview: null });
+  await user.keyboard('{ArrowLeft}');
+  expect(store.get().terminal.location).toMatchObject({ path: '/zarzad' });
+  expect(sel()).toContain('/protokoly');
+});
+it('mc: przycisk F5 pobiera, Pobrane w prawym panelu', async () => {
+  const { store, container } = renderWithStore(<Terminal />, runLine(at(onBank(), '/pracownicy/m.kowal'), 'mc').state);
+  expect(screen.getByText('pusto')).toBeInTheDocument();
+  await user.keyboard('{ArrowDown}');
+  await user.click(screen.getByRole('button', { name: /F5/ }));
+  expect(store.get().srv.dl).toMatchObject({ path: '/pracownicy/m.kowal/lista_zakupow.txt' });
+  act(() => store.apply(realtimeTick(store.get(), 3000)));
+  expect(container.querySelectorAll('.mc .pane')[1].textContent).toContain('lista_zakupow.txt');
+  expect(screen.getByText('pobrany')).toBeInTheDocument();
+});
+it('edytor: Ctrl+K usuwa wiersz za +1%, F2 zapisuje', async () => {
+  const { store } = renderWithStore(<Terminal />, runLine(at(onBank(), '/it/logi'), 'edit auth.log').state);
+  expect(screen.getByText(/edycja: 10.42.7.12:\/it\/logi\/auth.log/)).toBeInTheDocument();
+  await user.keyboard('{Control>}k{/Control}');
+  expect(screen.getByText(/niezapisane zmiany/)).toBeInTheDocument();
+  expect(store.get().srv.trace).toBeCloseTo(3);
+  await user.keyboard('{F2}');
+  expect(store.get().srv.editor!.dirty).toBe(false);
+  expect(store.get().srv.logClean).toBe(true);
+  await user.keyboard('{Escape}');
+  expect(store.get().srv.editor).toBeNull();
+  expect(screen.getByLabelText('Polecenie')).toBeInTheDocument();
+});
+it('edytor z mc: F4, strzałki, Delete, Esc wraca do paneli', async () => {
+  const { store, container } = renderWithStore(<Terminal />, runLine(at(onBank(), '/it/logi'), 'mc').state);
+  await user.keyboard('{ArrowDown}{F4}');
+  expect(store.get().srv.editor!.fromMc).toBe(true);
+  expect(container.querySelectorAll('.mc .view .ln')).toHaveLength(store.get().srv.log.length);
+  expect(container.querySelector('.mc .view .ln.sel .me')).not.toBeNull();
+  await user.keyboard('{ArrowUp}{ArrowUp}{ArrowUp}{ArrowUp}{ArrowUp}{ArrowUp}{Delete}{Escape}');
+  expect(store.get().srv.editor).toBeNull();
+  expect(store.get().terminal.lines.at(-1)!.html).toContain('Wyjście bez zapisu');
+  expect(screen.getByText('~/Pobrane (ten komputer)')).toBeInTheDocument();
+});
+it('mc nie rysuje się poza serwerem', () => {
+  const s = runLine(onBank(), 'mc').state;
+  renderWithStore(<Terminal />, { ...s, terminal: { ...s.terminal, location: { kind: 'S1' } } });
+  expect(screen.queryByText('~/Pobrane (ten komputer)')).toBeNull();
 });

@@ -29,3 +29,28 @@
 .wyt-wires .crkres.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
 .wyt-wires .crkres .btn{margin-top:8px}
 .wyt-wires .acc{color:var(--acc)} .wyt-wires .coin{color:var(--coin)} .wyt-wires .red{color:var(--red)} .wyt-wires .dim{color:var(--dim)}
+
+/* misja.html linie 373–393: mc i edytor w oknie Terminala; #mc → .mc (warstwę daje .termview) */
+.mc{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--term);font-size:13px;line-height:1.5;outline:none}
+.mc .panes{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:0}
+.mc .pane{border:1px solid var(--edge);margin:6px 3px 0;display:flex;flex-direction:column;min-height:0;overflow:auto}
+.mc .ph{background:var(--panel-2);color:var(--acc);padding:2px 8px;border-bottom:1px solid var(--edge);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:sticky;top:0}
+.mc .ph.ph-box{margin:6px 3px 0;border:1px solid var(--edge)}
+.mc .ph .coin{color:var(--coin)}
+.mc .row{display:flex;justify-content:space-between;gap:10px;padding:0 8px;white-space:nowrap;cursor:pointer}
+.mc .row span:first-child{overflow:hidden;text-overflow:ellipsis}
+.mc .row.dir{color:var(--acc)} .mc .row.sel{background:var(--acc-dim);color:var(--on-acc)}
+.mc .row small{color:var(--dim)} .mc .row.sel small{color:var(--on-acc)}
+.mc .row.got small{color:var(--acc)}
+.mc .dimtxt{color:var(--dim)}
+.mc .info{margin:3px 3px 0;border:1px solid var(--edge);padding:3px 8px;color:var(--dim);min-height:24px}
+.mc .info b{color:var(--acc);font-weight:400} .mc .info i{color:var(--text);font-style:normal}
+.mc .mcmd{padding:3px 8px;color:var(--dim);min-height:24px}
+.mc .mcmd .y{color:var(--coin)} .mc .mcmd .r{color:var(--red)} .mc .mcmd .c{color:var(--acc)} .mc .mcmd .d{color:var(--dim)}
+.mc .fk{display:flex;flex-wrap:wrap;background:var(--panel);border-top:1px solid var(--edge)}
+.mc .fk button{background:none;border:0;padding:2px 7px;color:var(--text);font:inherit;font-size:12px;cursor:pointer}
+.mc .fk button:hover{background:var(--panel-2)} .mc .fk i{font-style:normal;color:var(--coin);margin-right:3px}
+.mc .view{flex:1;margin:6px 3px 0;border:1px solid var(--edge);padding:6px 10px;white-space:pre;overflow:auto}
+.mc .view .ln{cursor:pointer} .mc .view .ln.sel{background:var(--acc-dim);color:var(--on-acc)}
+.mc .view .me{color:var(--red)} .mc .view .ln.sel .me{color:var(--on-acc)}
+.mc .view .d{color:var(--dim)}

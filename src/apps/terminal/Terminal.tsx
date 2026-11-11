@@ -30,9 +30,10 @@ export function Terminal() {
   }, [shown.length]);
 
   // Fokus przy otwarciu okna i gdy program wpisze polecenie (setTerminalInput).
+  // Także po zamknięciu widoku w oknie (np. mc), jak `inp.focus()` w makiecie (linia 1342).
   useEffect(() => {
     if (input.current && document.activeElement !== input.current) input.current.focus();
-  }, [value, busy]);
+  }, [value, busy, view?.id]);
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     const history = store.get().terminal.history;

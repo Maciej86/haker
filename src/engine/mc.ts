@@ -5,7 +5,7 @@ import { step } from './types';
 import { esc, fmt } from './text';
 import { children } from './fstree';
 import { gclk } from './clock';
-import { charge, closeSession, dlProgress, onServer, srvHost, treeHost, withSrv } from './server';
+import { SRV_ME_IP, charge, closeSession, dlProgress, onServer, srvHost, treeHost, withSrv } from './server';
 import type { LogLine } from './server';
 
 /** Treść pliku do Terminala i podglądu F3 (linia 1267); auth.log z wierszy `srv.log`. */
@@ -92,6 +92,13 @@ export function removeLog(s: GameState, name: string): StepResult {
   }], [...r.ui, { kind: 'toast', text: 'Usunięcie logu wzbudziło podejrzenia', bad: true }]);
 }
 
+/** Nagłówek edytora: plik logu na serwerze („10.42.7.12:/it/logi/auth.log”) i adres gracza w sieci (linie 1386, 1388). */
+export function editorHead(s: GameState): { file: string; me: string } | null {
+  const host = srvHost(s);
+  const path = Object.entries(host?.tree ?? {}).find(([, n]) => n.kind === 'file' && n.tag === 'log')?.[0];
+  return host && path ? { file: `${host.ip}:${path}`, me: SRV_ME_IP } : null;
+}
+
 export type EditorAction = { kind: 'del'; index: number } | { kind: 'save' } | { kind: 'quit' };
 
 /** Klawisze edytora auth.log: usuń wiersz (+1%), zapisz (+3%), wyjdź (linie 1391–1399). */
@@ -121,7 +128,7 @@ export function editorAct(s: GameState, a: EditorAction): StepResult {
     return step(n, [{
       html: `<span class="c">Zapisano auth.log.</span> ${logClean
         ? '<span class="d">Nie ma w nim twojego adresu. Każda kolejna akcja dopisze nowy wiersz.</span>'
-        : '<span class="y">W logu zostały wiersze z 10.42.0.250.</span>'}`,
+        : `<span class="y">W logu zostały wiersze z ${SRV_ME_IP}.</span>`}`,
     }], ui);
   }
   const lines = ed.dirty ? [{ html: '<span class="y">Wyjście bez zapisu: zmiany w auth.log porzucone.</span>' }] : [];
