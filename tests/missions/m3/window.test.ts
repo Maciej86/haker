@@ -7,10 +7,9 @@ import { realtimeTick } from '../../../src/engine/realtime';
 import { deserialize, serialize } from '../../../src/engine/state';
 import { initM3State, offAt } from '../../../src/missions/m3/state';
 import { camName, judgeWindow, m3Check, m3Walk } from '../../../src/missions/m3/window';
-import { atBothAt, atT, cams, home, m3, run, txt, withM3 } from './helpers';
+import { atBothAt, atT, cams, home, lastMail, m3, run, txt, withM3 } from './helpers';
 
 const offBoth = (s: GameState) => run(s, 'cam off 10.42.5.31', 'cam off 10.42.5.33').state;
-const lastMail = (s: GameState) => s.mail.threads.m3.at(-1)!;
 
 const walkOf = (r: StepResult) => r.ui.find((e) => e.kind === 'walk') as Extract<UiEvent, { kind: 'walk' }>;
 

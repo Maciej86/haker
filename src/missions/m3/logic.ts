@@ -1,6 +1,7 @@
 import type { AppId, GameState, Line, StepResult } from '../../engine/types';
 import { step } from '../../engine/types';
 import { fill } from '../../engine/text';
+import { hhmm } from '../../engine/clock';
 import { bug, bugAtS1, reusedBugSub } from '../../engine/devices';
 import { isLinkedToS1 } from '../../engine/commands/basic';
 import { TRIP_FAILED_SUB, tripFailed } from '../../engine/trip';
@@ -8,7 +9,7 @@ import { gain } from '../../engine/skills';
 import type { NetworkOverlay } from '../../engine/missions';
 import type { TowerNode } from '../../world/tower';
 import { M3_CAMS, M3_ROUTE, isFloorCam } from './cams';
-import { M3_ACCEPTED_LINE, M3_DIRECT_LINE, M3_NET_HINT, M3_PROBE_CAM, M3_PROBE_OTHER } from './texts';
+import { M3_BACK_STEP, M3_ACCEPTED_LINE, M3_DIRECT_LINE, M3_NET_HINT, M3_PROBE_CAM, M3_PROBE_OTHER } from './texts';
 
 /** Linie Terminala po przyjęciu (makieta 1803–1804) i okno „Plan piętra” od razu. */
 export function m3OnAccept(s: GameState): StepResult {
@@ -44,7 +45,7 @@ export function m3TermStep(s: GameState): string {
     case 2: return 'połącz się z PODSŁUCH-1 (use S1)';
     case 3: return s.net.scanned ? 'znajdź cel: scan, NetMap, probe' : 'następny krok: znajdź cel w sieci za S1';
     case 4: return m.err > 0 && m.leg === 1 ? `nowe okno: 21:44, ${m.win.len} min` : 'zaplanuj kamery na 21:14 (at), potem disconnect i wait';
-    case 5: return 'czekaj na wiadomość od L. (wyjście z 712)';
+    case 5: return m.noticed ? fill(M3_BACK_STEP, { hm: hhmm(m.win.start) }) : 'czekaj na wiadomość od L. (wyjście z 712)';
     case 6: return 'posprzątaj i odpisz L. w Poczcie';
     default: return 'zlecenie zakończone';
   }

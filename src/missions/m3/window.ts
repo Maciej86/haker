@@ -18,7 +18,7 @@ import { CAM_MAX, M3_BACK_LEAD, M3_NOTICE_AFTER, M3_RETRY_START, camIsOff, offAt
 import { M3_CAMS, M3_ROUTE } from './cams';
 import { PLAN_ROUTE } from './plan';
 import {
-  M3_AT_READY, M3_EARLY, M3_FAIL_LINE, M3_JOBS_LOST, M3_LATE, M3_LATE_BACK, M3_LATE_THERE, M3_OVERFLOW, M3_OVERFLOW_FAIL,
+  M3_AT_READY, M3_EARLY, M3_NOTICE_LINE, M3_NOTICE_MAIL, M3_NOTICE_TOAST, M3_FAIL_LINE, M3_JOBS_LOST, M3_LATE, M3_LATE_BACK, M3_LATE_THERE, M3_OVERFLOW, M3_OVERFLOW_FAIL,
   M3_OVERFLOW_LINE, M3_OVERFLOW_MAIL, M3_OVERFLOW_TOAST, M3_RETRY_3, M3_RETRY_EARLY, M3_RETRY_LATE, M3_RETRY_LINE,
   M3_RETRY_TOAST_EARLY, M3_RETRY_TOAST_LATE, M3_THERE_LINE, M3_THERE_MAIL, M3_THERE_TOAST, M3_WINDOW_FAIL,
 } from './texts';
@@ -250,12 +250,27 @@ export function m3Evaluate(s: GameState): StepResult {
   ), spec);
 }
 
-/** Straż zlecenia po każdym poleceniu i tiku: zadania at po padnięciu podsłuchu, 7 minut, ocena, 7 minut. */
+/** Wiadomość L. o wyjściu z 712 (makieta linie 1713–1716): leg 2, raz, od minuty `notice`. */
+export function m3Notice(s: GameState): StepResult {
+  const m = s.mission.m3;
+  if (m.leg !== 2 || m.noticed || m.notice === null || s.t < m.notice) return step(s);
+  const notice = m.notice;
+  const hm = hhmm(m.win.start);
+  const n = m3MailL(withM({ ...s, sec: 0 }, { ...m, noticed: true }), fill(M3_NOTICE_MAIL, { hm }), notice);
+  return step(
+    n,
+    [{ html: fill(M3_NOTICE_LINE, { kiedy: gclk(s, notice), hm, od: hhmm(m.win.start - 1) }) }],
+    [{ kind: 'toast', text: fill(M3_NOTICE_TOAST, { hm }), bad: true }, { kind: 'open', app: 'plan' }, { kind: 'open', app: 'terminal' }],
+  );
+}
+
+/** Straż zlecenia po każdym poleceniu i tiku: zadania at po padnięciu podsłuchu, 7 minut, wiadomość L., ocena, 7 minut. */
 export function m3Check(s: GameState): StepResult {
   if (s.active !== 'm3' || !live(s)) return step(s);
   let r: StepResult = step(s);
   if (!bugAtS1(s)) r = M3_CAM_HOOKS.lost(s, s.t);
   r = andThen(r, m3Overflow);
+  r = andThen(r, m3Notice);
   r = andThen(r, m3Evaluate);
   return andThen(r, m3Overflow);
 }

@@ -2,14 +2,13 @@ import { expect, test } from 'vitest';
 import type { GameState } from '../../../src/engine/types';
 import { acceptOffer, floorPlanView } from '../../../src/engine/missions';
 import { deserialize, serialize } from '../../../src/engine/state';
-import type { M3State } from '../../../src/missions/m3/state';
 import { camIsOff, offAt } from '../../../src/missions/m3/state';
 import { cone } from '../../../src/missions/m3/plan';
 import { m3StartState } from '../../../src/missions/m3/dev';
 import '../../../src/missions';
+import { withM3 } from './helpers';
 
 const acc = () => acceptOffer(m3StartState(), 'm3').state;
-const withM3 = (s: GameState, m: Partial<M3State>) => ({ ...s, mission: { ...s.mission, m3: { ...s.mission.m3, ...m } } });
 const checked = (s: GameState, ips: string[]) => ({ ...s, net: { ...s.net, scanned: true, checked: ips } });
 
 test('przed probe: cztery kamery bez adresów', () => {

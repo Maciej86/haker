@@ -11,7 +11,7 @@ import { atReady, manualOff } from './window';
 import { m3Live } from './live';
 import { m3StageIndex } from './logic';
 import {
-  M3_CLOCK_BACK, M3_CLOCK_BLOCK, M3_CLOCK_DISCONNECT, M3_CLOCK_JUMP, M3_CLOCK_LIVE, M3_CLOCK_LIVE_AT, M3_CLOCK_LIVE_CONNECT,
+  M3_BACK_LIVE, M3_BACK_LIVE_CONNECT, M3_CLOCK_BACK, M3_CLOCK_BLOCK, M3_CLOCK_DISCONNECT, M3_CLOCK_JUMP, M3_CLOCK_LIVE, M3_CLOCK_LIVE_AT, M3_CLOCK_LIVE_CONNECT,
   M3_CLOCK_LIVE_NOW, M3_CLOCK_LIVE_TAG, M3_CLOCK_LIVE_WAIT, M3_CLOCK_MANUAL, M3_CLOCK_QUIET, M3_CLOCK_READY, M3_CLOCK_RUNNING,
   M3_CLOCK_WAIT_L, M3_CLOCK_WARN, M3_CLOCK_WARN_AT, M3_CLOCK_WARN_MAN, M3_CLOCK_WIN,
 } from './texts';
@@ -79,12 +79,13 @@ export function m3ClockView(s: GameState): ClockView | null {
       note: { tone: 'dim', html: why + (linked ? ' ' + M3_CLOCK_DISCONNECT : '') },
     };
   }
-  // Etap 2 po wiadomości: na razie bez notki; plan 32 dopisze teksty linii 1823 dla leg === 2.
-  if (m.leg === 1 && live) {
+  if (live) {
+    const back = m.leg === 2;
     const co = jobs ? M3_CLOCK_LIVE_AT
       : linked ? (s.t < w.start - 1 ? fill(M3_CLOCK_LIVE_WAIT, { hm: hhmm(w.start - 1) }) : M3_CLOCK_LIVE_NOW)
-      : M3_CLOCK_LIVE_CONNECT;
-    return { time, html, live, jump: null, note: { tone: 'text', html: fill(M3_CLOCK_LIVE, { co }) } };
+      : back ? M3_BACK_LIVE_CONNECT : M3_CLOCK_LIVE_CONNECT;
+    const note = back ? fill(M3_BACK_LIVE, { hm: hhmm(w.start), co }) : fill(M3_CLOCK_LIVE, { co });
+    return { time, html, live, jump: null, note: { tone: 'text', html: note } };
   }
   return { time, html, live, jump: null, note: null };
 }

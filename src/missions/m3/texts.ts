@@ -145,3 +145,16 @@ export const M3_CLOCK_LIVE_AT = 'Zadania at wykonają się same.';
 export const M3_CLOCK_LIVE_WAIT = 'Kamery wyłącz od {hm}, nie wcześniej.';
 export const M3_CLOCK_LIVE_NOW = 'Teraz: <code>cam off</code> dla kamer z drogi.';
 export const M3_CLOCK_LIVE_CONNECT = 'Połącz się: <code>use S1</code>.';
+
+// Droga powrotna (makieta linie 1713–1716, 1742–1746, 1823).
+/** Linia 1714. Wstawka {hm}. */
+export const M3_NOTICE_MAIL = 'Wychodzi za 5 minut, o <b>{hm}</b>. Ta sama droga w drugą stronę: z 712 korytarzem B do windy.';
+/** Linia 1715. Wstawki {kiedy}, {hm}, {od}. */
+export const M3_NOTICE_LINE = '<span class="y">{kiedy} · L.: wychodzi o {hm}. Ta sama droga, z 712 do windy.</span> <span class="d">Kamery na drodze wyłącz od {od}, nie wcześniej.</span>';
+/** Linia 1716. Wstawka {hm}. */
+export const M3_NOTICE_TOAST = 'L.: wychodzi o {hm}!';
+/** Linia 1716: pasek misji w Terminalu. Wstawka {hm}. */
+export const M3_BACK_STEP = 'powrót o {hm}: te same dwie kamery';
+/** Linia 1823 (leg 2, na żywo). Wstawki {hm}, {co}: M3_CLOCK_LIVE_AT, M3_CLOCK_LIVE_WAIT, M3_CLOCK_LIVE_NOW albo M3_BACK_LIVE_CONNECT. */
+export const M3_BACK_LIVE = 'Wychodzi o {hm}. {co}';
+export const M3_BACK_LIVE_CONNECT = 'Połącz się: <code>use S1</code> (2 min).';
