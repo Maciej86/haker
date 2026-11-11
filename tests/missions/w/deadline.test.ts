@@ -70,3 +70,15 @@ test('skok W. tuż przed 19:00', () => {
   expect(deadlineLabel(s)).toEqual({ text: 'czw 19:00 · zostało 2 min', red: true });
   expect(onServer(s)).toBe(true);
 });
+
+test('wysłanie po terminie z serwera w trakcie pobierania: sesja zamknięta jak przy terminie, bez listu „Minęła 19:00”', () => {
+  const g = runLine(at(gotV2(), '/finanse/zestawienia/2026'), 'get zestawienie_oddzialow_2026_FINAL.xlsx').state;
+  expect(g.srv.dl).not.toBeNull();
+  const r = sendV2({ ...g, t: 1140 });
+  expect(r.state.terminal.location).toEqual({ kind: 'home' });
+  expect(r.state.srv).toMatchObject({ dl: null, crack: null, editor: null, mc: { open: false, preview: null } });
+  expect(r.ui).toContainEqual({ kind: 'stopTimer', timer: 'download' });
+  expect(r.state.failed).toBe(true);
+  expect(r.state.mail.threads.w.some(m => m.html.startsWith('Minęła 19:00'))).toBe(false);
+  expect(r.state.mail.threads.w.at(-1)!.html).toBe('Po terminie. Zarząd zebrał się o 19:00 i było po sprawie. Nie płacę.');
+});

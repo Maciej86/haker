@@ -1,5 +1,5 @@
 import type { FileRef, GameState, MailMsg, MissionId, StepResult } from './types';
-import { step } from './types';
+import { andThen, step } from './types';
 import { advance, gclk } from './clock';
 import { esc } from './text';
 import { failMission, finishMission, missionDef } from './missions';
@@ -49,6 +49,8 @@ export type FileDeliveryCfg = {
   badReplyAfter?: number;
   /** Plik po terminie: tekst odpowiedzi (po 3 min, `bad`) ma pierwszeństwo przed `judge` i kończy misję porażką. */
   late?: (s: GameState) => string | null;
+  /** Przy spóźnionym wysłaniu, przed `failMission` (np. koniec sesji na serwerze). */
+  onLate?: (s: GameState) => StepResult;
 };
 
 const withThread = (s: GameState, id: MissionId, msgs: MailMsg[]): GameState => ({
@@ -73,7 +75,8 @@ export function fileDelivery(id: MissionId, cfg: FileDeliveryCfg): DeliveryDef {
       const lateReply = cfg.late?.(s1) ?? null;
       if (lateReply !== null) {
         const answer: MailMsg = { from: giver.name, when: gclk(s1, s1.t + 3), html: lateReply, bad: true };
-        return failMission(withThread(s1, id, [mine, answer]));
+        const st = withThread(s1, id, [mine, answer]);
+        return andThen(cfg.onLate?.(st) ?? step(st), failMission);
       }
       const { ok, reply } = cfg.judge(s1, file);
       const answer: MailMsg = ok

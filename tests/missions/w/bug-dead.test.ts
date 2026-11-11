@@ -13,7 +13,10 @@ test('pada na serwerze: tekst W., dom, kup nowy', () => {
   const r = realtimeTick(low(onBank()), 10_000);
   expect(r.state.terminal.location).toEqual({ kind: 'home' });
   expect(txt(r)).toContain('PODSŁUCH-1 wyczerpany. Połączenie z siecią za S1 zerwane.');
-  expect(txt(r)).toContain('Misja trwa. Nowy podsłuch kupisz w Darknecie (150 ¤), potem trzeba go podpiąć przy skrzynce S1.');
+  expect(txt(r)).toContain('Misja trwa.');
+  // linia 1408 bez porady (Terminal nie podpowiada); co dalej mówi pasek kroku
+  expect(txt(r)).not.toContain('Darknecie');
+  expect(txt(r)).not.toContain('podpiąć');
   expect(termStep(r.state)).toBe('kup nowy PODSŁUCH-1 w Darknecie');
   expect(stageIndex(r.state)).toBe(6);
 });

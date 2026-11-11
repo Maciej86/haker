@@ -9,7 +9,7 @@ import { W_HOST, wJudge } from './server';
 import { W_BONUSES, wLate, wOnDeadline, wOnFinish, wSummary } from './finish';
 import { fileDelivery } from '../../engine/delivery';
 import { step } from '../../engine/types';
-import { interruptSrv, turnTile } from '../../engine/server';
+import { endSession, interruptSrv, turnTile } from '../../engine/server';
 import { wiresView } from '../../engine/wires';
 
 const W_WYT_TITLE = 'Wytrych 1.0 · włamanie do 10.42.7.12';
@@ -79,7 +79,7 @@ export const w: MissionDef = {
   // linie 1290–1296; spóźnienie po 19:00: linie 1303–1304
   delivery: fileDelivery('w', {
     title: 'Odpowiedz W.', text: 'W załączniku zestawienie.', emptyAttach: 'pusto: pobierz plik z serwera (get)', cost: 1, judge: wJudge, badReplyAfter: 2,
-    late: wLate,
+    late: wLate, onLate: endSession,
   }),
   rewards: { money: 2500, xp: 80 },
   bonuses: W_BONUSES,
