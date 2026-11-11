@@ -1,11 +1,15 @@
 import { stageView } from '../../engine/missions';
+import { bugTripOffer, tripAgain, TRIP_AGAIN } from '../../engine/devices';
+import { dur } from '../../engine/clock';
+import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { useGame } from '../../ui/useGame';
+import { useGame, useStore } from '../../ui/useGame';
 import { usePref } from '../../ui/prefs';
 
 // misja.html linie 464 i 725–735
 export function StageCard() {
   const s = useGame((x) => x);
+  const store = useStore();
   const [coach] = usePref('neonos-coach', 'on');
   const rows = stageView(s);
   return (
@@ -24,6 +28,12 @@ export function StageCard() {
           </div>
         ))}
       </div>
+      {bugTripOffer(s) ? (
+        // [decyzja] misja.html linia 1418 miała ten przycisk w Terminalu; linie Terminala nie mają akcji.
+        <Button style={{ marginTop: 8 }} onClick={() => store.apply(tripAgain(store.get()))}>
+          {`Jedź i podepnij · samochód ok. ${dur(TRIP_AGAIN.minutes)}, ${TRIP_AGAIN.cost} ¤`}
+        </Button>
+      ) : null}
     </Card>
   );
 }

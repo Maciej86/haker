@@ -6,6 +6,7 @@ import { isLinkedToS1 } from './commands/basic';
 import { hasPackage } from './trip';
 import { realtimeSources } from './realtime';
 import type { RealtimeSource } from './realtime';
+import { registerBuyHandler } from './buyHandlers';
 
 export const BUG_MAX = 60;
 export const BUG_PRICE = 150;
@@ -128,3 +129,5 @@ export const S1_SOURCE: RealtimeSource = {
     return { ...r, state: { ...r.state, net: { ...r.state.net, s1Ms } } };
   },
 };
+
+registerBuyHandler('pods', buyBug, (s) => (hasPackage(s) ? 'Masz już nowy PODSŁUCH-1 w plecaku.' : null));

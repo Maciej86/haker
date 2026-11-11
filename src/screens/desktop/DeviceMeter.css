@@ -1,0 +1,9 @@
+/* misja.html linie 58–66 */
+#dev{animation:dev-pop .9s ease}
+@keyframes dev-pop{0%{box-shadow:0 0 0 0 rgba(var(--acc-rgb),.7);transform:scale(.9)}60%{box-shadow:0 0 0 10px rgba(var(--acc-rgb),0);transform:scale(1.04)}100%{transform:scale(1)}}
+#dev .led{width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 6px var(--acc)}
+#dev .meter{width:64px;height:5px;background:var(--track);border-radius:3px;overflow:hidden}
+#dev .meter i{display:block;height:100%;background:var(--acc);transition:width .4s}
+#devmin{font-weight:700;color:var(--acc)}
+#dev.low{border-color:var(--coin)} #dev.low .led{background:var(--coin);box-shadow:0 0 6px var(--coin)} #dev.low .meter i{background:var(--coin)} #dev.low #devmin{color:var(--coin)}
+#dev.off{border-color:var(--red)} #dev.off .led{background:var(--red);box-shadow:none} #dev.off .meter i{background:var(--red)} #dev.off #devmin{color:var(--red)}

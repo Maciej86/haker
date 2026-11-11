@@ -11,6 +11,7 @@ import { Icons } from './Icons';
 import { PlayerPanel } from './PlayerPanel';
 import { TaskBar, openApps } from './TaskBar';
 import { slots } from './slots';
+import './DeviceMeter';
 import './Desktop.css';
 
 function Windows() {

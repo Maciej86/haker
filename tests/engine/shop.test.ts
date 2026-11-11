@@ -30,9 +30,10 @@ it('jednorazowej rzeczy nie da się kupić drugi raz', () => {
   expect(twice.state).toBe(once); expect(twice.ui).toEqual([]);
 });
 it('Wytrych wypisuje linię instalacji', () => { expect(buy(game({ money: 100 }), 'wyt').lines[0].html).toContain('Zainstalowano: Wytrych 1.0'); });
-it('PODSŁUCH-1 wiele razy, bez owned', () => {
-  const r = buy(buy(game({ money: 300 }), 'pods').state, 'pods');
-  expect(r.state.money).toBe(0); expect(r.state.owned).not.toContain('pods'); expect(r.state.stats.buys).toBe(2);
+it('PODSŁUCH-1: bez owned, drugi odmowa przez guard', () => {
+  const once = buy(game({ money: 300 }), 'pods').state; const r = buy(once, 'pods');
+  expect(r.state.money).toBe(150); expect(r.state.owned).not.toContain('pods'); expect(r.state.stats.buys).toBe(1);
+  expect(r.ui).toContainEqual({ kind: 'toast', text: 'Masz już nowy PODSŁUCH-1 w plecaku.', bad: true });
 });
 it('onBuy misji z centrum uwagi', () => {
   const spy = vi.fn((s: GameState) => step(s, [{ html: 'misja' }]));

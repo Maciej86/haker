@@ -1,3 +1,4 @@
+import { registerBuyHandler, buyHandler } from './buyHandlers';
 import type { GameState, Line, StepResult, UiEvent } from './types';
 import { step } from './types';
 import { fmt } from './text';
@@ -36,11 +37,7 @@ export const DARK_ITEMS: ShopItem[] = [
   { id: 'v3', icon: 'loop', name: 'Pętla v2.0', desc: 'Na 20 s zatrzymuje namierzanie. Sprzedawca: kr0nos', price: 2200 },
 ];
 
-const handlers = new Map<string, (s: GameState) => StepResult>();
-
-export function registerBuyHandler(id: string, fn: (s: GameState) => StepResult): void {
-  handlers.set(id, fn);
-}
+export { registerBuyHandler };
 
 export function toolsCount(s: GameState): number {
   return DARK_ITEMS.filter((i) => !i.multi && s.owned.includes(i.id)).length;
@@ -50,6 +47,9 @@ export function buy(s: GameState, id: string): StepResult {
   const it = [...HW_ITEMS, ...NET_ITEMS, ...DARK_ITEMS].find((i) => i.id === id);
   if (!it) return step(s);
   if (!it.multi && s.owned.includes(id)) return step(s);
+  const h = buyHandler(id);
+  const refused = h?.guard?.(s);
+  if (refused) return step(s, [], [{ kind: 'toast', text: refused, bad: true }]);
   if (s.money < it.price) {
     return step(s, [], [{ kind: 'toast', text: `Brakuje ${fmt(it.price - s.money)} ¤ na ${it.name}`, bad: true }]);
   }
@@ -63,8 +63,7 @@ export function buy(s: GameState, id: string): StepResult {
   const lines: Line[] = (it.lines ?? []).map((html) => ({ html }));
   const ui: UiEvent[] = [{ kind: 'toast', text: `Kupiono: ${it.name}` }];
   const chain = (r: StepResult) => { state = r.state; lines.push(...r.lines); ui.push(...r.ui); };
-  const h = handlers.get(id);
-  if (h) chain(h(state));
+  if (h) chain(h.fn(state));
   const onBuy = missionDef(focusMission(state))?.onBuy;
   if (onBuy) chain(onBuy(state, id));
   return step(state, lines, ui);
