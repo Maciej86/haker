@@ -43,9 +43,10 @@ export const DIRECT_COMMANDS: CommandTable = {
     if (viaS1?.access === 'S1') return viaS1.onCrack(s);   // host za S1 (plan 21): misja woła startCrack
     const host = directHost(s, ip);
     if (!host) {
-      // za S1 makieta zna jeden cel: „Użycie: crack 10.42.7.12” (linia 927)
-      const s1Host = missionDef(focusMission(s))?.hosts?.find((h) => h.access === 'S1' && h.enterCmd);
-      if (s1Host && isLinkedToS1(s)) return step(s, [{ html: `<span class="r">Użycie: ${s1Host.enterCmd}</span>` }]);
+      // za S1 makieta zna jeden cel: „Użycie: crack 10.42.7.12” (linia 927), ale dopiero gdy cel jest znaleziony
+      const def = missionDef(focusMission(s));
+      const s1Host = def?.hosts?.find((h) => h.access === 'S1' && h.enterCmd);
+      if (s1Host && isLinkedToS1(s) && def?.network?.targetFound?.(s)) return step(s, [{ html: `<span class="r">Użycie: ${s1Host.enterCmd}</span>` }]);
       return step(s, [{ html: `<span class="r">crack: brak odpowiedzi od ${esc(ip)}.</span>` }]);
     }
     if (host.cracked(s)) {

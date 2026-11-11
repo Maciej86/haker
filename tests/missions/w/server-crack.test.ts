@@ -96,3 +96,12 @@ test('drugie wejście: bez drugiego przyrostu', () => {
   const s = endCrack(runLine(runLine(onBank(), 'disconnect').state, 'crack 10.42.7.12').state, 'ok').state;
   expect(s.gains.filter(g => g.sk === 'Sieć' && g.why.startsWith('włamanie'))).toHaveLength(1);
 });
+test('crack na zły adres przed znalezieniem celu nie zdradza IP banku', () => {
+  const s = run(wAfterTripState(), 'use S1', 'scan').state;
+  const r = runLine(s, 'crack 10.42.5.99');
+  expect(txt(r)).not.toContain('10.42.7.12');
+  expect(txt(r)).toContain('crack: brak odpowiedzi od 10.42.5.99.');
+});
+test('crack na zły adres po znalezieniu celu: Użycie z adresem', () => {
+  expect(txt(runLine(found(), 'crack 10.42.5.99'))).toContain('Użycie: crack 10.42.7.12');
+});
