@@ -9,4 +9,5 @@ export const MAIL_ORDER: MissionId[] = ['w', 'm3', 'kuba'];
 export const MISSIONS: Record<MissionId, MissionDef> = { kuba, w, m3 };
 import './kuba/dev';
 import './w/dev';
+import './m3/dev';
 import '../world/trip/devJumps';
