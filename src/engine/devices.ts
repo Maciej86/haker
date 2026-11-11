@@ -118,16 +118,20 @@ export const S1_SOURCE: RealtimeSource = {
     && isLinkedToS1(s)
     && bugAtS1(s)
     && !realtimeSources(s).some((r) => r.pausesS1 && r.active(s)),
-  tick: (s, ms) => {
-    let acc = s.net.s1Ms + ms;
-    let r: StepResult = step(s);
-    while (acc >= S1_STEP_MS && isLinkedToS1(r.state) && bugAtS1(r.state)) {
-      acc -= S1_STEP_MS;
-      r = andThen(r, (x) => spend(x, 1, 1));
-    }
-    const s1Ms = isLinkedToS1(r.state) && bugAtS1(r.state) ? acc : 0;
-    return { ...r, state: { ...r.state, net: { ...r.state.net, s1Ms } } };
-  },
+  tick: (s, ms) => s1Minutes(s, ms),
 };
+
+/** Minuty połączenia z S1: co 10 s czasu rzeczywistego 1 min gry i 1 min urządzenia, licznik `net.s1Ms`
+ * wspólny dla `'s1'` i źródeł z `pausesS1`, które liczą minuty same (Wytrych, pobieranie). */
+export function s1Minutes(s: GameState, ms: number): StepResult {
+  let acc = s.net.s1Ms + ms;
+  let r: StepResult = step(s);
+  while (acc >= S1_STEP_MS && isLinkedToS1(r.state) && bugAtS1(r.state)) {
+    acc -= S1_STEP_MS;
+    r = andThen(r, (x) => spend(x, 1, 1));
+  }
+  const s1Ms = isLinkedToS1(r.state) && bugAtS1(r.state) ? acc : 0;
+  return { ...r, state: { ...r.state, net: { ...r.state.net, s1Ms } } };
+}
 
 registerBuyHandler('pods', buyBug, (s) => (hasPackage(s) ? 'Masz już nowy PODSŁUCH-1 w plecaku.' : null));

@@ -6,6 +6,11 @@ import {
   W_OFFER_BODY, W_STAGES,
 } from './texts';
 import { W_HOST } from './server';
+import { step } from '../../engine/types';
+import { turnTile } from '../../engine/server';
+import { wiresView } from '../../engine/wires';
+
+const W_WYT_TITLE = 'Wytrych 1.0 · włamanie do 10.42.7.12';
 
 /** Wyjazd do Poznania (wartości jak SAMPLE_TRIP planu 04; progress z wyjazd.tpl.html linia 411). */
 const W_TRIP: TripDef = {
@@ -53,6 +58,12 @@ export const w: MissionDef = {
   termStep: wTermStep,
   network: W_NETWORK,
   hosts: [W_HOST],
+  wytrych: {
+    view: (s) => (s.srv.crack || s.srv.res
+      ? { title: W_WYT_TITLE, mode: 'wires', wires: wiresView(s) }
+      : { title: W_WYT_TITLE, mode: 'none' }),
+    act: (s, a) => (a.kind === 'turn' ? turnTile(s, a.r, a.c, a.dir) : step(s)),
+  },
   onProbe: wOnProbe,
   commands: W_COMMANDS,
   help: [W_HELP_CRACK],

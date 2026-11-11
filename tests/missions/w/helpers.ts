@@ -3,6 +3,8 @@ import type { GameState } from '../../../src/engine/types';
 import type { SrvState } from '../../../src/engine/server';
 import { wAfterTripState } from '../../../src/missions/w/dev';
 import { run } from '../kuba/helpers';
+import { runLine } from '../../../src/engine/terminal';
+import { endCrack } from '../../../src/engine/server';
 import '../../../src/missions';
 
 export { run, txt } from '../kuba/helpers';
@@ -19,3 +21,9 @@ export const at = (s: GameState, path: string): GameState => ({
 
 /** Cel znaleziony: czw 16:16, zapas 54, lokacja S1. */
 export const found = (): GameState => run(wAfterTripState(), 'use S1', 'scan', 'probe 10.42.7.12').state;
+
+/** Wytrych w toku: czw 16:21, zapas 52. */
+export const cracking = (): GameState => runLine(found(), 'crack 10.42.7.12').state;
+
+/** Na serwerze banku w '/', po udanym Wytrychu; `p` łata `srv`. */
+export const onBank = (p: Partial<SrvState> = {}): GameState => at(withSrv(endCrack(cracking(), 'ok').state, p), '/');

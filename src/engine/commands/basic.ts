@@ -3,6 +3,7 @@ import type { GameState } from '../types';
 import { step } from '../types';
 import { packageWaiting } from '../devices';
 import { focusMission, missionDef } from '../missions';
+import { endCrack } from '../server';
 
 const HELP_TEXT = `<span class="c">Dostępne polecenia</span>
   devices           twoje urządzenia w terenie
@@ -66,5 +67,12 @@ export const BASIC_COMMANDS: CommandTable = {
     }
     return step(s, [{ html: rows.join('\n') }]);
   },
-  abort: (_a, s) => step(s, [{ html: '<span class="d">Nic nie trwa.</span>' }]),
+  abort: (_a, s) => {
+    if (s.srv.crack) return endCrack(s, 'abort');
+    if (s.srv.dl) {
+      return step({ ...s, srv: { ...s.srv, dl: null } }, [{ html: '<span class="r">Pobieranie przerwane.</span>' }],
+        [{ kind: 'stopTimer', timer: 'download' }]);
+    }
+    return step(s, [{ html: '<span class="d">Nic nie trwa.</span>' }]);
+  },
 };

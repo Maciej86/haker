@@ -6,6 +6,7 @@ import { isLinkedToS1 } from '../../engine/commands/basic';
 import { TRIP_FAILED_SUB, tripFailed } from '../../engine/trip';
 import { gain } from '../../engine/skills';
 import { RECON_COMMANDS } from '../../engine/commands/recon';
+import { onServer } from '../../engine/server';
 import type { CommandTable } from '../../engine/terminal';
 import type { NetSide, NetworkOverlay } from '../../engine/missions';
 import { buyHint, hintView } from '../../engine/missions';
@@ -26,6 +27,7 @@ export function wOnAccept(s: GameState): StepResult {
 /** Etap zlecenia (makieta linia 732, z poprawką na stan trwały: po skanie etap nie cofa się). */
 export function wStageIndex(s: GameState): number {
   if (s.done.includes('w')) return 7;
+  if (s.srv.cracked) return 6;
   if (s.mission.w.found) return 5;
   if (isLinkedToS1(s) || s.net.scanned) return 4;
   if (bugAtS1(s)) return 3;
@@ -38,7 +40,7 @@ export function wStageSub(s: GameState, i: number): string | null {
   return i === 2 ? (reusedBugSub(s) ?? (tripFailed(s) ? TRIP_FAILED_SUB : null)) : null;
 }
 
-/** Pasek misji w Terminalu (makieta 1866, 1806, 870, 916, 1438, 1874). */
+/** Pasek misji w Terminalu (makieta 1866, 1806, 870, 916, 1438, 1874, 1183, 1191, 959, 962). */
 export function wTermStep(s: GameState): string {
   switch (wStageIndex(s)) {
     case 0: return 'przeczytaj mail od W.';
@@ -46,7 +48,12 @@ export function wTermStep(s: GameState): string {
     case 2: return 'otwórz Mapę i znajdź bank w Poznaniu';
     case 3: return 'połącz się z PODSŁUCH-1 (use S1)';
     case 4: return s.net.scanned ? 'znajdź cel: scan, NetMap, probe' : 'następny krok: znajdź cel w sieci za S1';
-    case 5: return 'następny krok: włamanie do 10.42.7.12';
+    case 5: return s.srv.crack ? 'włamanie: Wytrych' : 'następny krok: włamanie do 10.42.7.12';
+    case 6:
+      if (s.downloads.some((f) => f.mission === 'w')) {
+        return isLinkedToS1(s) ? 'zejdź z S1 (disconnect) i odeślij plik' : 'odeślij plik w Poczcie';
+      }
+      return onServer(s) ? 'znajdź zestawienie przyjęte przez zarząd' : 'pobierz zestawienie';
     default: return 'zlecenie zakończone';
   }
 }

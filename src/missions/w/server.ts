@@ -4,6 +4,8 @@ import { step } from '../../engine/types';
 import type { HostDef } from '../../engine/missions';
 import type { Tree, TreeFile, TreeNode } from '../../engine/fstree';
 import type { LogLine } from '../../engine/server';
+import { startCrack } from '../../engine/server';
+import type { GameState, StepResult } from '../../engine/types';
 
 const F = (name: string, mb: number, date: string, author: string, approved: string, notes: string, tag: string, body: string): TreeFile =>
   ({ kind: 'file', name, mb, date, author, approved, notes, tag, body });
@@ -71,5 +73,11 @@ export const W_HOST: HostDef = {
   enterCmd: 'crack 10.42.7.12',
   cracked: () => false,
   onConnectLocked: (s) => step(s),
-  onCrack: (s) => step(s),
+  onCrack: (s) => wOnCrack(s),
 };
+
+/** `crack 10.42.7.12`: dopiero po znalezieniu celu (linia 926 bez „Najpierw znajdź cel (scan, probe).”). */
+export function wOnCrack(s: GameState): StepResult {
+  if (!s.mission.w.found) return step(s, [{ html: '<span class="r">Nie wiesz jeszcze, do czego się włamać.</span>' }]);
+  return startCrack(s, W_HOST.ip);
+}

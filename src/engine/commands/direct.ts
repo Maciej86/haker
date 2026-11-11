@@ -38,6 +38,8 @@ export const DIRECT_COMMANDS: CommandTable = {
       return step(s, [{ html: 'crack: nie znaleziono polecenia. <span class="d">Nie masz jeszcze Wytrycha. Kupisz go w Darknecie.</span>' }]);
     }
     if (!ip) return step(s, [{ html: 'Użycie: crack &lt;ip&gt;' }]);
+    const viaS1 = missionHost(s, ip);
+    if (viaS1?.access === 'S1') return viaS1.onCrack(s);   // host za S1 (plan 21): misja woła startCrack
     const host = directHost(s, ip);
     if (!host) return step(s, [{ html: `<span class="r">crack: brak odpowiedzi od ${esc(ip)}.</span>` }]);
     if (host.cracked(s)) {
