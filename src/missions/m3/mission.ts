@@ -7,6 +7,7 @@ import { m3PlanView } from './plan';
 import { M3_COMMANDS } from './window';
 import { M3_LIVE_SOURCE, M3_WATCH_SOURCE } from './live';
 import { m3ClockView, m3Jump } from './clock';
+import { M3_BONUSES, M3_DELIVERY, m3AdjustReward, m3Summary } from './finish';
 
 export const m3: MissionDef = {
   id: "m3",
@@ -46,10 +47,11 @@ export const m3: MissionDef = {
   realtime: [M3_LIVE_SOURCE, M3_WATCH_SOURCE],
   clock: m3ClockView,
   clockJump: m3Jump,
-  delivery: { kind: "report" },
+  delivery: M3_DELIVERY,
   rewards: { money: 2000, xp: 80 },
-  bonuses: [],
-  summary: () => [],
+  bonuses: M3_BONUSES,
+  summary: m3Summary,
+  adjustReward: m3AdjustReward,
   doneLog: ["> Raport wysłany: wszedł i wyszedł.", "> L. potwierdził.", "> Zlecenie zakończone."],
   failLog: ["> L. odwołał zlecenie.", "> Zlecenie nieudane."],
 };

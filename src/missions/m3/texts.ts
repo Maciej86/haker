@@ -169,3 +169,14 @@ export const M3_BACK_BAD_LINE = '<span class="r">{txt}</span> <span class="d">Mi
 /** Linia 1746. */
 export const M3_BACK_OK_TOAST = 'L.: wyszedł niezauważony';
 export const M3_BACK_BAD_TOAST = 'L.: nagrany przy wyjściu, zapłata mniejsza';
+
+// Raport i podsumowanie (makieta linie 1828–1840, 1854–1856).
+/** Linie 1828–1829, w kolejności premii. */
+export const M3_BONUS_LABELS = ['Oba przejścia bez błędu (tam i z powrotem)', 'Żadna zbędna kamera nie zgasła', 'Rozłączony z S1 przed raportem'] as const;
+export const M3_LATE_LABEL = 'Nagroda za zlecenie (pomniejszona: druga próba)';
+/** Linia 1839. */
+export function m3OpenCamsRow(n: number): string {
+  return `${n} kamer${n > 1 ? 'y' : 'a'} dalej wyłączon${n > 1 ? 'e' : 'a'}. Ochrona to zauważy rano.`;
+}
+/** Linia 1840. Wstawki {czas}, {min}. */
+export const M3_TIME_ROW = 'Czas: {czas} · PODSŁUCH-1 zostało {min} min (zostaje przy S1)';

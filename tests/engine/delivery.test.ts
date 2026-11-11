@@ -17,13 +17,13 @@ function withDelivery<T>(d: DeliveryDef, fn: () => T): T {
   try { return fn(); } finally { MISSIONS.m3.delivery = orig; }
 }
 
-test('szkielet z planu 01 bez box/send: brak pola oddania, deliver nic nie robi', () => {
+test('szkielet bez box/send: brak pola oddania, deliver nic nie robi', () => withDelivery({ kind: 'report' }, () => {
   const s = game({ active: 'm3' });
   expect(MISSIONS.m3.delivery).toEqual({ kind: 'report' });
   expect(replyBox(s, 'm3')).toBeNull();
   expect(canDeliver(s, 'm3')).toBe(false);
   expect(deliver(s, 'm3', 'x').state).toBe(s);
-});
+}));
 test('raport bez pliku: pole, canDeliver, send dostaje fileId null', () => withDelivery(REPORT, () => {
   const s = game({ active: 'm3' });
   expect(replyBox(s, 'm3')).toEqual(BOX);
