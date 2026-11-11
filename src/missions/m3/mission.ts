@@ -37,7 +37,7 @@ export const m3: MissionDef = {
   trip: M3_TRIP,
   network: M3_NETWORK,
   onProbe: m3OnProbe,
-  apps: ['plan'],
+  apps: ['plan', 'clock'],
   floorPlan: m3PlanView,
   termLabel: 'kamery w Hotelu Luksus',
   onAccept: m3OnAccept,

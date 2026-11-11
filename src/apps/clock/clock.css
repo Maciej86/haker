@@ -1,0 +1,10 @@
+/* Duży zegar misji czasowej (misja.html linie 241–245). Na pulpicie #bigclock, w oknie Zegara bez id. */
+.bigclock{display:flex;align-items:center;gap:16px;padding:8px 16px;border:1px solid var(--coin);border-radius:8px;background:rgba(var(--panel-rgb),.96);box-shadow:0 0 30px color-mix(in srgb,var(--coin) 15%,transparent)}
+.bigclock.fixed{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:60}
+.bigclock .bc-t{font-size:32px;line-height:1.1;color:var(--coin);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.bigclock .bc-l{font-size:12px;color:var(--dim)}.bigclock .bc-l b{color:var(--text);font-weight:500}
+.bigclock.live{border-color:var(--red);box-shadow:0 0 36px color-mix(in srgb,var(--red) 25%,transparent)}.bigclock.live .bc-t{color:var(--red)}
+.bigclock .btn{white-space:nowrap}.bigclock small{display:block;font-size:11px;color:var(--dim);margin-top:4px;max-width:250px}
+.bigclock small.bc-note-text{color:var(--text)}.bigclock small.bc-note-red{color:var(--red)}
+.clock-app{padding:12px}.clock-app .bigclock{flex-wrap:wrap}
+.clock-empty{padding:14px;color:var(--dim)}

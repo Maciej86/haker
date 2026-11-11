@@ -12,6 +12,7 @@ import { PlayerPanel } from './PlayerPanel';
 import { TaskBar, openApps } from './TaskBar';
 import { slots } from './slots';
 import '../../apps/server/register';
+import '../../apps/clock/register';
 import './DeviceMeter';
 import './Desktop.css';
 

@@ -26,7 +26,7 @@ test('oferta L.: 2000 ¤, bez terminu, 5 minut i 7 minut w treści', () => {
   expect(d.offer.body[1]).toContain('nie działa dłużej niż <b>7 minut</b>');
   expect(d.offer.body[2]).toBe('Płacę 2000 ¤. Wchodzisz w to?');
   expect(d.deadline).toBeUndefined();
-  expect(d.apps).toEqual(['plan']);
+  expect(d.apps).toEqual(['plan', 'clock']);
 });
 test('przyjęcie: 1 + 2 min, odpowiedź L., linia, okno planu', () => {
   const r = accepted();
