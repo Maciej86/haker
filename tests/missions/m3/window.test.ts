@@ -2,7 +2,7 @@ import '../../../src/missions';
 import { expect, test } from 'vitest';
 import type { GameState } from '../../../src/engine/types';
 import { runLine } from '../../../src/engine/terminal';
-import { retryDay } from '../../../src/engine/missions';
+import { retryDay, termStep } from '../../../src/engine/missions';
 import { realtimeTick } from '../../../src/engine/realtime';
 import { deserialize, serialize } from '../../../src/engine/state';
 import { initM3State, offAt } from '../../../src/missions/m3/state';
@@ -51,6 +51,7 @@ test('za wcześnie: restart kamer, 21:44 na 2 min, bez obniżki', () => {
   expect(lastMail(r.state).html).toBe('Ochrona zauważyła, że kamery przy windzie i korytarz B nie działają, zanim ruszył, i poszła sprawdzić. Zrestartowali kamery. Druga i ostatnia próba o <b>21:44</b>, a ochrona jest czujniejsza: okno tylko <b>2 minuty</b>.');
   expect(txt(r)).toContain('<span class="y">Nowe okno: 21:44, 2 min.</span>');
   expect(r.ui).toContainEqual({ kind: 'toast', text: 'L.: za wcześnie. Nowe okno 21:44', bad: true });
+  expect(termStep(r.state)).toBe('nowe okno: 21:44, 2 min');
 });
 test('za późno: 1500 ¤ (late), 21:44 na 3 min, kropka staje przy .31', () => {
   const r = m3Check(atT(cams(), 1275));

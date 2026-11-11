@@ -21,6 +21,9 @@ export function m3OnAccept(s: GameState): StepResult {
 export function m3StageIndex(s: GameState): number {
   if (s.done.includes('m3')) return 7;
   if (s.active !== 'm3') return 0; // przed przyjęciem: podsłuch po W. przy S1 nie przesuwa etapu
+  const m = s.mission.m3;
+  if (m.ok) return 6;
+  if (m.leg === 2) return 5;
   if (M3_ROUTE.every((ip) => s.net.checked.includes(ip))) return 4;
   if (isLinkedToS1(s) || s.net.scanned) return 3;
   return bugAtS1(s) ? 2 : 1;
@@ -31,14 +34,18 @@ export function m3StageSub(s: GameState, i: number): string | null {
   return i === 1 ? (reusedBugSub(s) ?? (tripFailed(s) ? TRIP_FAILED_SUB : null)) : null;
 }
 
-/** Pasek misji w Terminalu (makieta 1806, 916, 870, 1436, 1833). */
+/** Pasek misji w Terminalu (makieta 1806, 916, 870, 1436, 1833, 1736, 1741, 1746, 1841). */
 export function m3TermStep(s: GameState): string {
+  const m = s.mission.m3;
+  if (s.active === 'm3' && m.fail) return 'zlecenie przegrane';
   switch (m3StageIndex(s)) {
     case 0: return 'przeczytaj mail od L.';
     case 1: return 'otwórz Mapę i znajdź wieżowiec';
     case 2: return 'połącz się z PODSŁUCH-1 (use S1)';
     case 3: return s.net.scanned ? 'znajdź cel: scan, NetMap, probe' : 'następny krok: znajdź cel w sieci za S1';
-    case 4: return 'zaplanuj kamery na 21:14 (at), potem disconnect i wait';
+    case 4: return m.err > 0 && m.leg === 1 ? `nowe okno: 21:44, ${m.win.len} min` : 'zaplanuj kamery na 21:14 (at), potem disconnect i wait';
+    case 5: return 'czekaj na wiadomość od L. (wyjście z 712)';
+    case 6: return 'posprzątaj i odpisz L. w Poczcie';
     default: return 'zlecenie zakończone';
   }
 }
