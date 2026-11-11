@@ -4,6 +4,7 @@ import { nextDay } from '../../engine/clock';
 import { retryDay } from '../../engine/missions';
 import { fmt } from '../../engine/text';
 import { useGame, useStore } from '../../ui/useGame';
+import { clearUiTimers } from '../../ui/restart';
 import { TypedLog } from './TypedLog';
 import './Overlay.css';
 
@@ -50,7 +51,7 @@ export function Summary() {
         </div>
         {retry ? (
           <div className="retry">
-            <button className="btn" onClick={once(() => store.apply(retryDay(store.get())))}>Spróbuj od nowa (ten sam dzień)</button>
+            <button className="btn" onClick={once(() => { clearUiTimers(); store.apply(retryDay(store.get())); })}>Spróbuj od nowa (ten sam dzień)</button>
           </div>
         ) : null}
         <SummaryRows rows={rows ?? []} />

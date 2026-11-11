@@ -1,4 +1,5 @@
 import { devEnabled, devJumps } from '../../engine/dev';
+import { clearUiTimers } from '../../ui/restart';
 import { useStore } from '../../ui/useGame';
 import { useProfile } from '../../ui/useProfile';
 import { useWindows } from '../../ui/windows';
@@ -14,7 +15,7 @@ export function DevPanel() {
     <span id="mk">
       DEV:
       {devJumps().map((j) => (
-        <button key={j.id} onClick={() => { store.apply(j.make()); windows.reset(['terminal', 'mail']); }}>{j.label}</button>
+        <button key={j.id} onClick={() => { clearUiTimers(); store.apply(j.make()); windows.reset(['terminal', 'mail']); }}>{j.label}</button>
       ))}
       <button onClick={() => setPreviewAll(true)}>odblokuj motywy</button>
     </span>

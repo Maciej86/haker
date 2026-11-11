@@ -8,6 +8,12 @@ import { NEXT_DAY_T } from '../../src/engine/clock';
 import type { GameState, SummaryRow } from '../../src/engine/types';
 import { game } from '../engine/fixtures';
 import { deserialize, serialize } from '../../src/engine/state';
+import { hideMail } from '../../src/apps/mail/delayed';
+import { startTermHold, useTermHold } from '../../src/apps/terminal/hold';
+import { walk } from '../../src/apps/plan/walk';
+import { renderHook } from '@testing-library/react';
+
+const useTermHoldSnapshot = () => renderHook(() => useTermHold()).result.current;
 import { renderWithStore } from './helpers';
 
 beforeEach(() => { vi.useFakeTimers(); });
@@ -59,6 +65,22 @@ it('porażka: jedyny przycisk to Spróbuj od nowa, także po wczytaniu zapisu', 
   expect(loaded).toMatchObject({ failed: true, overlay: 'summary' });
   renderWithStore(<Summary />, loaded);
   expect(screen.getAllByRole('button').map((b) => b.textContent)).toEqual(['Spróbuj od nowa (ten sam dzień)']);
+});
+it('porażka: Spróbuj od nowa przerywa zaległy mail, wstrzymanie Terminala i pokaz na planie', () => {
+  const { dayCheckpoint: _, ...cp } = game({ money: 321 });
+  renderWithStore(<Summary />, done({ failed: true, summaryMeta: { log: [], xp: 0, money: 0, next: 'retry' }, dayCheckpoint: cp }));
+  const mail = vi.fn(); const walked = vi.fn();
+  act(() => {
+    hideMail('m3', 'odp', 1000, mail);
+    startTermHold({ ms: 1000, steps: 2, after: [] });
+    walk.start({ path: [[0, 0], [10, 10]], stopAt: 1, ms: 1000, holdMs: 0 }, walked);
+  });
+  expect(walk.get()).not.toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Spróbuj od nowa (ten sam dzień)' }));
+  act(() => vi.advanceTimersByTime(5000));
+  expect([mail, walked].map((f) => f.mock.calls.length)).toEqual([0, 0]);
+  expect(walk.get()).toBeNull();
+  expect(useTermHoldSnapshot()).toBeNull();
 });
 it('Pause: klik wznawia', () => {
   const onResume = vi.fn(); render(<Pause onResume={onResume} />);
