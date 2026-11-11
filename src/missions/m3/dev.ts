@@ -51,7 +51,21 @@ export function m3LiveState(seed = 1): GameState {
   return typed({ ...m3BeforeWindowState(seed), t: 21 * 60 + 10, sec: 0 }, 'use S1');
 }
 
+/** „L. wiadomość o wyjściu”: droga tam przez at, czw 21:45, wiadomość L. przyszła, dom, minuty na żywo. */
+export function m3BackState(seed = 1): GameState {
+  return typed(m3BeforeWindowState(seed), 'use S1', 'at 21:14 cam off 10.42.5.31 3m', 'at 21:14 cam off 10.42.5.33 3m',
+    'disconnect', 'wait 21:15', 'wait 21:45');
+}
+
+/** „L. raport”: powrót przez at oceniony (ok), czw 21:51, dom, etap 6 z polem raportu. */
+export function m3ReportState(seed = 1): GameState {
+  return typed(m3BackState(seed), 'use S1', 'at 21:50 cam off 10.42.5.31 3m', 'at 21:50 cam off 10.42.5.33 3m',
+    'disconnect', 'wait 21:51');
+}
+
 registerDevJump({ id: 'm3-start', label: 'start L.', make: () => m3StartState() });
 registerDevJump({ id: 'm3-after-trip', label: 'L. po wyjeździe', make: () => m3AfterTripState() });
 registerDevJump({ id: 'm3-before-window', label: 'L. przed oknem', make: () => m3BeforeWindowState() });
 registerDevJump({ id: 'm3-live', label: 'L. minuty na żywo', make: () => m3LiveState() });
+registerDevJump({ id: 'm3-back', label: 'L. wiadomość o wyjściu', make: () => m3BackState() });
+registerDevJump({ id: 'm3-report', label: 'L. raport', make: () => m3ReportState() });
