@@ -50,6 +50,11 @@ export type { TripDef } from './trip';
 export type { DeliveryDef } from './delivery';
 export type BonusDef = { label: string; money: number; when: (s: GameState) => boolean; note?: string };
 export type StageDef = { title: string; sub: string; coach: string };
+/** Kropka idącej osoby na planie piętra (animacja z planu 31); `seen`: w polu widzenia kamery. */
+export type PlanDot = { x: number; y: number; seen: boolean };
+export type PlanCam = { ip: string; lbl: string; known: boolean; off: boolean };
+/** Plan piętra: `svg` to wnętrze `<svg viewBox="0 0 600 290">` z gry (renderowane jako HTML). */
+export type PlanView = { svg: string; cams: PlanCam[]; rows: { label: string; value: string; coin?: boolean }[]; footer: string };
 
 export type MissionDef = {
   id: MissionId;
@@ -113,12 +118,19 @@ export type MissionDef = {
   notesTitle?: string;
   notesIntro?: string;
   notesFooter?: string;
+  /** Okno „Plan piętra”: widok planu w tej misji. */
+  floorPlan?: (s: GameState, dot: PlanDot | null) => PlanView;
 };
 
 export function missionDef(id: MissionId): MissionDef;
 export function missionDef(id: MissionId | null | undefined): MissionDef | undefined;
 export function missionDef(id: MissionId | null | undefined): MissionDef | undefined {
   return id ? MISSIONS[id] : undefined;
+}
+
+/** Plan piętra aktywnego zlecenia albo null, gdy zlecenie go nie ma. */
+export function floorPlanView(s: GameState, dot?: PlanDot | null): PlanView | null {
+  return missionDef(s.active)?.floorPlan?.(s, dot ?? null) ?? null;
 }
 
 export function findHost(ip: string): HostDef | undefined {
