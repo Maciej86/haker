@@ -158,3 +158,14 @@ export const M3_BACK_STEP = 'powrót o {hm}: te same dwie kamery';
 /** Linia 1823 (leg 2, na żywo). Wstawki {hm}, {co}: M3_CLOCK_LIVE_AT, M3_CLOCK_LIVE_WAIT, M3_CLOCK_LIVE_NOW albo M3_BACK_LIVE_CONNECT. */
 export const M3_BACK_LIVE = 'Wychodzi o {hm}. {co}';
 export const M3_BACK_LIVE_CONNECT = 'Połącz się: <code>use S1</code> (2 min).';
+/** Linia 1744, wariant ok. Wstawka {hm}. */
+export const M3_BACK_OK_MAIL = 'Wyszedł o {hm} i jest już poza hotelem. Nikt go nie widział. Odpisz mi krótko, kiedy wszystko posprzątasz.';
+/** Linia 1744: dopisek maila po błędzie w drodze powrotnej. */
+export const M3_BACK_BAD_TAIL = ' Zdążył wyjść, ale zostało nagranie. Zapłacę mniej. Odpisz, kiedy posprzątasz.';
+/** Linia 1745, wariant ok, bez porady „Włącz kamery (albo poczekaj na koniec zadań at), rozłącz się i odpisz L. w Poczcie.” (Terminal nie podpowiada). Wstawka {hm}. */
+export const M3_BACK_OK_LINE = '<span class="c">{hm} · wyszedł z 712 i zjechał windą. Nikt go nie widział.</span>';
+/** Linia 1745, wariant z błędem. Wstawka {txt}. */
+export const M3_BACK_BAD_LINE = '<span class="r">{txt}</span> <span class="d">Misja trwa, zapłata mniejsza. Posprzątaj i odpisz L.</span>';
+/** Linia 1746. */
+export const M3_BACK_OK_TOAST = 'L.: wyszedł niezauważony';
+export const M3_BACK_BAD_TOAST = 'L.: nagrany przy wyjściu, zapłata mniejsza';

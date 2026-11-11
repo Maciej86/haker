@@ -18,7 +18,8 @@ import { CAM_MAX, M3_BACK_LEAD, M3_NOTICE_AFTER, M3_RETRY_START, camIsOff, offAt
 import { M3_CAMS, M3_ROUTE } from './cams';
 import { PLAN_ROUTE } from './plan';
 import {
-  M3_AT_READY, M3_EARLY, M3_NOTICE_LINE, M3_NOTICE_MAIL, M3_NOTICE_TOAST, M3_FAIL_LINE, M3_JOBS_LOST, M3_LATE, M3_LATE_BACK, M3_LATE_THERE, M3_OVERFLOW, M3_OVERFLOW_FAIL,
+  M3_AT_READY, M3_BACK_BAD_LINE, M3_BACK_BAD_TAIL, M3_BACK_BAD_TOAST, M3_BACK_OK_LINE, M3_BACK_OK_MAIL, M3_BACK_OK_TOAST,
+  M3_EARLY, M3_NOTICE_LINE, M3_NOTICE_MAIL, M3_NOTICE_TOAST, M3_FAIL_LINE, M3_JOBS_LOST, M3_LATE, M3_LATE_BACK, M3_LATE_THERE, M3_OVERFLOW, M3_OVERFLOW_FAIL,
   M3_OVERFLOW_LINE, M3_OVERFLOW_MAIL, M3_OVERFLOW_TOAST, M3_RETRY_3, M3_RETRY_EARLY, M3_RETRY_LATE, M3_RETRY_LINE,
   M3_RETRY_TOAST_EARLY, M3_RETRY_TOAST_LATE, M3_THERE_LINE, M3_THERE_MAIL, M3_THERE_TOAST, M3_WINDOW_FAIL,
 } from './texts';
@@ -203,16 +204,28 @@ function reveal(s: GameState, r: StepResult, spec: WalkSpec): StepResult {
   return { ...r, ui: [...ui, ...r.ui.filter((e) => !isLate(e))] };
 }
 
-/** Ocena okna minutę po starcie (linie 1717–1741): droga do 712. Plan 32 dokłada drogę powrotną. */
+/** Ocena okna minutę po starcie (linie 1717–1746): droga do 712 i, po wiadomości L., droga powrotna. */
 export function m3Evaluate(s: GameState): StepResult {
   const m = s.mission.m3;
   const w = m.win;
-  if (!live(s) || m.leg !== 1 || s.t <= w.start || m.evalAt === w.start) return step(s);
+  const back = m.leg === 2;
+  if (!live(s) || (back && !m.noticed) || s.t <= w.start || m.evalAt === w.start) return step(s);
   const j = judgeWindow(m);
   const end = w.start + w.len;
   const hm = hhmm(w.start);
-  const spec = m3Walk(j.res === 'late' ? j.miss[0] : null, false);
+  // W drodze powrotnej pierwsza na trasie jest kamera .33 (korytarz B), potem winda.
+  const seenAt = j.res !== 'late' ? null : back ? ([...M3_ROUTE].reverse().find((ip) => j.miss.includes(ip)) ?? null) : j.miss[0];
+  const spec = m3Walk(seenAt, back);
   let m2: M3State = { ...m, evalAt: w.start, extra: m.extra || j.extra };
+
+  if (j.res === 'ok' && back) {
+    m2 = { ...m2, wins: [...m.wins, { ...w }], ok: true };
+    return reveal(s, step(
+      m3MailL(withM(s, m2), fill(M3_BACK_OK_MAIL, { hm }), end),
+      [{ html: fill(M3_BACK_OK_LINE, { hm }) }],
+      [{ kind: 'toast', text: M3_BACK_OK_TOAST }],
+    ), spec);
+  }
 
   if (j.res === 'ok') {
     const exact = atCovers(m, w);
@@ -233,11 +246,20 @@ export function m3Evaluate(s: GameState): StepResult {
     m2 = { ...m2, log: m2.log.map((c) => (c.on === null || c.on > s.t ? { ...c, on: Math.max(c.off, s.t) } : c)) };
     txt = m3EarlyText(j.early);
   } else {
-    txt = m3LateText(j.miss, false);
+    txt = m3LateText(j.miss, back);
   }
   m2 = { ...m2, err: m.err + 1 };
   if (m2.err >= 2) {
     return reveal(s, m3Fail(withM(s, m2), txt + M3_WINDOW_FAIL, w.start, fill(M3_FAIL_LINE, { txt })), spec);
+  }
+  if (back) {
+    // Powrót bez drugiej próby: misja trwa, zapłata mniejsza (linie 1742–1746).
+    m2 = { ...m2, ok: true, late: true };
+    return reveal(s, step(
+      m3MailL(withM(s, m2), txt + M3_BACK_BAD_TAIL, end, true),
+      [{ html: fill(M3_BACK_BAD_LINE, { txt }) }],
+      [{ kind: 'toast', text: M3_BACK_BAD_TOAST, bad: true }],
+    ), spec);
   }
   const early = j.res === 'early';
   m2 = { ...m2, late: m2.late || !early, win: { start: M3_RETRY_START, len: early ? 2 : 3 } };
